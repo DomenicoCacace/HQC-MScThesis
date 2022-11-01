@@ -1,2 +1,8 @@
+# IDE config files
 .code
+.vscode
 *.code-workspace
+
+# Build folders
+.pio/
+build/
