@@ -1,12 +1,15 @@
 #include "board_utils.h"
 
 void setup_board(void) {
-    // HSE connects the PLL to an external High Speed oscillator, I believe.
-    // Since there is none attached to the board...
-    // rcc_clock_setup_pll(&rcc_hse_16mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
-    rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
-    setup_gpio();
-    setup_usart();
+   // HSE connects the PLL to an external High Speed oscillator, I believe.
+   // Since there is none attached to the board...
+   // rcc_clock_setup_pll(&rcc_hse_16mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
+   rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
+   setup_gpio();
+   setup_usart();
+#ifdef TIMING
+   setup_systick();
+#endif
 }
 
 /* Sets up trigger GPIO as Port B - Pin 9 
@@ -81,6 +84,14 @@ void setup_usart(void){
    // usart_disable_tx_interrupt(USART1);
 }
 
+void setup_systick(void) {
+    if (ARM_CM_DWT_CTRL != 0) {                  // See if DWT is available
+        ARM_CM_DEMCR      |= 1 << 24;            // Set bit 24
+        ARM_CM_DWT_CYCCNT  = 0;                
+        ARM_CM_DWT_CTRL   |= 1 << 0;             // Set bit 0
+    }
+}
+
 void usart_send_str(char *str, int bytes) {
   for (int i = 0; i < bytes; i++)
     usart_send_blocking(USART, str[i]);
@@ -103,7 +114,7 @@ void trigger_reset(void){
 
 void debug(const char* str, ...){ 
    #ifdef DEBUG
-   char buffer[100];
+   char buffer[256];
    va_list arg;
 
    va_start (arg, str);

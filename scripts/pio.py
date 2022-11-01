@@ -23,12 +23,19 @@ else:
     env.Append(CPPDEFINES=[("STLINK_COMM")])
     print("STLINK selected")
 
-debug = input("Enable debug messages [y/N]: \n")
-if debug == "Y" or debug == "y":
+debug = input("Enable debug messages [Y/n]: \n")
+if debug == "N" or debug == "n":
+    print("Debug disabled")
+else:
     env.Append(CPPDEFINES=[("DEBUG")])
     print("Debug enabled")
+
+debug = input("Enable timing [Y/n]: \n")
+if debug == "N" or debug == "n":
+    print("Timing disabled")
 else:
-    print("Debug disabled")
+    env.Append(CPPDEFINES=[("TIMING")])
+    print("Timing enabled")
 
 print("\nExecutable(s) to run")
 print("[0] PKE Encryption")
