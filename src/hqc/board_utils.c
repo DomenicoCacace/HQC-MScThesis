@@ -100,3 +100,16 @@ void trigger_reset(void){
   gpio_clear(GPIOB, GPIO9);
   gpio_clear(GPIOA, GPIO5);
 }
+
+void debug(const char* str, ...){ 
+   #ifdef DEBUG
+   char buffer[100];
+   va_list arg;
+
+   va_start (arg, str);
+   vsprintf (buffer, str, arg);
+   va_end (arg);
+
+   usart_send_str(buffer, strlen(buffer));
+   #endif
+}
