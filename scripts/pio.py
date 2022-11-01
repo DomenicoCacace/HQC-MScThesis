@@ -43,6 +43,8 @@ print("[1] PKE Decryption")
 print("[2] KEM Encapsulation")
 print("[3] KEM Decapsulation")
 executables = input("Select executables to run: \n")
+if executables == "":
+    executables = "1 2"   
 executables = executables.split()
 executables = [x for x in executables if x != " "]
 executables = [int(x) for x in executables]
