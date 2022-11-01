@@ -9,8 +9,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "shake_prng.h"
-#include "api.h"
+#include "../lib/shake_prng.h"
+#include "../common/api.h"
 
 #define MAX_MARKER_LEN      50
 #define KAT_SUCCESS          0
@@ -22,6 +22,7 @@ int     FindMarker(FILE *infile, const char *marker);
 int     ReadHex(FILE *infile, unsigned char *A, int Length, char *str);
 void    fprintBstr(FILE *fp, char *S, unsigned char *A, unsigned long long L);
 
+/*
 int
 main()
 {
@@ -120,7 +121,7 @@ main()
     fclose(fp_rsp);
 
     return KAT_SUCCESS;
-}
+}*/
 
 
 
