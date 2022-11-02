@@ -15,7 +15,7 @@ void kem_timing(void);
 void mul_timing(void);
 #endif
 
-#define BATCH_SIZE 200
+#define BATCH_SIZE 1000
 #define DELAY 5000
 
 int main(void) {
@@ -78,11 +78,11 @@ void kem_timing() {
 	trigger_reset();
 
 	debug("Passed/Total: %d/%d\n\n", passed, BATCH_SIZE);
-	debug("Algorithm\tExec Time\n");
-	debug("Encaps");
-	debug("\t\t%lu\n", (unsigned)encaps.mean);
-	debug("Decaps");
-	debug("\t\t%lu\n", (unsigned)decaps.mean);
+	debug("Algorithm\tExec Time\tVariance\n");
+	debug("Encaps\t\t");
+	welford_print(encaps);
+	debug("Decaps\t\t");
+	welford_print(decaps);
 }
 
 void pke_timing() {
@@ -127,11 +127,11 @@ void pke_timing() {
   trigger_reset();
 
   debug("Passed/Total: %d/%d\n\n", passed, BATCH_SIZE);
-  debug("Algorithm\tExec Time\n");
-  debug("Encrypt");
-  debug("\t\t%lu\n", (unsigned)encrypt.mean);
-  debug("Decrypt");
-  debug("\t\t%lu\n", (unsigned)decrypt.mean);
+  debug("Algorithm\tExec Time\t\tVariance\n");
+  debug("Encrypt\t\t");
+	welford_print(encrypt);
+  debug("Decrypt\t\t");
+	welford_print(decrypt);
 }
 
 void mul_timing() {
@@ -177,11 +177,11 @@ void mul_timing() {
 	trigger_reset();
 
 	debug("Passed/Total: %d/%d\n", passed, BATCH_SIZE);
-	debug("Algorithm\tExec Time\n");
-	debug("Original");
-	debug("\t\t%lu\n", (unsigned)mul_original.mean);
-	debug("Optimized");
-	debug("\t\t%lu\n", (unsigned)mul_optimized.mean);
+	debug("Algorithm\t\tExec Time\t\tVariance\n");
+	debug("Original\t\t");
+	welford_print(mul_original);
+	debug("Optimized\t\t");
+	welford_print(mul_optimized);
 }
 #else
 #endif

@@ -35,7 +35,8 @@ void welford_update(welford_t* state, long double sample) {
 
 static inline
 void welford_print(const welford_t state) {
-    debug("%.2Lf \t %.2Lf\r\n",
-           state.mean,
-           sqrtl(state.M2/(long double)(state.count-1)));
+    char mean[13], variance[13];
+	gcvt(state.mean, 13, mean);
+    gcvt(sqrtl(state.M2 /(long double)(state.count - 1)), 13, variance);
+    debug("%s \t %s\r\n", mean, variance);
 }
