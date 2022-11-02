@@ -30,42 +30,46 @@ else:
     env.Append(CPPDEFINES=[("DEBUG")])
     print("Debug enabled")
 
-debug = input("Enable timing [Y/n]: \n")
-if debug == "N" or debug == "n":
+timing = input("Enable timing [Y/n]: \n")
+if timing == "N" or timing == "n":
     print("Timing disabled")
+    print("\nExecutable(s) to run")
+    print("[0] PKE Encryption")
+    print("[1] PKE Decryption")
+    print("[2] KEM Encapsulation")
+    print("[3] KEM Decapsulation")
+    executables = input("Select executables to run: \n")
+    if executables == "":
+        executables = "2 3"   
+    executables = executables.split()
+    executables = [x for x in executables if x != " "]
+    executables = [int(x) for x in executables]
+    for executable in executables:
+        if executable == 0:
+            env.Append(CPPDEFINES=[("PKE_ENCRYPT")])
+        elif executable == 1:
+            env.Append(CPPDEFINES=[("PKE_DECRYPT")])
+        elif executable == 2:
+            env.Append(CPPDEFINES=[("KEM_ENCAPS")])
+        elif executable == 3:
+            env.Append(CPPDEFINES=[("KEM_DECAPS")])
 else:
     env.Append(CPPDEFINES=[("TIMING")])
     print("Timing enabled")
-
-print("\nExecutable(s) to run")
-print("[0] PKE Encryption")
-print("[1] PKE Decryption")
-print("[2] KEM Encapsulation")
-print("[3] KEM Decapsulation")
-executables = input("Select executables to run: \n")
-if executables == "":
-    executables = "1 2"   
-executables = executables.split()
-executables = [x for x in executables if x != " "]
-executables = [int(x) for x in executables]
-for executable in executables:
-    if executable == 0:
-        env.Append(CPPDEFINES=[("PKE_ENCRYPT")])
-        if "PKE" not in env["CPPDEFINES"]:
+    print("\nExecutable(s) to run")
+    print("[0] Encrypt/Decrypt")
+    print("[1] Encaps/Decaps")
+    print("[2] Multiplication")
+    executables = input("Select executables to run: \n")
+    if executables == "":
+        executables = "2"   
+    executables = executables.split()
+    executables = [x for x in executables if x != " "]
+    executables = [int(x) for x in executables]
+    for executable in executables:
+        if executable == 0:
             env.Append(CPPDEFINES=[("PKE")])
-    elif executable == 1:
-        env.Append(CPPDEFINES=[("PKE_DECRYPT")])
-        if "PKE" not in env["CPPDEFINES"]:
-            env.Append(CPPDEFINES=[("PKE")])
-    elif executable == 2:
-        env.Append(CPPDEFINES=[("KEM_ENCAPS")])
-        if "KEM" not in env["CPPDEFINES"]:
+        elif executable == 1:
             env.Append(CPPDEFINES=[("KEM")])
-    elif executable == 3:
-        env.Append(CPPDEFINES=[("KEM_DECAPS")])
-        if "KEM" not in env["CPPDEFINES"]:
-            env.Append(CPPDEFINES=[("KEM")])
-
-
-
-    
+        elif executable == 2:
+            env.Append(CPPDEFINES=[("MUL")])

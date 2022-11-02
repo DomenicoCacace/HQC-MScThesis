@@ -37,5 +37,5 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/lib/shake_ds.h
 			${BASE_DIR}/lib/shake_prng.h)
 
-add_executable(hqc-${SECLVL} ${HEADERS} ${SOURCES} ${BASE_DIR}/hqc/main_x86.c)
+add_executable(hqc-${SECLVL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main_x86.c)
 set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECLVL}")
