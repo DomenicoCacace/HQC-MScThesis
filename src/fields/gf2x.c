@@ -171,7 +171,10 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
  * @param[in] ctx Pointer to the randomness context
  */
 void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx) {
-    
+    uint64_t tmp[(VEC_N_SIZE_64 << 1) + 1] = {0};
+
+    fast_convolution_mult(tmp, a1, a2, weight, ctx);
+    reduce(o, tmp);
 }
 
 
