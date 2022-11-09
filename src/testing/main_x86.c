@@ -63,7 +63,7 @@ int pke(void) {
 
 int mul(void) {
     #define MUL_ORIGINAL vect_mul
-	#define MUL_OPTIMIZED vect_mul
+	#define MUL_OPTIMIZED opt_mul
 
 	uint64_t u[VEC_N_SIZE_64] = {0};
 	uint32_t y[PARAM_OMEGA] = {0};
