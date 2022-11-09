@@ -157,3 +157,22 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
     fast_convolution_mult(tmp, a1, a2, weight, ctx);
     reduce(o, tmp);
 }
+
+/**
+ * @brief Multiply two polynomials modulo \f$ X^n - 1\f$.
+ *
+ * This functions multiplies a sparse polynomial <b>a1</b> (of Hamming weight equal to <b>weight</b>)
+ * and a dense polynomial <b>a2</b>. The multiplication is done modulo \f$ X^n - 1\f$.
+ *
+ * @param[out] o Pointer to the result
+ * @param[in] a1 Pointer to the sparse polynomial
+ * @param[in] a2 Pointer to the dense polynomial
+ * @param[in] weight Integer that is the weigt of the sparse polynomial
+ * @param[in] ctx Pointer to the randomness context
+ */
+void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx) {
+    
+}
+
+
+
