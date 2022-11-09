@@ -16,7 +16,6 @@ void mul_timing(void);
 #endif
 
 #define BATCH_SIZE 1000
-#define DELAY 5000
 
 int main(void) {
   setup_board();
@@ -154,12 +153,13 @@ void mul_timing() {
 
 	int passed = 0;
 
+	seedexpander_init(&seedexpander, sk, SEED_BYTES);
+
 	trigger_set();
 	for(int i = 0; i < BATCH_SIZE; i++) {
-		seedexpander_init(&seedexpander, sk, SEED_BYTES);
 		vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
 		vect_set_random_from_prng(u);
-		
+
 		start = get_systick();
 		MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
 		end = get_systick();

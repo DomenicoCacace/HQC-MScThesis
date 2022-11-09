@@ -14,6 +14,7 @@ void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32
 void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t weight);
 void vect_set_random(seedexpander_state *ctx, uint64_t *v);
 void vect_set_random_from_prng(uint64_t *v);
+void vect_generate_random_for_mult(uint64_t *v);
 
 void vect_add(uint64_t *o, const uint64_t *v1, const uint64_t *v2, uint32_t size);
 uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size);
