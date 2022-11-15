@@ -9,6 +9,8 @@ def main():
 
     graph = parse(lines)
     graph = collapse_assignments(graph)
+    graph = remove_self_loops(graph)
+    graph.print()
 
 def parse(lines):
     in1 = lines[1]
@@ -195,12 +197,16 @@ def collapse_assignments(graph):
     
     graph = apply_substitution(graph, sub_table)
     return graph
-
-
-
-def collapse(graph, eligible):
+            
+def remove_self_loops(graph):
+    while True:
+        old = graph.copy()
+        for edge in graph.edges:
+            if edge[0] == edge[1]:
+                graph.edges.remove(edge)
+        if old == graph:
+            break
     
-
     return graph
 
 class Var:
