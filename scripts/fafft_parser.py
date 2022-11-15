@@ -96,9 +96,26 @@ def parse(lines):
             if len(edges) > 2:
                 raise
             else:
+                need_sub = []
                 op1_old = edges[0][1]
                 op2_old = edges[1][1]
                 dest = edges[0][0]
+
+                edges_in_between = []
+                enable = False
+                for edge in graph.edges:
+                    if edge[0] == dest:
+                        if enable == True:
+                            break
+                        else:
+                            enable = True
+                    if enable:
+                        edges_in_between.append(edge)
+                for btw in edges_in_between:
+                    if isinstance(btw[1], Operation):
+                        
+                        if btw[1].lhs == dest or btw[1].rhs == dest:
+                            need_sub.append(btw)
 
                 # case 1:
                 # out = a
@@ -117,12 +134,12 @@ def parse(lines):
                     graph.nodes.remove(op2_old)
                     graph.edges.remove(edges[0])
                     graph.edges.remove(edges[1])
-                    print("FIXED SSA VIOLATION: {}\n".format((dest, new_op)))
+                    print("FIXED SSA VIOLATIONN: {}\n".format((dest, new_op)))
 
                 # case 2:
                 # out = a * b
                 # out = out * c
-                elif isinstance(op1_old, Operation) and isinstance(op2_old, Operation):
+                elif isinstance(op1_old, Operation) and isinstance(op2_old, Operation):             
                     # tmp = a * b
                     new_node = Var("Bit_" + str(ctr))
                     ctr += 1
@@ -137,7 +154,21 @@ def parse(lines):
                     new_op = type(op2_old)(op1, op2)
                     graph.add_node(new_op)
                     graph.replace_edge(edges[1], (dest, new_op))
+                    # substitute the old operand with the new one
+                    for edge in need_sub:
+                        op = edge[1]
+                        op1 = new_node
+                        if op.lhs == dest:
+                            op2 = op.rhs
+                        else:
+                            op2 = op.lhs
+                        new_op = type(op)(op1, op2)
+                        graph.add_node(new_op)
+                        graph.replace_edge(edge, (edge[0], new_op))
+                        graph.nodes.remove(edge[1])
+                    
                     print("FIXED SSA VIOLATION: {}, {}\n".format((new_node, op1_old), (dest, new_op)))
+
                 else:
                     raise
     return graph
