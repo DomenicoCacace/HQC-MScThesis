@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(HQC)
 
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -std=c99 -funroll-all-loops -flto -pedantic -Wall -Wextra")
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -std=c99 -flto -pedantic -Wall -Wextra")
 set(CMAKE_C_FLAGS_RNG "${CMAKE_C_FLAGS} -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-sign-compare")
 set(SECLVL 128)
 
@@ -31,6 +31,7 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/fields/fft.h
 			${BASE_DIR}/fields/gf.h
 			${BASE_DIR}/fields/gf2x.h
+			${BASE_DIR}/fields/shares.h
 			${BASE_DIR}/hqc/hqc.h
 			${BASE_DIR}/lib/domains.h
 			${BASE_DIR}/lib/fips202.h
@@ -38,4 +39,4 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/lib/shake_prng.h)
 
 add_executable(hqc-${SECLVL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main_x86.c)
-set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECLVL} -DVERBOSE=1")
+set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECLVL}") # -DVERBOSE=1")
