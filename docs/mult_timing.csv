@@ -1,0 +1,3 @@
+commit, mean_original, mean_opt, var_original, var_opt, note
+04a9bd, 698998.82, 699649.37, 13134.85, 14000.03, Reference implementation
+8f47c6, 712718.23, 712718.23, 12659.29, 5168.44, Reference implementation without shuffling
