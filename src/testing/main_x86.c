@@ -6,7 +6,7 @@
 #include "../fields/gf2x.h"
 #include "../lib/shake_prng.h"
 
-#define BATCH_SIZE 2
+#define BATCH_SIZE 10
 
 int kem(void);
 int pke(void);
@@ -80,8 +80,15 @@ int mul(void) {
 		vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
 		vect_generate_random_for_mult(u);
 
-		MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
-		MUL_OPTIMIZED(res_optimized, y, u, PARAM_OMEGA, &seedexpander);
+        uint64_t y_dense[VEC_N_SIZE_64] = {0};
+        for (size_t j = 0; j < PARAM_OMEGA; ++j) {
+            int32_t index = y[j] / 64;
+            int32_t pos = y[j] % 64;
+            y_dense[index] |= ((uint64_t) 1) << pos;
+        }
+
+        MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
+		MUL_OPTIMIZED(res_optimized, (const uint32_t *) y_dense, u, PARAM_OMEGA, &seedexpander);
 
 #ifdef VERBOSE
     printf("\n\nu: ");
@@ -93,8 +100,6 @@ int mul(void) {
     printf("\r\nres_optimized: ");
     for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_optimized[j]);
 #endif
-
-
         if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0) {
             passed++;
         }

@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../common/parameters.h"
 #include "gf2x.h"
 
 #define TABLE 16
@@ -158,48 +157,6 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
     reduce(o, tmp);
 }
 
-/**
- * @brief computes product of the polynomial a1(x) with the sparse polynomial a2
- *
- *  o(x) = a1(x)a2(x)
- *
- * @param[out] o Pointer to the result
- * @param[in] a1 Pointer to the sparse polynomial a2 (list of degrees of the monomials which appear in a2)
- * @param[in] a2 Pointer to the polynomial a1(x)
- * @param[in] weight Hamming wifht of the sparse polynomial a2
- * @param[in] ctx Pointer to a seed expander used to randomize the multiplication process
- */
-static void fast_convolution_mult_noshuffle(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx) {
-    uint64_t carry;
-    uint64_t tmp;
-    uint64_t table[TABLE * (VEC_N_SIZE_64 + 1)];
-
-
-    memcpy(table, a2, VEC_N_SIZE_64*sizeof(uint64_t));
-    table[VEC_N_SIZE_64] = 0x0UL;
-
-    for (size_t i = 1; i < TABLE; i++) {
-        carry = 0x0UL;
-
-        for (size_t j = 0; j < VEC_N_SIZE_64; j++) {
-            table[i*(VEC_N_SIZE_64+1)+j] = (a2[j] << i) ^ carry;
-            carry = (a2[j] >> ((WORD - i)));
-        }
-        table[i*(VEC_N_SIZE_64+1)+VEC_N_SIZE_64] = carry;
-    }
-
-    for (size_t i = 0; i < weight; i++) {
-        uint16_t *res_16 = (uint16_t *) o+(a1[i] >> 4);
-
-        for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
-            tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
-                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
-            tmp ^= table[((a1[i] & 0xf) * (VEC_N_SIZE_64 + 1))+j];
-            memcpy(res_16, &tmp, 8);
-            res_16 += 4;
-        }
-    }
-}
 
 /**
  * @brief Multiply two polynomials modulo \f$ X^n - 1\f$.
@@ -213,11 +170,15 @@ static void fast_convolution_mult_noshuffle(uint64_t *o, const uint32_t *a1, con
  * @param[in] weight Integer that is the weigt of the sparse polynomial
  * @param[in] ctx Pointer to the randomness context
  */
-void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx) {
-    uint64_t tmp[(VEC_N_SIZE_64 << 1) + 1] = {0};
+void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, uint16_t weight, seedexpander_state *ctx) {
+    uint32_t a1_m[65536/32] = {0};
+    uint32_t a2_m[65536/32] = {0};
+    uint64_t res[65536/32*2] = {0};
+    memcpy(a1_m, a1, VEC_N_SIZE_BYTES);
+    memcpy(a2_m, a2, VEC_N_SIZE_BYTES);
 
-    fast_convolution_mult_noshuffle(tmp, a1, a2, weight, ctx);
-    reduce(o, tmp);
+    bmul2_4096_to_8192((uint8_t *) res, (const uint8_t *) a1_m, (const uint8_t *) a2_m);
+    reduce(o, res);
 }
 
 
