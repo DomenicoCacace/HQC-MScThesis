@@ -178,7 +178,7 @@ void mul_timing() {
 
 
 		start = get_systick();
-		MUL_OPTIMIZED(res_optimized, (uint32_t*)y_dense, u, PARAM_OMEGA, &seedexpander);
+		MUL_OPTIMIZED(res_optimized, (uint32_t*)y_dense, u);
 		end = get_systick();
 		welford_update(&mul_optimized, ((long double)(end-start)));
 

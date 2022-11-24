@@ -88,7 +88,7 @@ int mul(void) {
         }
 
         MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
-		MUL_OPTIMIZED(res_optimized, (const uint32_t *) y_dense, u, PARAM_OMEGA, &seedexpander);
+		MUL_OPTIMIZED(res_optimized, (const uint32_t *) y_dense, u);
 
 #ifdef VERBOSE
     printf("\n\nu: ");

@@ -170,7 +170,7 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
  * @param[in] weight Integer that is the weigt of the sparse polynomial
  * @param[in] ctx Pointer to the randomness context
  */
-void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, uint16_t weight, seedexpander_state *ctx) {
+void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2) {
     uint32_t a1_m[65536/32] = {0};
     uint32_t a2_m[65536/32] = {0};
     uint64_t res[65536/32*2] = {0};
