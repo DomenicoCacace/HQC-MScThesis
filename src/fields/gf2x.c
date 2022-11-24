@@ -177,7 +177,7 @@ void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2) {
     memcpy(a1_m, a1, VEC_N_SIZE_BYTES);
     memcpy(a2_m, a2, VEC_N_SIZE_BYTES);
 
-    bmul2_4096_to_8192((uint8_t *) res, (const uint8_t *) a1_m, (const uint8_t *) a2_m);
+    bmul2((uint8_t *) res, (const uint8_t *) a1_m, (const uint8_t *) a2_m);
     reduce(o, res);
 }
 

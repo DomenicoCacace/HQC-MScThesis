@@ -42,7 +42,7 @@
 	eor \c_1, \c_1, \buf1	//c_1
 .endm
 
-//void gf4v_mul_2_asm( sto_t *c, const sto_t *a )
+//void gf4v_mul_2_asm( uint32_t *c, const uint32_t *a )
 .global gf4v_mul_2_asm
 gf4v_mul_2_asm:
 	ldr r3, [r1] 		//load a0
@@ -53,7 +53,7 @@ gf4v_mul_2_asm:
 	str r3, [r0, #4]
 	bx lr
 
-//void gf4v_mul_asm( sto_t *c, const sto_t *a , const sto_t *b)
+//void gf4v_mul_asm( uint32_t *c, const uint32_t *a , const uint32_t *b)
 .global gf4v_mul_asm
 gf4v_mul_asm:
 	push {r4-r5}
@@ -96,7 +96,7 @@ b_1		.req r12
 	pop {r4-r5}
 	bx lr
 
-//void gf4v_mulscalar_asm( sto_t *c, const sto_t *a , uint8_t b)
+//void gf4v_mulscalar_asm( uint32_t *c, const uint32_t *a , uint8_t b)
 .global gf4v_mulscalar_asm
 gf4v_mulscalar_asm:
 	push {r4-r5}
@@ -176,7 +176,7 @@ buf1	.req r12
 	eor \c_1, \c_1, \buf0
 .endm
 
-//void gf16v_mul_asm( sto_t *c, const sto_t *a , const sto_t *b )
+//void gf16v_mul_asm( uint32_t *c, const uint32_t *a , const uint32_t *b )
 // does not preserve pointers, uses all registers
 .global gf16v_mul_asm
 gf16v_mul_asm:
@@ -231,7 +231,7 @@ buf0	.req r14
 .unreq buf0
 	pop {r4-r11, pc}
 
-// void gf16v_mulscalar_asm( sto_t *c, const sto_t *a , uint8_t b )
+// void gf16v_mulscalar_asm( uint32_t *c, const uint32_t *a , uint8_t b )
 // preserves pointers, uses all registers
 .global gf16v_mulscalar_asm
 gf16v_mulscalar_asm:
@@ -273,7 +273,7 @@ buf2	.req r14
 .unreq buf2
 	pop {r4-r11, pc}
 
-//void gf16v_mul_0x4_asm( sto_t *c, const sto_t *a )
+//void gf16v_mul_0x4_asm( uint32_t *c, const uint32_t *a )
 //does not preserve pointer a, uses only caller-saved registers
 .global gf16v_mul_0x4_asm
 gf16v_mul_0x4_asm:
@@ -303,7 +303,7 @@ c_3		.req r12
 .unreq c_3
 	bx lr
 
-//void gf16v_mul_0x5_asm( sto_t *c, const sto_t *a )
+//void gf16v_mul_0x5_asm( uint32_t *c, const uint32_t *a )
 //does not preserve pointer a, uses only caller-saved registers
 .global gf16v_mul_0x5_asm
 gf16v_mul_0x5_asm:
@@ -333,7 +333,7 @@ c_3		.req r12
 .unreq c_3
 	bx lr
 
-//void gf16v_mul_8_asm( sto_t *c, const sto_t *a )
+//void gf16v_mul_8_asm( uint32_t *c, const uint32_t *a )
 //does not preserve pointer a, uses only caller-saved registers
 .global gf16v_mul_8_asm
 gf16v_mul_8_asm:
@@ -588,21 +588,21 @@ buf2	.req r14
 	str r6, [r0, #12]
 .endm
 
-//void void gf256v_mul_asm( sto_t *c, const sto_t *a , const sto_t *b )
+//void void gf256v_mul_asm( uint32_t *c, const uint32_t *a , const uint32_t *b )
 .global gf256v_mul_asm
 gf256v_mul_asm:
 	push {r4-r11, lr}
 	m_gf256v_mul
 	pop {r4-r11, pc}
 
-//void gf256v_mulscalar_asm( sto_t *c, const sto_t *a , uint8_t b )
+//void gf256v_mulscalar_asm( uint32_t *c, const uint32_t *a , uint8_t b )
 .global gf256v_mulscalar_asm
 gf256v_mulscalar_asm:
 	push {r4-r11, lr}
 	m_gf256v_mulscalar_asm
 	pop {r4-r11, pc}
 
-//void gf256v_mul_0x80_asm( sto_t *c, const sto_t *a)
+//void gf256v_mul_0x80_asm( uint32_t *c, const uint32_t *a)
 .global gf256v_mul_0x80_asm
 gf256v_mul_0x80_asm:
 	push {r4, r5, r10, r11, lr}
@@ -730,14 +730,14 @@ c_7		.req r14
 	add sp, #64
 .endm
 
-//void gf216v_mul( sto_t *c, const sto_t *a , const sto_t *b )
+//void gf216v_mul( uint32_t *c, const uint32_t *a , const uint32_t *b )
 .global gf216v_mul_asm
 gf216v_mul_asm:
 	push {r4-r11, lr}
 	m_gf216v_mul
 	pop {r4-r11, pc}
 
-//void void gf216v_mul_0x8000_asm( sto_t *c, const sto_t *a )
+//void void gf216v_mul_0x8000_asm( uint32_t *c, const uint32_t *a )
 .global gf216v_mul_0x8000_asm
 gf216v_mul_0x8000_asm:
 	push {r4-r11, lr}
@@ -918,7 +918,7 @@ buf3	.req r14
 .unreq buf3
 .endm
 
-//void gf232v_mul( sto_t *c, const sto_t *a , const sto_t *b )
+//void gf232v_mul( uint32_t *c, const uint32_t *a , const uint32_t *b )
 .global gf232v_mul_asm
 gf232v_mul_asm:
 	push {r4-r11, lr}
@@ -928,7 +928,7 @@ gf232v_mul_asm:
 	pop {r4-r11, pc}
 
 
-//void void gf232v_mul_0x2_asm( sto_t *c, const sto_t *a )
+//void void gf232v_mul_0x2_asm( uint32_t *c, const uint32_t *a )
 .global gf232v_mul_0x2_asm
 gf232v_mul_0x2_asm:
 	push {r4, r5, r10, r11, lr}
@@ -962,7 +962,7 @@ c_7		.req r14
 .unreq c_6
 .unreq c_7
 
-// void gf232v_mul_0x5_asm( sto_t *c, const sto_t *a )
+// void gf232v_mul_0x5_asm( uint32_t *c, const uint32_t *a )
 .global gf232v_mul_0x5_asm
 gf232v_mul_0x5_asm:
 	push {r4, r5, r10, r11, lr}
@@ -996,7 +996,7 @@ c_7		.req r14
 .unreq c_6
 .unreq c_7
 
-// void gf232v_mul_gf16_asm( sto_t *c, const sto_t *a , const sto_t *b_gf16 )
+// void gf232v_mul_gf16_asm( uint32_t *c, const uint32_t *a , const uint32_t *b_gf16 )
 .global gf232v_mul_gf16_asm
 gf232v_mul_gf16_asm:
 	push {r4-r11, lr}
@@ -1123,7 +1123,7 @@ buf0	.req r14
 .unreq buf0
 	pop {r4-r11, pc}
 
-// void gf232v_mul_gf256_asm( sto_t *c, const sto_t *a , const sto_t *b_gf256 )
+// void gf232v_mul_gf256_asm( uint32_t *c, const uint32_t *a , const uint32_t *b_gf256 )
 .global gf232v_mul_gf256_asm
 gf232v_mul_gf256_asm:
 	push {r4-r11, lr}
@@ -1143,7 +1143,7 @@ gf232v_mul_gf256_asm:
 	m_gf256v_mul
 	pop {r4-r11, pc}
 
-// void gf232v_mul_gf216_asm( sto_t *c, const sto_t *a , const sto_t *b_gf216 )
+// void gf232v_mul_gf216_asm( uint32_t *c, const uint32_t *a , const uint32_t *b_gf216 )
 .global gf232v_mul_gf216_asm
 gf232v_mul_gf216_asm:
 	push {r4-r11, lr}
@@ -1155,7 +1155,7 @@ gf232v_mul_gf216_asm:
 	m_gf216v_mul
 	pop {r4-r11, pc}
 
-// void gf232v_mulscalar_gf16_asm( sto_t *c, const sto_t *a , uint8_t b )
+// void gf232v_mulscalar_gf16_asm( uint32_t *c, const uint32_t *a , uint8_t b )
 .global gf232v_mulscalar_gf16_asm
 gf232v_mulscalar_gf16_asm:
 		push {r4-r11, lr}
@@ -1237,7 +1237,7 @@ buf2	.req r14
 .unreq buf2
 	pop {r4-r11, pc}
 
-// void gf232v_mulscalar_gf256_asm( sto_t *c, const sto_t *a , uint8_t b )
+// void gf232v_mulscalar_gf256_asm( uint32_t *c, const uint32_t *a , uint8_t b )
 .global gf232v_mulscalar_gf256_asm
 gf232v_mulscalar_gf256_asm:
 	push {r4-r11, lr}
@@ -1257,7 +1257,7 @@ gf232v_mulscalar_gf256_asm:
 	m_gf256v_mulscalar_asm
 	pop {r4-r11, pc}
 
-// void gf232v_mulscalar_asm( sto_t *c, const sto_t *a , uint32_t _b );
+// void gf232v_mulscalar_asm( uint32_t *c, const uint32_t *a , uint32_t _b );
 .global gf232v_mulscalar_asm
 gf232v_mulscalar_asm:
 	push {r4-r11, lr}
