@@ -93,27 +93,30 @@ def gen_unrolled_asm():
                 code += store(r)
 
         # s registers available
-        if s_count >= 0:
-            dst_reg = "r0"
-            src_reg = "r1"
+        if s_count >= 0:            
+            dst_reg = "r1"
+            code += load(dst_reg, pair[0])
+
+            src_reg = "r0"
+            code += load(src_reg, pair[1])
+
+            code += xor(dst_reg, src_reg)
+
             moveTo = "s{}".format(s_count)
+            code += mov(moveTo, dst_reg)
+
             registers.append((moveTo, pair[0]))
             s_count -= 1
-            
-            code += load(dst_reg, pair[0])
-            code += load(src_reg, pair[1])
-
-            code += xor(dst_reg, src_reg)
-            code += mov(moveTo, dst_reg)
         else:
-            src_reg = "r0"
             dst_reg = "r{}".format(r_count)
+            code += load(dst_reg, pair[0])
+
+            src_reg = "r0"
+            code += load(src_reg, pair[1])
+            code += xor(dst_reg, src_reg)
+
             registers.append((dst_reg, pair[0]))
             r_count -= 1
-
-            code += load(dst_reg, pair[0])
-            code += load(src_reg, pair[1])
-            code += xor(dst_reg, src_reg)
 
         # time to store
         outbounds = []
@@ -151,7 +154,7 @@ def gen_unrolled_asm():
             for reg in outbounds:
                 newreg = (reg[0], reg[1]-offset)
                 code += store(newreg)
-            code += "sub r14, r14, #{}\n".format(offset*4)
+            # code += "sub r14, r14, #{}\n".format(offset*4)
 
     code += "vpop {d8-d15}\n"
     code += "pop {r0-r12, r14}\n"
