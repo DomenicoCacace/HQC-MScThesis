@@ -382,45 +382,6 @@ eor r2, r2, r0
 ldr r1, [r14, #904]
 ldr r0, [r14, #1864]
 eor r1, r1, r0
-add r14, r14, #1084
-vstr.32 s31, [r14]
-sub r14, r14, #1084
-add r14, r14, #1056
-vstr.32 s30, [r14]
-sub r14, r14, #1056
-add r14, r14, #1060
-vstr.32 s29, [r14]
-sub r14, r14, #1060
-add r14, r14, #1064
-vstr.32 s28, [r14]
-sub r14, r14, #1064
-add r14, r14, #1068
-vstr.32 s27, [r14]
-sub r14, r14, #1068
-add r14, r14, #1040
-vstr.32 s26, [r14]
-sub r14, r14, #1040
-add r14, r14, #1044
-vstr.32 s25, [r14]
-sub r14, r14, #1044
-add r14, r14, #1048
-vstr.32 s24, [r14]
-sub r14, r14, #1048
-add r14, r14, #1052
-vstr.32 s23, [r14]
-sub r14, r14, #1052
-add r14, r14, #1024
-vstr.32 s22, [r14]
-sub r14, r14, #1024
-add r14, r14, #1028
-vstr.32 s21, [r14]
-sub r14, r14, #1028
-add r14, r14, #1032
-vstr.32 s20, [r14]
-sub r14, r14, #1032
-add r14, r14, #1036
-vstr.32 s19, [r14]
-sub r14, r14, #1036
 vstr.32 s18, [r14, #1008]
 vstr.32 s17, [r14, #1012]
 vstr.32 s16, [r14, #1016]
@@ -452,6 +413,21 @@ str r4, [r14, #924]
 str r3, [r14, #896]
 str r2, [r14, #900]
 str r1, [r14, #904]
+add r14, r14, #1024
+vstr.32 s31, [r14, #60]
+vstr.32 s30, [r14, #32]
+vstr.32 s29, [r14, #36]
+vstr.32 s28, [r14, #40]
+vstr.32 s27, [r14, #44]
+vstr.32 s26, [r14, #16]
+vstr.32 s25, [r14, #20]
+vstr.32 s24, [r14, #24]
+vstr.32 s23, [r14, #28]
+vstr.32 s22, [r14, #0]
+vstr.32 s21, [r14, #4]
+vstr.32 s20, [r14, #8]
+vstr.32 s19, [r14, #12]
+sub r14, r14, #1024
 ldr r0, [r14, #908]
 ldr r1, [r14, #1868]
 eor r0, r0, r1
@@ -2101,15 +2077,6 @@ vstr.32 s6, [r14, #32]
 vstr.32 s5, [r14, #36]
 vstr.32 s4, [r14, #40]
 vstr.32 s3, [r14, #44]
-add r14, r14, #1552
-vstr.32 s2, [r14]
-sub r14, r14, #1552
-add r14, r14, #1556
-vstr.32 s1, [r14]
-sub r14, r14, #1556
-add r14, r14, #1560
-vstr.32 s0, [r14]
-sub r14, r14, #1560
 str r12, [r14, #1564]
 str r11, [r14, #1536]
 str r10, [r14, #1540]
@@ -2122,6 +2089,11 @@ str r4, [r14, #1532]
 str r3, [r14, #1504]
 str r2, [r14, #1508]
 str r1, [r14, #1512]
+add r14, r14, #1552
+vstr.32 s2, [r14, #0]
+vstr.32 s1, [r14, #4]
+vstr.32 s0, [r14, #8]
+sub r14, r14, #1552
 ldr r0, [r14, #1516]
 ldr r1, [r14, #1996]
 eor r0, r0, r1
@@ -2286,102 +2258,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1336]
 ldr r0, [r14, #1816]
 eor r1, r1, r0
-add r14, r14, #1516
-vstr.32 s31, [r14]
-sub r14, r14, #1516
-add r14, r14, #1488
-vstr.32 s30, [r14]
-sub r14, r14, #1488
-add r14, r14, #1492
-vstr.32 s29, [r14]
-sub r14, r14, #1492
-add r14, r14, #1496
-vstr.32 s28, [r14]
-sub r14, r14, #1496
-add r14, r14, #1500
-vstr.32 s27, [r14]
-sub r14, r14, #1500
-add r14, r14, #1472
-vstr.32 s26, [r14]
-sub r14, r14, #1472
-add r14, r14, #1476
-vstr.32 s25, [r14]
-sub r14, r14, #1476
-add r14, r14, #1480
-vstr.32 s24, [r14]
-sub r14, r14, #1480
-add r14, r14, #1484
-vstr.32 s23, [r14]
-sub r14, r14, #1484
-add r14, r14, #1456
-vstr.32 s22, [r14]
-sub r14, r14, #1456
-add r14, r14, #1460
-vstr.32 s21, [r14]
-sub r14, r14, #1460
-add r14, r14, #1464
-vstr.32 s20, [r14]
-sub r14, r14, #1464
-add r14, r14, #1468
-vstr.32 s19, [r14]
-sub r14, r14, #1468
-add r14, r14, #1440
-vstr.32 s18, [r14]
-sub r14, r14, #1440
-add r14, r14, #1444
-vstr.32 s17, [r14]
-sub r14, r14, #1444
-add r14, r14, #1448
-vstr.32 s16, [r14]
-sub r14, r14, #1448
-add r14, r14, #1452
-vstr.32 s15, [r14]
-sub r14, r14, #1452
-add r14, r14, #1424
-vstr.32 s14, [r14]
-sub r14, r14, #1424
-add r14, r14, #1428
-vstr.32 s13, [r14]
-sub r14, r14, #1428
-add r14, r14, #1432
-vstr.32 s12, [r14]
-sub r14, r14, #1432
-add r14, r14, #1436
-vstr.32 s11, [r14]
-sub r14, r14, #1436
-add r14, r14, #1408
-vstr.32 s10, [r14]
-sub r14, r14, #1408
-add r14, r14, #1412
-vstr.32 s9, [r14]
-sub r14, r14, #1412
-add r14, r14, #1416
-vstr.32 s8, [r14]
-sub r14, r14, #1416
-add r14, r14, #1420
-vstr.32 s7, [r14]
-sub r14, r14, #1420
-add r14, r14, #1392
-vstr.32 s6, [r14]
-sub r14, r14, #1392
-add r14, r14, #1396
-vstr.32 s5, [r14]
-sub r14, r14, #1396
-add r14, r14, #1400
-vstr.32 s4, [r14]
-sub r14, r14, #1400
-add r14, r14, #1404
-vstr.32 s3, [r14]
-sub r14, r14, #1404
-add r14, r14, #1376
-vstr.32 s2, [r14]
-sub r14, r14, #1376
-add r14, r14, #1380
-vstr.32 s1, [r14]
-sub r14, r14, #1380
-add r14, r14, #1384
-vstr.32 s0, [r14]
-sub r14, r14, #1384
 str r12, [r14, #1388]
 str r11, [r14, #1360]
 str r10, [r14, #1364]
@@ -2394,6 +2270,40 @@ str r4, [r14, #1356]
 str r3, [r14, #1328]
 str r2, [r14, #1332]
 str r1, [r14, #1336]
+add r14, r14, #1376
+vstr.32 s31, [r14, #140]
+vstr.32 s30, [r14, #112]
+vstr.32 s29, [r14, #116]
+vstr.32 s28, [r14, #120]
+vstr.32 s27, [r14, #124]
+vstr.32 s26, [r14, #96]
+vstr.32 s25, [r14, #100]
+vstr.32 s24, [r14, #104]
+vstr.32 s23, [r14, #108]
+vstr.32 s22, [r14, #80]
+vstr.32 s21, [r14, #84]
+vstr.32 s20, [r14, #88]
+vstr.32 s19, [r14, #92]
+vstr.32 s18, [r14, #64]
+vstr.32 s17, [r14, #68]
+vstr.32 s16, [r14, #72]
+vstr.32 s15, [r14, #76]
+vstr.32 s14, [r14, #48]
+vstr.32 s13, [r14, #52]
+vstr.32 s12, [r14, #56]
+vstr.32 s11, [r14, #60]
+vstr.32 s10, [r14, #32]
+vstr.32 s9, [r14, #36]
+vstr.32 s8, [r14, #40]
+vstr.32 s7, [r14, #44]
+vstr.32 s6, [r14, #16]
+vstr.32 s5, [r14, #20]
+vstr.32 s4, [r14, #24]
+vstr.32 s3, [r14, #28]
+vstr.32 s2, [r14, #0]
+vstr.32 s1, [r14, #4]
+vstr.32 s0, [r14, #8]
+sub r14, r14, #1376
 ldr r0, [r14, #1340]
 ldr r1, [r14, #1820]
 eor r0, r0, r1
@@ -2558,102 +2468,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1160]
 ldr r0, [r14, #1640]
 eor r1, r1, r0
-add r14, r14, #1340
-vstr.32 s31, [r14]
-sub r14, r14, #1340
-add r14, r14, #1312
-vstr.32 s30, [r14]
-sub r14, r14, #1312
-add r14, r14, #1316
-vstr.32 s29, [r14]
-sub r14, r14, #1316
-add r14, r14, #1320
-vstr.32 s28, [r14]
-sub r14, r14, #1320
-add r14, r14, #1324
-vstr.32 s27, [r14]
-sub r14, r14, #1324
-add r14, r14, #1296
-vstr.32 s26, [r14]
-sub r14, r14, #1296
-add r14, r14, #1300
-vstr.32 s25, [r14]
-sub r14, r14, #1300
-add r14, r14, #1304
-vstr.32 s24, [r14]
-sub r14, r14, #1304
-add r14, r14, #1308
-vstr.32 s23, [r14]
-sub r14, r14, #1308
-add r14, r14, #1280
-vstr.32 s22, [r14]
-sub r14, r14, #1280
-add r14, r14, #1284
-vstr.32 s21, [r14]
-sub r14, r14, #1284
-add r14, r14, #1288
-vstr.32 s20, [r14]
-sub r14, r14, #1288
-add r14, r14, #1292
-vstr.32 s19, [r14]
-sub r14, r14, #1292
-add r14, r14, #1264
-vstr.32 s18, [r14]
-sub r14, r14, #1264
-add r14, r14, #1268
-vstr.32 s17, [r14]
-sub r14, r14, #1268
-add r14, r14, #1272
-vstr.32 s16, [r14]
-sub r14, r14, #1272
-add r14, r14, #1276
-vstr.32 s15, [r14]
-sub r14, r14, #1276
-add r14, r14, #1248
-vstr.32 s14, [r14]
-sub r14, r14, #1248
-add r14, r14, #1252
-vstr.32 s13, [r14]
-sub r14, r14, #1252
-add r14, r14, #1256
-vstr.32 s12, [r14]
-sub r14, r14, #1256
-add r14, r14, #1260
-vstr.32 s11, [r14]
-sub r14, r14, #1260
-add r14, r14, #1232
-vstr.32 s10, [r14]
-sub r14, r14, #1232
-add r14, r14, #1236
-vstr.32 s9, [r14]
-sub r14, r14, #1236
-add r14, r14, #1240
-vstr.32 s8, [r14]
-sub r14, r14, #1240
-add r14, r14, #1244
-vstr.32 s7, [r14]
-sub r14, r14, #1244
-add r14, r14, #1216
-vstr.32 s6, [r14]
-sub r14, r14, #1216
-add r14, r14, #1220
-vstr.32 s5, [r14]
-sub r14, r14, #1220
-add r14, r14, #1224
-vstr.32 s4, [r14]
-sub r14, r14, #1224
-add r14, r14, #1228
-vstr.32 s3, [r14]
-sub r14, r14, #1228
-add r14, r14, #1200
-vstr.32 s2, [r14]
-sub r14, r14, #1200
-add r14, r14, #1204
-vstr.32 s1, [r14]
-sub r14, r14, #1204
-add r14, r14, #1208
-vstr.32 s0, [r14]
-sub r14, r14, #1208
 str r12, [r14, #1212]
 str r11, [r14, #1184]
 str r10, [r14, #1188]
@@ -2666,6 +2480,40 @@ str r4, [r14, #1180]
 str r3, [r14, #1152]
 str r2, [r14, #1156]
 str r1, [r14, #1160]
+add r14, r14, #1200
+vstr.32 s31, [r14, #140]
+vstr.32 s30, [r14, #112]
+vstr.32 s29, [r14, #116]
+vstr.32 s28, [r14, #120]
+vstr.32 s27, [r14, #124]
+vstr.32 s26, [r14, #96]
+vstr.32 s25, [r14, #100]
+vstr.32 s24, [r14, #104]
+vstr.32 s23, [r14, #108]
+vstr.32 s22, [r14, #80]
+vstr.32 s21, [r14, #84]
+vstr.32 s20, [r14, #88]
+vstr.32 s19, [r14, #92]
+vstr.32 s18, [r14, #64]
+vstr.32 s17, [r14, #68]
+vstr.32 s16, [r14, #72]
+vstr.32 s15, [r14, #76]
+vstr.32 s14, [r14, #48]
+vstr.32 s13, [r14, #52]
+vstr.32 s12, [r14, #56]
+vstr.32 s11, [r14, #60]
+vstr.32 s10, [r14, #32]
+vstr.32 s9, [r14, #36]
+vstr.32 s8, [r14, #40]
+vstr.32 s7, [r14, #44]
+vstr.32 s6, [r14, #16]
+vstr.32 s5, [r14, #20]
+vstr.32 s4, [r14, #24]
+vstr.32 s3, [r14, #28]
+vstr.32 s2, [r14, #0]
+vstr.32 s1, [r14, #4]
+vstr.32 s0, [r14, #8]
+sub r14, r14, #1200
 ldr r0, [r14, #1164]
 ldr r1, [r14, #1644]
 eor r0, r0, r1
@@ -2830,81 +2678,6 @@ eor r2, r2, r0
 ldr r1, [r14, #596]
 ldr r0, [r14, #2132]
 eor r1, r1, r0
-add r14, r14, #1164
-vstr.32 s31, [r14]
-sub r14, r14, #1164
-add r14, r14, #1136
-vstr.32 s30, [r14]
-sub r14, r14, #1136
-add r14, r14, #1140
-vstr.32 s29, [r14]
-sub r14, r14, #1140
-add r14, r14, #1144
-vstr.32 s28, [r14]
-sub r14, r14, #1144
-add r14, r14, #1148
-vstr.32 s27, [r14]
-sub r14, r14, #1148
-add r14, r14, #1120
-vstr.32 s26, [r14]
-sub r14, r14, #1120
-add r14, r14, #1124
-vstr.32 s25, [r14]
-sub r14, r14, #1124
-add r14, r14, #1128
-vstr.32 s24, [r14]
-sub r14, r14, #1128
-add r14, r14, #1132
-vstr.32 s23, [r14]
-sub r14, r14, #1132
-add r14, r14, #1104
-vstr.32 s22, [r14]
-sub r14, r14, #1104
-add r14, r14, #1108
-vstr.32 s21, [r14]
-sub r14, r14, #1108
-add r14, r14, #1112
-vstr.32 s20, [r14]
-sub r14, r14, #1112
-add r14, r14, #1116
-vstr.32 s19, [r14]
-sub r14, r14, #1116
-add r14, r14, #1088
-vstr.32 s18, [r14]
-sub r14, r14, #1088
-add r14, r14, #1092
-vstr.32 s17, [r14]
-sub r14, r14, #1092
-add r14, r14, #1096
-vstr.32 s16, [r14]
-sub r14, r14, #1096
-add r14, r14, #1100
-vstr.32 s15, [r14]
-sub r14, r14, #1100
-add r14, r14, #1072
-vstr.32 s14, [r14]
-sub r14, r14, #1072
-add r14, r14, #1076
-vstr.32 s13, [r14]
-sub r14, r14, #1076
-add r14, r14, #1080
-vstr.32 s12, [r14]
-sub r14, r14, #1080
-add r14, r14, #1084
-vstr.32 s11, [r14]
-sub r14, r14, #1084
-add r14, r14, #1056
-vstr.32 s10, [r14]
-sub r14, r14, #1056
-add r14, r14, #1060
-vstr.32 s9, [r14]
-sub r14, r14, #1060
-add r14, r14, #1064
-vstr.32 s8, [r14]
-sub r14, r14, #1064
-add r14, r14, #1068
-vstr.32 s7, [r14]
-sub r14, r14, #1068
 vstr.32 s6, [r14, #672]
 vstr.32 s5, [r14, #656]
 vstr.32 s4, [r14, #660]
@@ -2924,6 +2697,33 @@ str r4, [r14, #616]
 str r3, [r14, #620]
 str r2, [r14, #592]
 str r1, [r14, #596]
+add r14, r14, #1056
+vstr.32 s31, [r14, #108]
+vstr.32 s30, [r14, #80]
+vstr.32 s29, [r14, #84]
+vstr.32 s28, [r14, #88]
+vstr.32 s27, [r14, #92]
+vstr.32 s26, [r14, #64]
+vstr.32 s25, [r14, #68]
+vstr.32 s24, [r14, #72]
+vstr.32 s23, [r14, #76]
+vstr.32 s22, [r14, #48]
+vstr.32 s21, [r14, #52]
+vstr.32 s20, [r14, #56]
+vstr.32 s19, [r14, #60]
+vstr.32 s18, [r14, #32]
+vstr.32 s17, [r14, #36]
+vstr.32 s16, [r14, #40]
+vstr.32 s15, [r14, #44]
+vstr.32 s14, [r14, #16]
+vstr.32 s13, [r14, #20]
+vstr.32 s12, [r14, #24]
+vstr.32 s11, [r14, #28]
+vstr.32 s10, [r14, #0]
+vstr.32 s9, [r14, #4]
+vstr.32 s8, [r14, #8]
+vstr.32 s7, [r14, #12]
+sub r14, r14, #1056
 ldr r0, [r14, #600]
 ldr r1, [r14, #2136]
 eor r0, r0, r1
@@ -3110,36 +2910,6 @@ vstr.32 s13, [r14, #512]
 vstr.32 s12, [r14, #516]
 vstr.32 s11, [r14, #520]
 vstr.32 s10, [r14, #524]
-add r14, r14, #1520
-vstr.32 s9, [r14]
-sub r14, r14, #1520
-add r14, r14, #1524
-vstr.32 s8, [r14]
-sub r14, r14, #1524
-add r14, r14, #1528
-vstr.32 s7, [r14]
-sub r14, r14, #1528
-add r14, r14, #1532
-vstr.32 s6, [r14]
-sub r14, r14, #1532
-add r14, r14, #1504
-vstr.32 s5, [r14]
-sub r14, r14, #1504
-add r14, r14, #1508
-vstr.32 s4, [r14]
-sub r14, r14, #1508
-add r14, r14, #1512
-vstr.32 s3, [r14]
-sub r14, r14, #1512
-add r14, r14, #1516
-vstr.32 s2, [r14]
-sub r14, r14, #1516
-add r14, r14, #1488
-vstr.32 s1, [r14]
-sub r14, r14, #1488
-add r14, r14, #1492
-vstr.32 s0, [r14]
-sub r14, r14, #1492
 str r12, [r14, #1496]
 str r11, [r14, #1500]
 str r10, [r14, #1472]
@@ -3152,6 +2922,18 @@ str r4, [r14, #1464]
 str r3, [r14, #1468]
 str r2, [r14, #1440]
 str r1, [r14, #1444]
+add r14, r14, #1488
+vstr.32 s9, [r14, #32]
+vstr.32 s8, [r14, #36]
+vstr.32 s7, [r14, #40]
+vstr.32 s6, [r14, #44]
+vstr.32 s5, [r14, #16]
+vstr.32 s4, [r14, #20]
+vstr.32 s3, [r14, #24]
+vstr.32 s2, [r14, #28]
+vstr.32 s1, [r14, #0]
+vstr.32 s0, [r14, #4]
+sub r14, r14, #1488
 ldr r0, [r14, #1448]
 ldr r1, [r14, #1960]
 eor r0, r0, r1
@@ -3316,102 +3098,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1268]
 ldr r0, [r14, #1780]
 eor r1, r1, r0
-add r14, r14, #1448
-vstr.32 s31, [r14]
-sub r14, r14, #1448
-add r14, r14, #1452
-vstr.32 s30, [r14]
-sub r14, r14, #1452
-add r14, r14, #1424
-vstr.32 s29, [r14]
-sub r14, r14, #1424
-add r14, r14, #1428
-vstr.32 s28, [r14]
-sub r14, r14, #1428
-add r14, r14, #1432
-vstr.32 s27, [r14]
-sub r14, r14, #1432
-add r14, r14, #1436
-vstr.32 s26, [r14]
-sub r14, r14, #1436
-add r14, r14, #1408
-vstr.32 s25, [r14]
-sub r14, r14, #1408
-add r14, r14, #1412
-vstr.32 s24, [r14]
-sub r14, r14, #1412
-add r14, r14, #1416
-vstr.32 s23, [r14]
-sub r14, r14, #1416
-add r14, r14, #1420
-vstr.32 s22, [r14]
-sub r14, r14, #1420
-add r14, r14, #1392
-vstr.32 s21, [r14]
-sub r14, r14, #1392
-add r14, r14, #1396
-vstr.32 s20, [r14]
-sub r14, r14, #1396
-add r14, r14, #1400
-vstr.32 s19, [r14]
-sub r14, r14, #1400
-add r14, r14, #1404
-vstr.32 s18, [r14]
-sub r14, r14, #1404
-add r14, r14, #1376
-vstr.32 s17, [r14]
-sub r14, r14, #1376
-add r14, r14, #1380
-vstr.32 s16, [r14]
-sub r14, r14, #1380
-add r14, r14, #1384
-vstr.32 s15, [r14]
-sub r14, r14, #1384
-add r14, r14, #1388
-vstr.32 s14, [r14]
-sub r14, r14, #1388
-add r14, r14, #1360
-vstr.32 s13, [r14]
-sub r14, r14, #1360
-add r14, r14, #1364
-vstr.32 s12, [r14]
-sub r14, r14, #1364
-add r14, r14, #1368
-vstr.32 s11, [r14]
-sub r14, r14, #1368
-add r14, r14, #1372
-vstr.32 s10, [r14]
-sub r14, r14, #1372
-add r14, r14, #1344
-vstr.32 s9, [r14]
-sub r14, r14, #1344
-add r14, r14, #1348
-vstr.32 s8, [r14]
-sub r14, r14, #1348
-add r14, r14, #1352
-vstr.32 s7, [r14]
-sub r14, r14, #1352
-add r14, r14, #1356
-vstr.32 s6, [r14]
-sub r14, r14, #1356
-add r14, r14, #1328
-vstr.32 s5, [r14]
-sub r14, r14, #1328
-add r14, r14, #1332
-vstr.32 s4, [r14]
-sub r14, r14, #1332
-add r14, r14, #1336
-vstr.32 s3, [r14]
-sub r14, r14, #1336
-add r14, r14, #1340
-vstr.32 s2, [r14]
-sub r14, r14, #1340
-add r14, r14, #1312
-vstr.32 s1, [r14]
-sub r14, r14, #1312
-add r14, r14, #1316
-vstr.32 s0, [r14]
-sub r14, r14, #1316
 str r12, [r14, #1320]
 str r11, [r14, #1324]
 str r10, [r14, #1296]
@@ -3424,6 +3110,40 @@ str r4, [r14, #1288]
 str r3, [r14, #1292]
 str r2, [r14, #1264]
 str r1, [r14, #1268]
+add r14, r14, #1312
+vstr.32 s31, [r14, #136]
+vstr.32 s30, [r14, #140]
+vstr.32 s29, [r14, #112]
+vstr.32 s28, [r14, #116]
+vstr.32 s27, [r14, #120]
+vstr.32 s26, [r14, #124]
+vstr.32 s25, [r14, #96]
+vstr.32 s24, [r14, #100]
+vstr.32 s23, [r14, #104]
+vstr.32 s22, [r14, #108]
+vstr.32 s21, [r14, #80]
+vstr.32 s20, [r14, #84]
+vstr.32 s19, [r14, #88]
+vstr.32 s18, [r14, #92]
+vstr.32 s17, [r14, #64]
+vstr.32 s16, [r14, #68]
+vstr.32 s15, [r14, #72]
+vstr.32 s14, [r14, #76]
+vstr.32 s13, [r14, #48]
+vstr.32 s12, [r14, #52]
+vstr.32 s11, [r14, #56]
+vstr.32 s10, [r14, #60]
+vstr.32 s9, [r14, #32]
+vstr.32 s8, [r14, #36]
+vstr.32 s7, [r14, #40]
+vstr.32 s6, [r14, #44]
+vstr.32 s5, [r14, #16]
+vstr.32 s4, [r14, #20]
+vstr.32 s3, [r14, #24]
+vstr.32 s2, [r14, #28]
+vstr.32 s1, [r14, #0]
+vstr.32 s0, [r14, #4]
+sub r14, r14, #1312
 ldr r0, [r14, #1272]
 ldr r1, [r14, #1784]
 eor r0, r0, r1
@@ -3588,102 +3308,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1092]
 ldr r0, [r14, #1604]
 eor r1, r1, r0
-add r14, r14, #1272
-vstr.32 s31, [r14]
-sub r14, r14, #1272
-add r14, r14, #1276
-vstr.32 s30, [r14]
-sub r14, r14, #1276
-add r14, r14, #1248
-vstr.32 s29, [r14]
-sub r14, r14, #1248
-add r14, r14, #1252
-vstr.32 s28, [r14]
-sub r14, r14, #1252
-add r14, r14, #1256
-vstr.32 s27, [r14]
-sub r14, r14, #1256
-add r14, r14, #1260
-vstr.32 s26, [r14]
-sub r14, r14, #1260
-add r14, r14, #1232
-vstr.32 s25, [r14]
-sub r14, r14, #1232
-add r14, r14, #1236
-vstr.32 s24, [r14]
-sub r14, r14, #1236
-add r14, r14, #1240
-vstr.32 s23, [r14]
-sub r14, r14, #1240
-add r14, r14, #1244
-vstr.32 s22, [r14]
-sub r14, r14, #1244
-add r14, r14, #1216
-vstr.32 s21, [r14]
-sub r14, r14, #1216
-add r14, r14, #1220
-vstr.32 s20, [r14]
-sub r14, r14, #1220
-add r14, r14, #1224
-vstr.32 s19, [r14]
-sub r14, r14, #1224
-add r14, r14, #1228
-vstr.32 s18, [r14]
-sub r14, r14, #1228
-add r14, r14, #1200
-vstr.32 s17, [r14]
-sub r14, r14, #1200
-add r14, r14, #1204
-vstr.32 s16, [r14]
-sub r14, r14, #1204
-add r14, r14, #1208
-vstr.32 s15, [r14]
-sub r14, r14, #1208
-add r14, r14, #1212
-vstr.32 s14, [r14]
-sub r14, r14, #1212
-add r14, r14, #1184
-vstr.32 s13, [r14]
-sub r14, r14, #1184
-add r14, r14, #1188
-vstr.32 s12, [r14]
-sub r14, r14, #1188
-add r14, r14, #1192
-vstr.32 s11, [r14]
-sub r14, r14, #1192
-add r14, r14, #1196
-vstr.32 s10, [r14]
-sub r14, r14, #1196
-add r14, r14, #1168
-vstr.32 s9, [r14]
-sub r14, r14, #1168
-add r14, r14, #1172
-vstr.32 s8, [r14]
-sub r14, r14, #1172
-add r14, r14, #1176
-vstr.32 s7, [r14]
-sub r14, r14, #1176
-add r14, r14, #1180
-vstr.32 s6, [r14]
-sub r14, r14, #1180
-add r14, r14, #1152
-vstr.32 s5, [r14]
-sub r14, r14, #1152
-add r14, r14, #1156
-vstr.32 s4, [r14]
-sub r14, r14, #1156
-add r14, r14, #1160
-vstr.32 s3, [r14]
-sub r14, r14, #1160
-add r14, r14, #1164
-vstr.32 s2, [r14]
-sub r14, r14, #1164
-add r14, r14, #1136
-vstr.32 s1, [r14]
-sub r14, r14, #1136
-add r14, r14, #1140
-vstr.32 s0, [r14]
-sub r14, r14, #1140
 str r12, [r14, #1144]
 str r11, [r14, #1148]
 str r10, [r14, #1120]
@@ -3696,6 +3320,40 @@ str r4, [r14, #1112]
 str r3, [r14, #1116]
 str r2, [r14, #1088]
 str r1, [r14, #1092]
+add r14, r14, #1136
+vstr.32 s31, [r14, #136]
+vstr.32 s30, [r14, #140]
+vstr.32 s29, [r14, #112]
+vstr.32 s28, [r14, #116]
+vstr.32 s27, [r14, #120]
+vstr.32 s26, [r14, #124]
+vstr.32 s25, [r14, #96]
+vstr.32 s24, [r14, #100]
+vstr.32 s23, [r14, #104]
+vstr.32 s22, [r14, #108]
+vstr.32 s21, [r14, #80]
+vstr.32 s20, [r14, #84]
+vstr.32 s19, [r14, #88]
+vstr.32 s18, [r14, #92]
+vstr.32 s17, [r14, #64]
+vstr.32 s16, [r14, #68]
+vstr.32 s15, [r14, #72]
+vstr.32 s14, [r14, #76]
+vstr.32 s13, [r14, #48]
+vstr.32 s12, [r14, #52]
+vstr.32 s11, [r14, #56]
+vstr.32 s10, [r14, #60]
+vstr.32 s9, [r14, #32]
+vstr.32 s8, [r14, #36]
+vstr.32 s7, [r14, #40]
+vstr.32 s6, [r14, #44]
+vstr.32 s5, [r14, #16]
+vstr.32 s4, [r14, #20]
+vstr.32 s3, [r14, #24]
+vstr.32 s2, [r14, #28]
+vstr.32 s1, [r14, #0]
+vstr.32 s0, [r14, #4]
+sub r14, r14, #1136
 ldr r0, [r14, #1096]
 ldr r1, [r14, #1608]
 eor r0, r0, r1
@@ -3860,60 +3518,6 @@ eor r2, r2, r0
 ldr r1, [r14, #916]
 ldr r0, [r14, #1428]
 eor r1, r1, r0
-add r14, r14, #1096
-vstr.32 s31, [r14]
-sub r14, r14, #1096
-add r14, r14, #1100
-vstr.32 s30, [r14]
-sub r14, r14, #1100
-add r14, r14, #1072
-vstr.32 s29, [r14]
-sub r14, r14, #1072
-add r14, r14, #1076
-vstr.32 s28, [r14]
-sub r14, r14, #1076
-add r14, r14, #1080
-vstr.32 s27, [r14]
-sub r14, r14, #1080
-add r14, r14, #1084
-vstr.32 s26, [r14]
-sub r14, r14, #1084
-add r14, r14, #1056
-vstr.32 s25, [r14]
-sub r14, r14, #1056
-add r14, r14, #1060
-vstr.32 s24, [r14]
-sub r14, r14, #1060
-add r14, r14, #1064
-vstr.32 s23, [r14]
-sub r14, r14, #1064
-add r14, r14, #1068
-vstr.32 s22, [r14]
-sub r14, r14, #1068
-add r14, r14, #1040
-vstr.32 s21, [r14]
-sub r14, r14, #1040
-add r14, r14, #1044
-vstr.32 s20, [r14]
-sub r14, r14, #1044
-add r14, r14, #1048
-vstr.32 s19, [r14]
-sub r14, r14, #1048
-add r14, r14, #1052
-vstr.32 s18, [r14]
-sub r14, r14, #1052
-add r14, r14, #1024
-vstr.32 s17, [r14]
-sub r14, r14, #1024
-add r14, r14, #1028
-vstr.32 s16, [r14]
-sub r14, r14, #1028
-add r14, r14, #1032
-vstr.32 s15, [r14]
-sub r14, r14, #1032
-add r14, r14, #1036
-vstr.32 s14, [r14]
-sub r14, r14, #1036
 vstr.32 s13, [r14, #1008]
 vstr.32 s12, [r14, #1012]
 vstr.32 s11, [r14, #1016]
@@ -3940,6 +3544,26 @@ str r4, [r14, #936]
 str r3, [r14, #940]
 str r2, [r14, #912]
 str r1, [r14, #916]
+add r14, r14, #1024
+vstr.32 s31, [r14, #72]
+vstr.32 s30, [r14, #76]
+vstr.32 s29, [r14, #48]
+vstr.32 s28, [r14, #52]
+vstr.32 s27, [r14, #56]
+vstr.32 s26, [r14, #60]
+vstr.32 s25, [r14, #32]
+vstr.32 s24, [r14, #36]
+vstr.32 s23, [r14, #40]
+vstr.32 s22, [r14, #44]
+vstr.32 s21, [r14, #16]
+vstr.32 s20, [r14, #20]
+vstr.32 s19, [r14, #24]
+vstr.32 s18, [r14, #28]
+vstr.32 s17, [r14, #0]
+vstr.32 s16, [r14, #4]
+vstr.32 s15, [r14, #8]
+vstr.32 s14, [r14, #12]
+sub r14, r14, #1024
 ldr r0, [r14, #920]
 ldr r1, [r14, #1432]
 eor r0, r0, r1
@@ -5154,72 +4778,6 @@ vstr.32 s25, [r14, #576]
 vstr.32 s24, [r14, #580]
 vstr.32 s23, [r14, #584]
 vstr.32 s22, [r14, #588]
-add r14, r14, #1328
-vstr.32 s21, [r14]
-sub r14, r14, #1328
-add r14, r14, #1332
-vstr.32 s20, [r14]
-sub r14, r14, #1332
-add r14, r14, #1336
-vstr.32 s19, [r14]
-sub r14, r14, #1336
-add r14, r14, #1340
-vstr.32 s18, [r14]
-sub r14, r14, #1340
-add r14, r14, #1312
-vstr.32 s17, [r14]
-sub r14, r14, #1312
-add r14, r14, #1316
-vstr.32 s16, [r14]
-sub r14, r14, #1316
-add r14, r14, #1320
-vstr.32 s15, [r14]
-sub r14, r14, #1320
-add r14, r14, #1324
-vstr.32 s14, [r14]
-sub r14, r14, #1324
-add r14, r14, #1296
-vstr.32 s13, [r14]
-sub r14, r14, #1296
-add r14, r14, #1300
-vstr.32 s12, [r14]
-sub r14, r14, #1300
-add r14, r14, #1304
-vstr.32 s11, [r14]
-sub r14, r14, #1304
-add r14, r14, #1308
-vstr.32 s10, [r14]
-sub r14, r14, #1308
-add r14, r14, #1280
-vstr.32 s9, [r14]
-sub r14, r14, #1280
-add r14, r14, #1284
-vstr.32 s8, [r14]
-sub r14, r14, #1284
-add r14, r14, #1288
-vstr.32 s7, [r14]
-sub r14, r14, #1288
-add r14, r14, #1292
-vstr.32 s6, [r14]
-sub r14, r14, #1292
-add r14, r14, #1264
-vstr.32 s5, [r14]
-sub r14, r14, #1264
-add r14, r14, #1268
-vstr.32 s4, [r14]
-sub r14, r14, #1268
-add r14, r14, #1272
-vstr.32 s3, [r14]
-sub r14, r14, #1272
-add r14, r14, #1276
-vstr.32 s2, [r14]
-sub r14, r14, #1276
-add r14, r14, #1248
-vstr.32 s1, [r14]
-sub r14, r14, #1248
-add r14, r14, #1252
-vstr.32 s0, [r14]
-sub r14, r14, #1252
 str r12, [r14, #1256]
 str r11, [r14, #1260]
 str r10, [r14, #1232]
@@ -5232,6 +4790,30 @@ str r4, [r14, #1224]
 str r3, [r14, #1228]
 str r2, [r14, #1200]
 str r1, [r14, #1204]
+add r14, r14, #1248
+vstr.32 s21, [r14, #80]
+vstr.32 s20, [r14, #84]
+vstr.32 s19, [r14, #88]
+vstr.32 s18, [r14, #92]
+vstr.32 s17, [r14, #64]
+vstr.32 s16, [r14, #68]
+vstr.32 s15, [r14, #72]
+vstr.32 s14, [r14, #76]
+vstr.32 s13, [r14, #48]
+vstr.32 s12, [r14, #52]
+vstr.32 s11, [r14, #56]
+vstr.32 s10, [r14, #60]
+vstr.32 s9, [r14, #32]
+vstr.32 s8, [r14, #36]
+vstr.32 s7, [r14, #40]
+vstr.32 s6, [r14, #44]
+vstr.32 s5, [r14, #16]
+vstr.32 s4, [r14, #20]
+vstr.32 s3, [r14, #24]
+vstr.32 s2, [r14, #28]
+vstr.32 s1, [r14, #0]
+vstr.32 s0, [r14, #4]
+sub r14, r14, #1248
 ldr r0, [r14, #1208]
 ldr r1, [r14, #1400]
 eor r0, r0, r1
@@ -5396,102 +4978,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1796]
 ldr r0, [r14, #1988]
 eor r1, r1, r0
-add r14, r14, #1208
-vstr.32 s31, [r14]
-sub r14, r14, #1208
-add r14, r14, #1212
-vstr.32 s30, [r14]
-sub r14, r14, #1212
-add r14, r14, #1184
-vstr.32 s29, [r14]
-sub r14, r14, #1184
-add r14, r14, #1188
-vstr.32 s28, [r14]
-sub r14, r14, #1188
-add r14, r14, #1192
-vstr.32 s27, [r14]
-sub r14, r14, #1192
-add r14, r14, #1196
-vstr.32 s26, [r14]
-sub r14, r14, #1196
-add r14, r14, #1168
-vstr.32 s25, [r14]
-sub r14, r14, #1168
-add r14, r14, #1172
-vstr.32 s24, [r14]
-sub r14, r14, #1172
-add r14, r14, #1176
-vstr.32 s23, [r14]
-sub r14, r14, #1176
-add r14, r14, #1180
-vstr.32 s22, [r14]
-sub r14, r14, #1180
-add r14, r14, #1152
-vstr.32 s21, [r14]
-sub r14, r14, #1152
-add r14, r14, #1156
-vstr.32 s20, [r14]
-sub r14, r14, #1156
-add r14, r14, #1160
-vstr.32 s19, [r14]
-sub r14, r14, #1160
-add r14, r14, #1164
-vstr.32 s18, [r14]
-sub r14, r14, #1164
-add r14, r14, #1136
-vstr.32 s17, [r14]
-sub r14, r14, #1136
-add r14, r14, #1140
-vstr.32 s16, [r14]
-sub r14, r14, #1140
-add r14, r14, #1144
-vstr.32 s15, [r14]
-sub r14, r14, #1144
-add r14, r14, #1148
-vstr.32 s14, [r14]
-sub r14, r14, #1148
-add r14, r14, #1120
-vstr.32 s13, [r14]
-sub r14, r14, #1120
-add r14, r14, #1124
-vstr.32 s12, [r14]
-sub r14, r14, #1124
-add r14, r14, #1128
-vstr.32 s11, [r14]
-sub r14, r14, #1128
-add r14, r14, #1132
-vstr.32 s10, [r14]
-sub r14, r14, #1132
-add r14, r14, #1104
-vstr.32 s9, [r14]
-sub r14, r14, #1104
-add r14, r14, #1108
-vstr.32 s8, [r14]
-sub r14, r14, #1108
-add r14, r14, #1112
-vstr.32 s7, [r14]
-sub r14, r14, #1112
-add r14, r14, #1116
-vstr.32 s6, [r14]
-sub r14, r14, #1116
-add r14, r14, #1088
-vstr.32 s5, [r14]
-sub r14, r14, #1088
-add r14, r14, #1092
-vstr.32 s4, [r14]
-sub r14, r14, #1092
-add r14, r14, #1096
-vstr.32 s3, [r14]
-sub r14, r14, #1096
-add r14, r14, #1100
-vstr.32 s2, [r14]
-sub r14, r14, #1100
-add r14, r14, #1840
-vstr.32 s1, [r14]
-sub r14, r14, #1840
-add r14, r14, #1844
-vstr.32 s0, [r14]
-sub r14, r14, #1844
 str r12, [r14, #1848]
 str r11, [r14, #1852]
 str r10, [r14, #1824]
@@ -5504,6 +4990,40 @@ str r4, [r14, #1816]
 str r3, [r14, #1820]
 str r2, [r14, #1792]
 str r1, [r14, #1796]
+add r14, r14, #1088
+vstr.32 s31, [r14, #120]
+vstr.32 s30, [r14, #124]
+vstr.32 s29, [r14, #96]
+vstr.32 s28, [r14, #100]
+vstr.32 s27, [r14, #104]
+vstr.32 s26, [r14, #108]
+vstr.32 s25, [r14, #80]
+vstr.32 s24, [r14, #84]
+vstr.32 s23, [r14, #88]
+vstr.32 s22, [r14, #92]
+vstr.32 s21, [r14, #64]
+vstr.32 s20, [r14, #68]
+vstr.32 s19, [r14, #72]
+vstr.32 s18, [r14, #76]
+vstr.32 s17, [r14, #48]
+vstr.32 s16, [r14, #52]
+vstr.32 s15, [r14, #56]
+vstr.32 s14, [r14, #60]
+vstr.32 s13, [r14, #32]
+vstr.32 s12, [r14, #36]
+vstr.32 s11, [r14, #40]
+vstr.32 s10, [r14, #44]
+vstr.32 s9, [r14, #16]
+vstr.32 s8, [r14, #20]
+vstr.32 s7, [r14, #24]
+vstr.32 s6, [r14, #28]
+vstr.32 s5, [r14, #0]
+vstr.32 s4, [r14, #4]
+vstr.32 s3, [r14, #8]
+vstr.32 s2, [r14, #12]
+vstr.32 s1, [r14, #752]
+vstr.32 s0, [r14, #756]
+sub r14, r14, #1088
 ldr r0, [r14, #1800]
 ldr r1, [r14, #1992]
 eor r0, r0, r1
@@ -5668,102 +5188,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1620]
 ldr r0, [r14, #1812]
 eor r1, r1, r0
-add r14, r14, #1800
-vstr.32 s31, [r14]
-sub r14, r14, #1800
-add r14, r14, #1804
-vstr.32 s30, [r14]
-sub r14, r14, #1804
-add r14, r14, #1776
-vstr.32 s29, [r14]
-sub r14, r14, #1776
-add r14, r14, #1780
-vstr.32 s28, [r14]
-sub r14, r14, #1780
-add r14, r14, #1784
-vstr.32 s27, [r14]
-sub r14, r14, #1784
-add r14, r14, #1788
-vstr.32 s26, [r14]
-sub r14, r14, #1788
-add r14, r14, #1760
-vstr.32 s25, [r14]
-sub r14, r14, #1760
-add r14, r14, #1764
-vstr.32 s24, [r14]
-sub r14, r14, #1764
-add r14, r14, #1768
-vstr.32 s23, [r14]
-sub r14, r14, #1768
-add r14, r14, #1772
-vstr.32 s22, [r14]
-sub r14, r14, #1772
-add r14, r14, #1744
-vstr.32 s21, [r14]
-sub r14, r14, #1744
-add r14, r14, #1748
-vstr.32 s20, [r14]
-sub r14, r14, #1748
-add r14, r14, #1752
-vstr.32 s19, [r14]
-sub r14, r14, #1752
-add r14, r14, #1756
-vstr.32 s18, [r14]
-sub r14, r14, #1756
-add r14, r14, #1728
-vstr.32 s17, [r14]
-sub r14, r14, #1728
-add r14, r14, #1732
-vstr.32 s16, [r14]
-sub r14, r14, #1732
-add r14, r14, #1736
-vstr.32 s15, [r14]
-sub r14, r14, #1736
-add r14, r14, #1740
-vstr.32 s14, [r14]
-sub r14, r14, #1740
-add r14, r14, #1712
-vstr.32 s13, [r14]
-sub r14, r14, #1712
-add r14, r14, #1716
-vstr.32 s12, [r14]
-sub r14, r14, #1716
-add r14, r14, #1720
-vstr.32 s11, [r14]
-sub r14, r14, #1720
-add r14, r14, #1724
-vstr.32 s10, [r14]
-sub r14, r14, #1724
-add r14, r14, #1696
-vstr.32 s9, [r14]
-sub r14, r14, #1696
-add r14, r14, #1700
-vstr.32 s8, [r14]
-sub r14, r14, #1700
-add r14, r14, #1704
-vstr.32 s7, [r14]
-sub r14, r14, #1704
-add r14, r14, #1708
-vstr.32 s6, [r14]
-sub r14, r14, #1708
-add r14, r14, #1680
-vstr.32 s5, [r14]
-sub r14, r14, #1680
-add r14, r14, #1684
-vstr.32 s4, [r14]
-sub r14, r14, #1684
-add r14, r14, #1688
-vstr.32 s3, [r14]
-sub r14, r14, #1688
-add r14, r14, #1692
-vstr.32 s2, [r14]
-sub r14, r14, #1692
-add r14, r14, #1664
-vstr.32 s1, [r14]
-sub r14, r14, #1664
-add r14, r14, #1668
-vstr.32 s0, [r14]
-sub r14, r14, #1668
 str r12, [r14, #1672]
 str r11, [r14, #1676]
 str r10, [r14, #1648]
@@ -5776,6 +5200,40 @@ str r4, [r14, #1640]
 str r3, [r14, #1644]
 str r2, [r14, #1616]
 str r1, [r14, #1620]
+add r14, r14, #1664
+vstr.32 s31, [r14, #136]
+vstr.32 s30, [r14, #140]
+vstr.32 s29, [r14, #112]
+vstr.32 s28, [r14, #116]
+vstr.32 s27, [r14, #120]
+vstr.32 s26, [r14, #124]
+vstr.32 s25, [r14, #96]
+vstr.32 s24, [r14, #100]
+vstr.32 s23, [r14, #104]
+vstr.32 s22, [r14, #108]
+vstr.32 s21, [r14, #80]
+vstr.32 s20, [r14, #84]
+vstr.32 s19, [r14, #88]
+vstr.32 s18, [r14, #92]
+vstr.32 s17, [r14, #64]
+vstr.32 s16, [r14, #68]
+vstr.32 s15, [r14, #72]
+vstr.32 s14, [r14, #76]
+vstr.32 s13, [r14, #48]
+vstr.32 s12, [r14, #52]
+vstr.32 s11, [r14, #56]
+vstr.32 s10, [r14, #60]
+vstr.32 s9, [r14, #32]
+vstr.32 s8, [r14, #36]
+vstr.32 s7, [r14, #40]
+vstr.32 s6, [r14, #44]
+vstr.32 s5, [r14, #16]
+vstr.32 s4, [r14, #20]
+vstr.32 s3, [r14, #24]
+vstr.32 s2, [r14, #28]
+vstr.32 s1, [r14, #0]
+vstr.32 s0, [r14, #4]
+sub r14, r14, #1664
 ldr r0, [r14, #1624]
 ldr r1, [r14, #1816]
 eor r0, r0, r1
@@ -5948,24 +5406,6 @@ eor r2, r2, r0
 ldr r1, [r14, #388]
 ldr r0, [r14, #484]
 eor r1, r1, r0
-add r14, r14, #1624
-vstr.32 s31, [r14]
-sub r14, r14, #1624
-add r14, r14, #1628
-vstr.32 s30, [r14]
-sub r14, r14, #1628
-add r14, r14, #1600
-vstr.32 s29, [r14]
-sub r14, r14, #1600
-add r14, r14, #1604
-vstr.32 s28, [r14]
-sub r14, r14, #1604
-add r14, r14, #1608
-vstr.32 s27, [r14]
-sub r14, r14, #1608
-add r14, r14, #1612
-vstr.32 s26, [r14]
-sub r14, r14, #1612
 vstr.32 s25, [r14, #144]
 vstr.32 s24, [r14, #148]
 vstr.32 s23, [r14, #152]
@@ -6004,6 +5444,14 @@ str r4, [r14, #408]
 str r3, [r14, #412]
 str r2, [r14, #384]
 str r1, [r14, #388]
+add r14, r14, #1600
+vstr.32 s31, [r14, #24]
+vstr.32 s30, [r14, #28]
+vstr.32 s29, [r14, #0]
+vstr.32 s28, [r14, #4]
+vstr.32 s27, [r14, #8]
+vstr.32 s26, [r14, #12]
+sub r14, r14, #1600
 ldr r0, [r14, #392]
 ldr r1, [r14, #488]
 eor r0, r0, r1
@@ -6618,96 +6066,6 @@ ldr r0, [r14, #1492]
 eor r1, r1, r0
 vstr.32 s31, [r14, #808]
 vstr.32 s30, [r14, #812]
-add r14, r14, #1168
-vstr.32 s29, [r14]
-sub r14, r14, #1168
-add r14, r14, #1172
-vstr.32 s28, [r14]
-sub r14, r14, #1172
-add r14, r14, #1176
-vstr.32 s27, [r14]
-sub r14, r14, #1176
-add r14, r14, #1180
-vstr.32 s26, [r14]
-sub r14, r14, #1180
-add r14, r14, #1152
-vstr.32 s25, [r14]
-sub r14, r14, #1152
-add r14, r14, #1156
-vstr.32 s24, [r14]
-sub r14, r14, #1156
-add r14, r14, #1160
-vstr.32 s23, [r14]
-sub r14, r14, #1160
-add r14, r14, #1164
-vstr.32 s22, [r14]
-sub r14, r14, #1164
-add r14, r14, #1136
-vstr.32 s21, [r14]
-sub r14, r14, #1136
-add r14, r14, #1140
-vstr.32 s20, [r14]
-sub r14, r14, #1140
-add r14, r14, #1144
-vstr.32 s19, [r14]
-sub r14, r14, #1144
-add r14, r14, #1148
-vstr.32 s18, [r14]
-sub r14, r14, #1148
-add r14, r14, #1120
-vstr.32 s17, [r14]
-sub r14, r14, #1120
-add r14, r14, #1124
-vstr.32 s16, [r14]
-sub r14, r14, #1124
-add r14, r14, #1128
-vstr.32 s15, [r14]
-sub r14, r14, #1128
-add r14, r14, #1132
-vstr.32 s14, [r14]
-sub r14, r14, #1132
-add r14, r14, #1104
-vstr.32 s13, [r14]
-sub r14, r14, #1104
-add r14, r14, #1108
-vstr.32 s12, [r14]
-sub r14, r14, #1108
-add r14, r14, #1112
-vstr.32 s11, [r14]
-sub r14, r14, #1112
-add r14, r14, #1116
-vstr.32 s10, [r14]
-sub r14, r14, #1116
-add r14, r14, #1088
-vstr.32 s9, [r14]
-sub r14, r14, #1088
-add r14, r14, #1092
-vstr.32 s8, [r14]
-sub r14, r14, #1092
-add r14, r14, #1096
-vstr.32 s7, [r14]
-sub r14, r14, #1096
-add r14, r14, #1100
-vstr.32 s6, [r14]
-sub r14, r14, #1100
-add r14, r14, #1072
-vstr.32 s5, [r14]
-sub r14, r14, #1072
-add r14, r14, #1076
-vstr.32 s4, [r14]
-sub r14, r14, #1076
-add r14, r14, #1080
-vstr.32 s3, [r14]
-sub r14, r14, #1080
-add r14, r14, #1084
-vstr.32 s2, [r14]
-sub r14, r14, #1084
-add r14, r14, #1056
-vstr.32 s1, [r14]
-sub r14, r14, #1056
-add r14, r14, #1060
-vstr.32 s0, [r14]
-sub r14, r14, #1060
 str r12, [r14, #1064]
 str r11, [r14, #1068]
 str r10, [r14, #1424]
@@ -6720,6 +6078,38 @@ str r4, [r14, #1416]
 str r3, [r14, #1420]
 str r2, [r14, #1392]
 str r1, [r14, #1396]
+add r14, r14, #1056
+vstr.32 s29, [r14, #112]
+vstr.32 s28, [r14, #116]
+vstr.32 s27, [r14, #120]
+vstr.32 s26, [r14, #124]
+vstr.32 s25, [r14, #96]
+vstr.32 s24, [r14, #100]
+vstr.32 s23, [r14, #104]
+vstr.32 s22, [r14, #108]
+vstr.32 s21, [r14, #80]
+vstr.32 s20, [r14, #84]
+vstr.32 s19, [r14, #88]
+vstr.32 s18, [r14, #92]
+vstr.32 s17, [r14, #64]
+vstr.32 s16, [r14, #68]
+vstr.32 s15, [r14, #72]
+vstr.32 s14, [r14, #76]
+vstr.32 s13, [r14, #48]
+vstr.32 s12, [r14, #52]
+vstr.32 s11, [r14, #56]
+vstr.32 s10, [r14, #60]
+vstr.32 s9, [r14, #32]
+vstr.32 s8, [r14, #36]
+vstr.32 s7, [r14, #40]
+vstr.32 s6, [r14, #44]
+vstr.32 s5, [r14, #16]
+vstr.32 s4, [r14, #20]
+vstr.32 s3, [r14, #24]
+vstr.32 s2, [r14, #28]
+vstr.32 s1, [r14, #0]
+vstr.32 s0, [r14, #4]
+sub r14, r14, #1056
 ldr r0, [r14, #1400]
 ldr r1, [r14, #1496]
 eor r0, r0, r1
@@ -6884,102 +6274,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1604]
 ldr r0, [r14, #1700]
 eor r1, r1, r0
-add r14, r14, #1400
-vstr.32 s31, [r14]
-sub r14, r14, #1400
-add r14, r14, #1404
-vstr.32 s30, [r14]
-sub r14, r14, #1404
-add r14, r14, #1376
-vstr.32 s29, [r14]
-sub r14, r14, #1376
-add r14, r14, #1380
-vstr.32 s28, [r14]
-sub r14, r14, #1380
-add r14, r14, #1384
-vstr.32 s27, [r14]
-sub r14, r14, #1384
-add r14, r14, #1388
-vstr.32 s26, [r14]
-sub r14, r14, #1388
-add r14, r14, #1360
-vstr.32 s25, [r14]
-sub r14, r14, #1360
-add r14, r14, #1364
-vstr.32 s24, [r14]
-sub r14, r14, #1364
-add r14, r14, #1368
-vstr.32 s23, [r14]
-sub r14, r14, #1368
-add r14, r14, #1372
-vstr.32 s22, [r14]
-sub r14, r14, #1372
-add r14, r14, #1344
-vstr.32 s21, [r14]
-sub r14, r14, #1344
-add r14, r14, #1348
-vstr.32 s20, [r14]
-sub r14, r14, #1348
-add r14, r14, #1352
-vstr.32 s19, [r14]
-sub r14, r14, #1352
-add r14, r14, #1356
-vstr.32 s18, [r14]
-sub r14, r14, #1356
-add r14, r14, #1328
-vstr.32 s17, [r14]
-sub r14, r14, #1328
-add r14, r14, #1332
-vstr.32 s16, [r14]
-sub r14, r14, #1332
-add r14, r14, #1336
-vstr.32 s15, [r14]
-sub r14, r14, #1336
-add r14, r14, #1340
-vstr.32 s14, [r14]
-sub r14, r14, #1340
-add r14, r14, #1312
-vstr.32 s13, [r14]
-sub r14, r14, #1312
-add r14, r14, #1316
-vstr.32 s12, [r14]
-sub r14, r14, #1316
-add r14, r14, #1320
-vstr.32 s11, [r14]
-sub r14, r14, #1320
-add r14, r14, #1324
-vstr.32 s10, [r14]
-sub r14, r14, #1324
-add r14, r14, #1680
-vstr.32 s9, [r14]
-sub r14, r14, #1680
-add r14, r14, #1684
-vstr.32 s8, [r14]
-sub r14, r14, #1684
-add r14, r14, #1688
-vstr.32 s7, [r14]
-sub r14, r14, #1688
-add r14, r14, #1692
-vstr.32 s6, [r14]
-sub r14, r14, #1692
-add r14, r14, #1664
-vstr.32 s5, [r14]
-sub r14, r14, #1664
-add r14, r14, #1668
-vstr.32 s4, [r14]
-sub r14, r14, #1668
-add r14, r14, #1672
-vstr.32 s3, [r14]
-sub r14, r14, #1672
-add r14, r14, #1676
-vstr.32 s2, [r14]
-sub r14, r14, #1676
-add r14, r14, #1648
-vstr.32 s1, [r14]
-sub r14, r14, #1648
-add r14, r14, #1652
-vstr.32 s0, [r14]
-sub r14, r14, #1652
 str r12, [r14, #1656]
 str r11, [r14, #1660]
 str r10, [r14, #1632]
@@ -6992,6 +6286,40 @@ str r4, [r14, #1624]
 str r3, [r14, #1628]
 str r2, [r14, #1600]
 str r1, [r14, #1604]
+add r14, r14, #1312
+vstr.32 s31, [r14, #88]
+vstr.32 s30, [r14, #92]
+vstr.32 s29, [r14, #64]
+vstr.32 s28, [r14, #68]
+vstr.32 s27, [r14, #72]
+vstr.32 s26, [r14, #76]
+vstr.32 s25, [r14, #48]
+vstr.32 s24, [r14, #52]
+vstr.32 s23, [r14, #56]
+vstr.32 s22, [r14, #60]
+vstr.32 s21, [r14, #32]
+vstr.32 s20, [r14, #36]
+vstr.32 s19, [r14, #40]
+vstr.32 s18, [r14, #44]
+vstr.32 s17, [r14, #16]
+vstr.32 s16, [r14, #20]
+vstr.32 s15, [r14, #24]
+vstr.32 s14, [r14, #28]
+vstr.32 s13, [r14, #0]
+vstr.32 s12, [r14, #4]
+vstr.32 s11, [r14, #8]
+vstr.32 s10, [r14, #12]
+vstr.32 s9, [r14, #368]
+vstr.32 s8, [r14, #372]
+vstr.32 s7, [r14, #376]
+vstr.32 s6, [r14, #380]
+vstr.32 s5, [r14, #352]
+vstr.32 s4, [r14, #356]
+vstr.32 s3, [r14, #360]
+vstr.32 s2, [r14, #364]
+vstr.32 s1, [r14, #336]
+vstr.32 s0, [r14, #340]
+sub r14, r14, #1312
 ldr r0, [r14, #1608]
 ldr r1, [r14, #1704]
 eor r0, r0, r1
@@ -7180,102 +6508,6 @@ eor r2, r2, r0
 ldr r1, [r14, #2096]
 ldr r0, [r14, #2192]
 eor r1, r1, r0
-add r14, r14, #1608
-vstr.32 s31, [r14]
-sub r14, r14, #1608
-add r14, r14, #1612
-vstr.32 s30, [r14]
-sub r14, r14, #1612
-add r14, r14, #1584
-vstr.32 s29, [r14]
-sub r14, r14, #1584
-add r14, r14, #1588
-vstr.32 s28, [r14]
-sub r14, r14, #1588
-add r14, r14, #1592
-vstr.32 s27, [r14]
-sub r14, r14, #1592
-add r14, r14, #1596
-vstr.32 s26, [r14]
-sub r14, r14, #1596
-add r14, r14, #1568
-vstr.32 s25, [r14]
-sub r14, r14, #1568
-add r14, r14, #1572
-vstr.32 s24, [r14]
-sub r14, r14, #1572
-add r14, r14, #1576
-vstr.32 s23, [r14]
-sub r14, r14, #1576
-add r14, r14, #1580
-vstr.32 s22, [r14]
-sub r14, r14, #1580
-add r14, r14, #1936
-vstr.32 s21, [r14]
-sub r14, r14, #1936
-add r14, r14, #1940
-vstr.32 s20, [r14]
-sub r14, r14, #1940
-add r14, r14, #1944
-vstr.32 s19, [r14]
-sub r14, r14, #1944
-add r14, r14, #1948
-vstr.32 s18, [r14]
-sub r14, r14, #1948
-add r14, r14, #1920
-vstr.32 s17, [r14]
-sub r14, r14, #1920
-add r14, r14, #1924
-vstr.32 s16, [r14]
-sub r14, r14, #1924
-add r14, r14, #1928
-vstr.32 s15, [r14]
-sub r14, r14, #1928
-add r14, r14, #1932
-vstr.32 s14, [r14]
-sub r14, r14, #1932
-add r14, r14, #1904
-vstr.32 s13, [r14]
-sub r14, r14, #1904
-add r14, r14, #1908
-vstr.32 s12, [r14]
-sub r14, r14, #1908
-add r14, r14, #1912
-vstr.32 s11, [r14]
-sub r14, r14, #1912
-add r14, r14, #1916
-vstr.32 s10, [r14]
-sub r14, r14, #1916
-add r14, r14, #1888
-vstr.32 s9, [r14]
-sub r14, r14, #1888
-add r14, r14, #1892
-vstr.32 s8, [r14]
-sub r14, r14, #1892
-add r14, r14, #1896
-vstr.32 s7, [r14]
-sub r14, r14, #1896
-add r14, r14, #1900
-vstr.32 s6, [r14]
-sub r14, r14, #1900
-add r14, r14, #1872
-vstr.32 s5, [r14]
-sub r14, r14, #1872
-add r14, r14, #1876
-vstr.32 s4, [r14]
-sub r14, r14, #1876
-add r14, r14, #1880
-vstr.32 s3, [r14]
-sub r14, r14, #1880
-add r14, r14, #1884
-vstr.32 s2, [r14]
-sub r14, r14, #1884
-add r14, r14, #1856
-vstr.32 s1, [r14]
-sub r14, r14, #1856
-add r14, r14, #1860
-vstr.32 s0, [r14]
-sub r14, r14, #1860
 str r12, [r14, #1864]
 str r11, [r14, #1868]
 str r10, [r14, #1840]
@@ -7288,6 +6520,40 @@ str r4, [r14, #1832]
 str r3, [r14, #1836]
 str r2, [r14, #2112]
 str r1, [r14, #2096]
+add r14, r14, #1568
+vstr.32 s31, [r14, #40]
+vstr.32 s30, [r14, #44]
+vstr.32 s29, [r14, #16]
+vstr.32 s28, [r14, #20]
+vstr.32 s27, [r14, #24]
+vstr.32 s26, [r14, #28]
+vstr.32 s25, [r14, #0]
+vstr.32 s24, [r14, #4]
+vstr.32 s23, [r14, #8]
+vstr.32 s22, [r14, #12]
+vstr.32 s21, [r14, #368]
+vstr.32 s20, [r14, #372]
+vstr.32 s19, [r14, #376]
+vstr.32 s18, [r14, #380]
+vstr.32 s17, [r14, #352]
+vstr.32 s16, [r14, #356]
+vstr.32 s15, [r14, #360]
+vstr.32 s14, [r14, #364]
+vstr.32 s13, [r14, #336]
+vstr.32 s12, [r14, #340]
+vstr.32 s11, [r14, #344]
+vstr.32 s10, [r14, #348]
+vstr.32 s9, [r14, #320]
+vstr.32 s8, [r14, #324]
+vstr.32 s7, [r14, #328]
+vstr.32 s6, [r14, #332]
+vstr.32 s5, [r14, #304]
+vstr.32 s4, [r14, #308]
+vstr.32 s3, [r14, #312]
+vstr.32 s2, [r14, #316]
+vstr.32 s1, [r14, #288]
+vstr.32 s0, [r14, #292]
+sub r14, r14, #1568
 ldr r0, [r14, #2100]
 ldr r1, [r14, #2196]
 eor r0, r0, r1
@@ -7457,27 +6723,6 @@ vstr.32 s20, [r14, #352]
 ldr r1, [r14, #224]
 ldr r0, [r14, #352]
 eor r1, r1, r0
-add r14, r14, #2100
-vstr.32 s31, [r14]
-sub r14, r14, #2100
-add r14, r14, #2104
-vstr.32 s30, [r14]
-sub r14, r14, #2104
-add r14, r14, #2108
-vstr.32 s29, [r14]
-sub r14, r14, #2108
-add r14, r14, #2080
-vstr.32 s28, [r14]
-sub r14, r14, #2080
-add r14, r14, #2084
-vstr.32 s27, [r14]
-sub r14, r14, #2084
-add r14, r14, #2088
-vstr.32 s26, [r14]
-sub r14, r14, #2088
-add r14, r14, #2092
-vstr.32 s25, [r14]
-sub r14, r14, #2092
 vstr.32 s24, [r14, #368]
 vstr.32 s23, [r14, #372]
 vstr.32 s22, [r14, #376]
@@ -7515,6 +6760,15 @@ str r4, [r14, #244]
 str r3, [r14, #248]
 str r2, [r14, #252]
 str r1, [r14, #224]
+add r14, r14, #2080
+vstr.32 s31, [r14, #20]
+vstr.32 s30, [r14, #24]
+vstr.32 s29, [r14, #28]
+vstr.32 s28, [r14, #0]
+vstr.32 s27, [r14, #4]
+vstr.32 s26, [r14, #8]
+vstr.32 s25, [r14, #12]
+sub r14, r14, #2080
 ldr r0, [r14, #228]
 ldr r1, [r14, #356]
 eor r0, r0, r1
@@ -8137,93 +7391,6 @@ eor r1, r1, r0
 vstr.32 s31, [r14, #644]
 vstr.32 s30, [r14, #648]
 vstr.32 s29, [r14, #652]
-add r14, r14, #1392
-vstr.32 s28, [r14]
-sub r14, r14, #1392
-add r14, r14, #1396
-vstr.32 s27, [r14]
-sub r14, r14, #1396
-add r14, r14, #1400
-vstr.32 s26, [r14]
-sub r14, r14, #1400
-add r14, r14, #1404
-vstr.32 s25, [r14]
-sub r14, r14, #1404
-add r14, r14, #1376
-vstr.32 s24, [r14]
-sub r14, r14, #1376
-add r14, r14, #1380
-vstr.32 s23, [r14]
-sub r14, r14, #1380
-add r14, r14, #1384
-vstr.32 s22, [r14]
-sub r14, r14, #1384
-add r14, r14, #1388
-vstr.32 s21, [r14]
-sub r14, r14, #1388
-add r14, r14, #1360
-vstr.32 s20, [r14]
-sub r14, r14, #1360
-add r14, r14, #1364
-vstr.32 s19, [r14]
-sub r14, r14, #1364
-add r14, r14, #1368
-vstr.32 s18, [r14]
-sub r14, r14, #1368
-add r14, r14, #1372
-vstr.32 s17, [r14]
-sub r14, r14, #1372
-add r14, r14, #1344
-vstr.32 s16, [r14]
-sub r14, r14, #1344
-add r14, r14, #1348
-vstr.32 s15, [r14]
-sub r14, r14, #1348
-add r14, r14, #1352
-vstr.32 s14, [r14]
-sub r14, r14, #1352
-add r14, r14, #1356
-vstr.32 s13, [r14]
-sub r14, r14, #1356
-add r14, r14, #1328
-vstr.32 s12, [r14]
-sub r14, r14, #1328
-add r14, r14, #1332
-vstr.32 s11, [r14]
-sub r14, r14, #1332
-add r14, r14, #1336
-vstr.32 s10, [r14]
-sub r14, r14, #1336
-add r14, r14, #1340
-vstr.32 s9, [r14]
-sub r14, r14, #1340
-add r14, r14, #1312
-vstr.32 s8, [r14]
-sub r14, r14, #1312
-add r14, r14, #1316
-vstr.32 s7, [r14]
-sub r14, r14, #1316
-add r14, r14, #1320
-vstr.32 s6, [r14]
-sub r14, r14, #1320
-add r14, r14, #1324
-vstr.32 s5, [r14]
-sub r14, r14, #1324
-add r14, r14, #1296
-vstr.32 s4, [r14]
-sub r14, r14, #1296
-add r14, r14, #1300
-vstr.32 s3, [r14]
-sub r14, r14, #1300
-add r14, r14, #1304
-vstr.32 s2, [r14]
-sub r14, r14, #1304
-add r14, r14, #1308
-vstr.32 s1, [r14]
-sub r14, r14, #1308
-add r14, r14, #1280
-vstr.32 s0, [r14]
-sub r14, r14, #1280
 str r12, [r14, #1284]
 str r11, [r14, #1288]
 str r10, [r14, #1292]
@@ -8236,6 +7403,37 @@ str r4, [r14, #1252]
 str r3, [r14, #1256]
 str r2, [r14, #1260]
 str r1, [r14, #1232]
+add r14, r14, #1280
+vstr.32 s28, [r14, #112]
+vstr.32 s27, [r14, #116]
+vstr.32 s26, [r14, #120]
+vstr.32 s25, [r14, #124]
+vstr.32 s24, [r14, #96]
+vstr.32 s23, [r14, #100]
+vstr.32 s22, [r14, #104]
+vstr.32 s21, [r14, #108]
+vstr.32 s20, [r14, #80]
+vstr.32 s19, [r14, #84]
+vstr.32 s18, [r14, #88]
+vstr.32 s17, [r14, #92]
+vstr.32 s16, [r14, #64]
+vstr.32 s15, [r14, #68]
+vstr.32 s14, [r14, #72]
+vstr.32 s13, [r14, #76]
+vstr.32 s12, [r14, #48]
+vstr.32 s11, [r14, #52]
+vstr.32 s10, [r14, #56]
+vstr.32 s9, [r14, #60]
+vstr.32 s8, [r14, #32]
+vstr.32 s7, [r14, #36]
+vstr.32 s6, [r14, #40]
+vstr.32 s5, [r14, #44]
+vstr.32 s4, [r14, #16]
+vstr.32 s3, [r14, #20]
+vstr.32 s2, [r14, #24]
+vstr.32 s1, [r14, #28]
+vstr.32 s0, [r14, #0]
+sub r14, r14, #1280
 ldr r0, [r14, #1236]
 ldr r1, [r14, #1364]
 eor r0, r0, r1
@@ -8400,102 +7598,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1824]
 ldr r0, [r14, #1952]
 eor r1, r1, r0
-add r14, r14, #1236
-vstr.32 s31, [r14]
-sub r14, r14, #1236
-add r14, r14, #1240
-vstr.32 s30, [r14]
-sub r14, r14, #1240
-add r14, r14, #1244
-vstr.32 s29, [r14]
-sub r14, r14, #1244
-add r14, r14, #1216
-vstr.32 s28, [r14]
-sub r14, r14, #1216
-add r14, r14, #1220
-vstr.32 s27, [r14]
-sub r14, r14, #1220
-add r14, r14, #1224
-vstr.32 s26, [r14]
-sub r14, r14, #1224
-add r14, r14, #1228
-vstr.32 s25, [r14]
-sub r14, r14, #1228
-add r14, r14, #1200
-vstr.32 s24, [r14]
-sub r14, r14, #1200
-add r14, r14, #1204
-vstr.32 s23, [r14]
-sub r14, r14, #1204
-add r14, r14, #1208
-vstr.32 s22, [r14]
-sub r14, r14, #1208
-add r14, r14, #1212
-vstr.32 s21, [r14]
-sub r14, r14, #1212
-add r14, r14, #1184
-vstr.32 s20, [r14]
-sub r14, r14, #1184
-add r14, r14, #1188
-vstr.32 s19, [r14]
-sub r14, r14, #1188
-add r14, r14, #1192
-vstr.32 s18, [r14]
-sub r14, r14, #1192
-add r14, r14, #1196
-vstr.32 s17, [r14]
-sub r14, r14, #1196
-add r14, r14, #1168
-vstr.32 s16, [r14]
-sub r14, r14, #1168
-add r14, r14, #1172
-vstr.32 s15, [r14]
-sub r14, r14, #1172
-add r14, r14, #1176
-vstr.32 s14, [r14]
-sub r14, r14, #1176
-add r14, r14, #1180
-vstr.32 s13, [r14]
-sub r14, r14, #1180
-add r14, r14, #1152
-vstr.32 s12, [r14]
-sub r14, r14, #1152
-add r14, r14, #1156
-vstr.32 s11, [r14]
-sub r14, r14, #1156
-add r14, r14, #1160
-vstr.32 s10, [r14]
-sub r14, r14, #1160
-add r14, r14, #1164
-vstr.32 s9, [r14]
-sub r14, r14, #1164
-add r14, r14, #1904
-vstr.32 s8, [r14]
-sub r14, r14, #1904
-add r14, r14, #1908
-vstr.32 s7, [r14]
-sub r14, r14, #1908
-add r14, r14, #1912
-vstr.32 s6, [r14]
-sub r14, r14, #1912
-add r14, r14, #1916
-vstr.32 s5, [r14]
-sub r14, r14, #1916
-add r14, r14, #1888
-vstr.32 s4, [r14]
-sub r14, r14, #1888
-add r14, r14, #1892
-vstr.32 s3, [r14]
-sub r14, r14, #1892
-add r14, r14, #1896
-vstr.32 s2, [r14]
-sub r14, r14, #1896
-add r14, r14, #1900
-vstr.32 s1, [r14]
-sub r14, r14, #1900
-add r14, r14, #1872
-vstr.32 s0, [r14]
-sub r14, r14, #1872
 str r12, [r14, #1876]
 str r11, [r14, #1880]
 str r10, [r14, #1884]
@@ -8508,6 +7610,40 @@ str r4, [r14, #1844]
 str r3, [r14, #1848]
 str r2, [r14, #1852]
 str r1, [r14, #1824]
+add r14, r14, #1152
+vstr.32 s31, [r14, #84]
+vstr.32 s30, [r14, #88]
+vstr.32 s29, [r14, #92]
+vstr.32 s28, [r14, #64]
+vstr.32 s27, [r14, #68]
+vstr.32 s26, [r14, #72]
+vstr.32 s25, [r14, #76]
+vstr.32 s24, [r14, #48]
+vstr.32 s23, [r14, #52]
+vstr.32 s22, [r14, #56]
+vstr.32 s21, [r14, #60]
+vstr.32 s20, [r14, #32]
+vstr.32 s19, [r14, #36]
+vstr.32 s18, [r14, #40]
+vstr.32 s17, [r14, #44]
+vstr.32 s16, [r14, #16]
+vstr.32 s15, [r14, #20]
+vstr.32 s14, [r14, #24]
+vstr.32 s13, [r14, #28]
+vstr.32 s12, [r14, #0]
+vstr.32 s11, [r14, #4]
+vstr.32 s10, [r14, #8]
+vstr.32 s9, [r14, #12]
+vstr.32 s8, [r14, #752]
+vstr.32 s7, [r14, #756]
+vstr.32 s6, [r14, #760]
+vstr.32 s5, [r14, #764]
+vstr.32 s4, [r14, #736]
+vstr.32 s3, [r14, #740]
+vstr.32 s2, [r14, #744]
+vstr.32 s1, [r14, #748]
+vstr.32 s0, [r14, #720]
+sub r14, r14, #1152
 ldr r0, [r14, #1828]
 ldr r1, [r14, #1956]
 eor r0, r0, r1
@@ -8705,102 +7841,6 @@ eor r2, r2, r0
 ldr r1, [r14, #80]
 ldr r0, [r14, #112]
 eor r1, r1, r0
-add r14, r14, #1828
-vstr.32 s31, [r14]
-sub r14, r14, #1828
-add r14, r14, #1832
-vstr.32 s30, [r14]
-sub r14, r14, #1832
-add r14, r14, #1836
-vstr.32 s29, [r14]
-sub r14, r14, #1836
-add r14, r14, #1808
-vstr.32 s28, [r14]
-sub r14, r14, #1808
-add r14, r14, #1812
-vstr.32 s27, [r14]
-sub r14, r14, #1812
-add r14, r14, #1816
-vstr.32 s26, [r14]
-sub r14, r14, #1816
-add r14, r14, #1820
-vstr.32 s25, [r14]
-sub r14, r14, #1820
-add r14, r14, #1792
-vstr.32 s24, [r14]
-sub r14, r14, #1792
-add r14, r14, #1796
-vstr.32 s23, [r14]
-sub r14, r14, #1796
-add r14, r14, #1800
-vstr.32 s22, [r14]
-sub r14, r14, #1800
-add r14, r14, #1804
-vstr.32 s21, [r14]
-sub r14, r14, #1804
-add r14, r14, #1776
-vstr.32 s20, [r14]
-sub r14, r14, #1776
-add r14, r14, #1780
-vstr.32 s19, [r14]
-sub r14, r14, #1780
-add r14, r14, #1784
-vstr.32 s18, [r14]
-sub r14, r14, #1784
-add r14, r14, #1788
-vstr.32 s17, [r14]
-sub r14, r14, #1788
-add r14, r14, #1760
-vstr.32 s16, [r14]
-sub r14, r14, #1760
-add r14, r14, #1764
-vstr.32 s15, [r14]
-sub r14, r14, #1764
-add r14, r14, #1768
-vstr.32 s14, [r14]
-sub r14, r14, #1768
-add r14, r14, #1772
-vstr.32 s13, [r14]
-sub r14, r14, #1772
-add r14, r14, #1744
-vstr.32 s12, [r14]
-sub r14, r14, #1744
-add r14, r14, #1748
-vstr.32 s11, [r14]
-sub r14, r14, #1748
-add r14, r14, #1752
-vstr.32 s10, [r14]
-sub r14, r14, #1752
-add r14, r14, #1756
-vstr.32 s9, [r14]
-sub r14, r14, #1756
-add r14, r14, #1728
-vstr.32 s8, [r14]
-sub r14, r14, #1728
-add r14, r14, #1732
-vstr.32 s7, [r14]
-sub r14, r14, #1732
-add r14, r14, #1736
-vstr.32 s6, [r14]
-sub r14, r14, #1736
-add r14, r14, #1740
-vstr.32 s5, [r14]
-sub r14, r14, #1740
-add r14, r14, #1712
-vstr.32 s4, [r14]
-sub r14, r14, #1712
-add r14, r14, #1716
-vstr.32 s3, [r14]
-sub r14, r14, #1716
-add r14, r14, #1720
-vstr.32 s2, [r14]
-sub r14, r14, #1720
-add r14, r14, #1724
-vstr.32 s1, [r14]
-sub r14, r14, #1724
-add r14, r14, #1696
-vstr.32 s0, [r14]
-sub r14, r14, #1696
 str r12, [r14, #1700]
 str r11, [r14, #1704]
 str r10, [r14, #1708]
@@ -8813,6 +7853,40 @@ str r4, [r14, #1668]
 str r3, [r14, #1672]
 str r2, [r14, #1676]
 str r1, [r14, #80]
+add r14, r14, #1696
+vstr.32 s31, [r14, #132]
+vstr.32 s30, [r14, #136]
+vstr.32 s29, [r14, #140]
+vstr.32 s28, [r14, #112]
+vstr.32 s27, [r14, #116]
+vstr.32 s26, [r14, #120]
+vstr.32 s25, [r14, #124]
+vstr.32 s24, [r14, #96]
+vstr.32 s23, [r14, #100]
+vstr.32 s22, [r14, #104]
+vstr.32 s21, [r14, #108]
+vstr.32 s20, [r14, #80]
+vstr.32 s19, [r14, #84]
+vstr.32 s18, [r14, #88]
+vstr.32 s17, [r14, #92]
+vstr.32 s16, [r14, #64]
+vstr.32 s15, [r14, #68]
+vstr.32 s14, [r14, #72]
+vstr.32 s13, [r14, #76]
+vstr.32 s12, [r14, #48]
+vstr.32 s11, [r14, #52]
+vstr.32 s10, [r14, #56]
+vstr.32 s9, [r14, #60]
+vstr.32 s8, [r14, #32]
+vstr.32 s7, [r14, #36]
+vstr.32 s6, [r14, #40]
+vstr.32 s5, [r14, #44]
+vstr.32 s4, [r14, #16]
+vstr.32 s3, [r14, #20]
+vstr.32 s2, [r14, #24]
+vstr.32 s1, [r14, #28]
+vstr.32 s0, [r14, #0]
+sub r14, r14, #1696
 ldr r0, [r14, #84]
 ldr r1, [r14, #116]
 eor r0, r0, r1
@@ -9705,102 +8779,6 @@ eor r2, r2, r0
 ldr r1, [r14, #1488]
 ldr r0, [r14, #1520]
 eor r1, r1, r0
-add r14, r14, #1092
-vstr.32 s31, [r14]
-sub r14, r14, #1092
-add r14, r14, #1096
-vstr.32 s30, [r14]
-sub r14, r14, #1096
-add r14, r14, #1100
-vstr.32 s29, [r14]
-sub r14, r14, #1100
-add r14, r14, #1072
-vstr.32 s28, [r14]
-sub r14, r14, #1072
-add r14, r14, #1076
-vstr.32 s27, [r14]
-sub r14, r14, #1076
-add r14, r14, #1080
-vstr.32 s26, [r14]
-sub r14, r14, #1080
-add r14, r14, #1084
-vstr.32 s25, [r14]
-sub r14, r14, #1084
-add r14, r14, #1056
-vstr.32 s24, [r14]
-sub r14, r14, #1056
-add r14, r14, #1060
-vstr.32 s23, [r14]
-sub r14, r14, #1060
-add r14, r14, #1064
-vstr.32 s22, [r14]
-sub r14, r14, #1064
-add r14, r14, #1068
-vstr.32 s21, [r14]
-sub r14, r14, #1068
-add r14, r14, #1232
-vstr.32 s20, [r14]
-sub r14, r14, #1232
-add r14, r14, #1236
-vstr.32 s19, [r14]
-sub r14, r14, #1236
-add r14, r14, #1240
-vstr.32 s18, [r14]
-sub r14, r14, #1240
-add r14, r14, #1244
-vstr.32 s17, [r14]
-sub r14, r14, #1244
-add r14, r14, #1216
-vstr.32 s16, [r14]
-sub r14, r14, #1216
-add r14, r14, #1220
-vstr.32 s15, [r14]
-sub r14, r14, #1220
-add r14, r14, #1224
-vstr.32 s14, [r14]
-sub r14, r14, #1224
-add r14, r14, #1228
-vstr.32 s13, [r14]
-sub r14, r14, #1228
-add r14, r14, #1200
-vstr.32 s12, [r14]
-sub r14, r14, #1200
-add r14, r14, #1204
-vstr.32 s11, [r14]
-sub r14, r14, #1204
-add r14, r14, #1208
-vstr.32 s10, [r14]
-sub r14, r14, #1208
-add r14, r14, #1212
-vstr.32 s9, [r14]
-sub r14, r14, #1212
-add r14, r14, #1184
-vstr.32 s8, [r14]
-sub r14, r14, #1184
-add r14, r14, #1188
-vstr.32 s7, [r14]
-sub r14, r14, #1188
-add r14, r14, #1192
-vstr.32 s6, [r14]
-sub r14, r14, #1192
-add r14, r14, #1196
-vstr.32 s5, [r14]
-sub r14, r14, #1196
-add r14, r14, #1360
-vstr.32 s4, [r14]
-sub r14, r14, #1360
-add r14, r14, #1364
-vstr.32 s3, [r14]
-sub r14, r14, #1364
-add r14, r14, #1368
-vstr.32 s2, [r14]
-sub r14, r14, #1368
-add r14, r14, #1372
-vstr.32 s1, [r14]
-sub r14, r14, #1372
-add r14, r14, #1344
-vstr.32 s0, [r14]
-sub r14, r14, #1344
 str r12, [r14, #1348]
 str r11, [r14, #1352]
 str r10, [r14, #1356]
@@ -9813,6 +8791,40 @@ str r4, [r14, #1316]
 str r3, [r14, #1320]
 str r2, [r14, #1324]
 str r1, [r14, #1488]
+add r14, r14, #1056
+vstr.32 s31, [r14, #36]
+vstr.32 s30, [r14, #40]
+vstr.32 s29, [r14, #44]
+vstr.32 s28, [r14, #16]
+vstr.32 s27, [r14, #20]
+vstr.32 s26, [r14, #24]
+vstr.32 s25, [r14, #28]
+vstr.32 s24, [r14, #0]
+vstr.32 s23, [r14, #4]
+vstr.32 s22, [r14, #8]
+vstr.32 s21, [r14, #12]
+vstr.32 s20, [r14, #176]
+vstr.32 s19, [r14, #180]
+vstr.32 s18, [r14, #184]
+vstr.32 s17, [r14, #188]
+vstr.32 s16, [r14, #160]
+vstr.32 s15, [r14, #164]
+vstr.32 s14, [r14, #168]
+vstr.32 s13, [r14, #172]
+vstr.32 s12, [r14, #144]
+vstr.32 s11, [r14, #148]
+vstr.32 s10, [r14, #152]
+vstr.32 s9, [r14, #156]
+vstr.32 s8, [r14, #128]
+vstr.32 s7, [r14, #132]
+vstr.32 s6, [r14, #136]
+vstr.32 s5, [r14, #140]
+vstr.32 s4, [r14, #304]
+vstr.32 s3, [r14, #308]
+vstr.32 s2, [r14, #312]
+vstr.32 s1, [r14, #316]
+vstr.32 s0, [r14, #288]
+sub r14, r14, #1056
 ldr r0, [r14, #1492]
 ldr r1, [r14, #1524]
 eor r0, r0, r1
@@ -10029,102 +9041,6 @@ str r9, [r14, #1728]
 ldr r1, [r14, #1696]
 ldr r0, [r14, #1728]
 eor r1, r1, r0
-add r14, r14, #1492
-vstr.32 s31, [r14]
-sub r14, r14, #1492
-add r14, r14, #1496
-vstr.32 s30, [r14]
-sub r14, r14, #1496
-add r14, r14, #1500
-vstr.32 s29, [r14]
-sub r14, r14, #1500
-add r14, r14, #1472
-vstr.32 s28, [r14]
-sub r14, r14, #1472
-add r14, r14, #1476
-vstr.32 s27, [r14]
-sub r14, r14, #1476
-add r14, r14, #1480
-vstr.32 s26, [r14]
-sub r14, r14, #1480
-add r14, r14, #1484
-vstr.32 s25, [r14]
-sub r14, r14, #1484
-add r14, r14, #1456
-vstr.32 s24, [r14]
-sub r14, r14, #1456
-add r14, r14, #1460
-vstr.32 s23, [r14]
-sub r14, r14, #1460
-add r14, r14, #1464
-vstr.32 s22, [r14]
-sub r14, r14, #1464
-add r14, r14, #1468
-vstr.32 s21, [r14]
-sub r14, r14, #1468
-add r14, r14, #1440
-vstr.32 s20, [r14]
-sub r14, r14, #1440
-add r14, r14, #1444
-vstr.32 s19, [r14]
-sub r14, r14, #1444
-add r14, r14, #1448
-vstr.32 s18, [r14]
-sub r14, r14, #1448
-add r14, r14, #1452
-vstr.32 s17, [r14]
-sub r14, r14, #1452
-add r14, r14, #1616
-vstr.32 s16, [r14]
-sub r14, r14, #1616
-add r14, r14, #1620
-vstr.32 s15, [r14]
-sub r14, r14, #1620
-add r14, r14, #1624
-vstr.32 s14, [r14]
-sub r14, r14, #1624
-add r14, r14, #1628
-vstr.32 s13, [r14]
-sub r14, r14, #1628
-add r14, r14, #1600
-vstr.32 s12, [r14]
-sub r14, r14, #1600
-add r14, r14, #1604
-vstr.32 s11, [r14]
-sub r14, r14, #1604
-add r14, r14, #1608
-vstr.32 s10, [r14]
-sub r14, r14, #1608
-add r14, r14, #1612
-vstr.32 s9, [r14]
-sub r14, r14, #1612
-add r14, r14, #1584
-vstr.32 s8, [r14]
-sub r14, r14, #1584
-add r14, r14, #1588
-vstr.32 s7, [r14]
-sub r14, r14, #1588
-add r14, r14, #1592
-vstr.32 s6, [r14]
-sub r14, r14, #1592
-add r14, r14, #1596
-vstr.32 s5, [r14]
-sub r14, r14, #1596
-add r14, r14, #1568
-vstr.32 s4, [r14]
-sub r14, r14, #1568
-add r14, r14, #1572
-vstr.32 s3, [r14]
-sub r14, r14, #1572
-add r14, r14, #1576
-vstr.32 s2, [r14]
-sub r14, r14, #1576
-add r14, r14, #1580
-vstr.32 s1, [r14]
-sub r14, r14, #1580
-add r14, r14, #1744
-vstr.32 s0, [r14]
-sub r14, r14, #1744
 str r12, [r14, #1748]
 str r11, [r14, #1752]
 str r10, [r14, #1756]
@@ -10137,6 +9053,40 @@ str r4, [r14, #1716]
 str r3, [r14, #1720]
 str r2, [r14, #1724]
 str r1, [r14, #1696]
+add r14, r14, #1440
+vstr.32 s31, [r14, #52]
+vstr.32 s30, [r14, #56]
+vstr.32 s29, [r14, #60]
+vstr.32 s28, [r14, #32]
+vstr.32 s27, [r14, #36]
+vstr.32 s26, [r14, #40]
+vstr.32 s25, [r14, #44]
+vstr.32 s24, [r14, #16]
+vstr.32 s23, [r14, #20]
+vstr.32 s22, [r14, #24]
+vstr.32 s21, [r14, #28]
+vstr.32 s20, [r14, #0]
+vstr.32 s19, [r14, #4]
+vstr.32 s18, [r14, #8]
+vstr.32 s17, [r14, #12]
+vstr.32 s16, [r14, #176]
+vstr.32 s15, [r14, #180]
+vstr.32 s14, [r14, #184]
+vstr.32 s13, [r14, #188]
+vstr.32 s12, [r14, #160]
+vstr.32 s11, [r14, #164]
+vstr.32 s10, [r14, #168]
+vstr.32 s9, [r14, #172]
+vstr.32 s8, [r14, #144]
+vstr.32 s7, [r14, #148]
+vstr.32 s6, [r14, #152]
+vstr.32 s5, [r14, #156]
+vstr.32 s4, [r14, #128]
+vstr.32 s3, [r14, #132]
+vstr.32 s2, [r14, #136]
+vstr.32 s1, [r14, #140]
+vstr.32 s0, [r14, #304]
+sub r14, r14, #1440
 ldr r0, [r14, #1700]
 ldr r1, [r14, #1732]
 eor r0, r0, r1
@@ -10350,102 +9300,6 @@ str r9, [r14, #2128]
 ldr r1, [r14, #2096]
 ldr r0, [r14, #2128]
 eor r1, r1, r0
-add r14, r14, #1700
-vstr.32 s31, [r14]
-sub r14, r14, #1700
-add r14, r14, #1704
-vstr.32 s30, [r14]
-sub r14, r14, #1704
-add r14, r14, #1708
-vstr.32 s29, [r14]
-sub r14, r14, #1708
-add r14, r14, #1872
-vstr.32 s28, [r14]
-sub r14, r14, #1872
-add r14, r14, #1876
-vstr.32 s27, [r14]
-sub r14, r14, #1876
-add r14, r14, #1880
-vstr.32 s26, [r14]
-sub r14, r14, #1880
-add r14, r14, #1884
-vstr.32 s25, [r14]
-sub r14, r14, #1884
-add r14, r14, #1856
-vstr.32 s24, [r14]
-sub r14, r14, #1856
-add r14, r14, #1860
-vstr.32 s23, [r14]
-sub r14, r14, #1860
-add r14, r14, #1864
-vstr.32 s22, [r14]
-sub r14, r14, #1864
-add r14, r14, #1868
-vstr.32 s21, [r14]
-sub r14, r14, #1868
-add r14, r14, #1840
-vstr.32 s20, [r14]
-sub r14, r14, #1840
-add r14, r14, #1844
-vstr.32 s19, [r14]
-sub r14, r14, #1844
-add r14, r14, #1848
-vstr.32 s18, [r14]
-sub r14, r14, #1848
-add r14, r14, #1852
-vstr.32 s17, [r14]
-sub r14, r14, #1852
-add r14, r14, #1824
-vstr.32 s16, [r14]
-sub r14, r14, #1824
-add r14, r14, #1828
-vstr.32 s15, [r14]
-sub r14, r14, #1828
-add r14, r14, #1832
-vstr.32 s14, [r14]
-sub r14, r14, #1832
-add r14, r14, #1836
-vstr.32 s13, [r14]
-sub r14, r14, #1836
-add r14, r14, #2000
-vstr.32 s12, [r14]
-sub r14, r14, #2000
-add r14, r14, #2004
-vstr.32 s11, [r14]
-sub r14, r14, #2004
-add r14, r14, #2008
-vstr.32 s10, [r14]
-sub r14, r14, #2008
-add r14, r14, #2012
-vstr.32 s9, [r14]
-sub r14, r14, #2012
-add r14, r14, #1984
-vstr.32 s8, [r14]
-sub r14, r14, #1984
-add r14, r14, #1988
-vstr.32 s7, [r14]
-sub r14, r14, #1988
-add r14, r14, #1992
-vstr.32 s6, [r14]
-sub r14, r14, #1992
-add r14, r14, #1996
-vstr.32 s5, [r14]
-sub r14, r14, #1996
-add r14, r14, #1968
-vstr.32 s4, [r14]
-sub r14, r14, #1968
-add r14, r14, #1972
-vstr.32 s3, [r14]
-sub r14, r14, #1972
-add r14, r14, #1976
-vstr.32 s2, [r14]
-sub r14, r14, #1976
-add r14, r14, #1980
-vstr.32 s1, [r14]
-sub r14, r14, #1980
-add r14, r14, #1952
-vstr.32 s0, [r14]
-sub r14, r14, #1952
 str r12, [r14, #1956]
 str r11, [r14, #1960]
 str r10, [r14, #1964]
@@ -10458,6 +9312,40 @@ str r4, [r14, #2116]
 str r3, [r14, #2120]
 str r2, [r14, #2124]
 str r1, [r14, #2096]
+add r14, r14, #1700
+vstr.32 s31, [r14, #0]
+vstr.32 s30, [r14, #4]
+vstr.32 s29, [r14, #8]
+vstr.32 s28, [r14, #172]
+vstr.32 s27, [r14, #176]
+vstr.32 s26, [r14, #180]
+vstr.32 s25, [r14, #184]
+vstr.32 s24, [r14, #156]
+vstr.32 s23, [r14, #160]
+vstr.32 s22, [r14, #164]
+vstr.32 s21, [r14, #168]
+vstr.32 s20, [r14, #140]
+vstr.32 s19, [r14, #144]
+vstr.32 s18, [r14, #148]
+vstr.32 s17, [r14, #152]
+vstr.32 s16, [r14, #124]
+vstr.32 s15, [r14, #128]
+vstr.32 s14, [r14, #132]
+vstr.32 s13, [r14, #136]
+vstr.32 s12, [r14, #300]
+vstr.32 s11, [r14, #304]
+vstr.32 s10, [r14, #308]
+vstr.32 s9, [r14, #312]
+vstr.32 s8, [r14, #284]
+vstr.32 s7, [r14, #288]
+vstr.32 s6, [r14, #292]
+vstr.32 s5, [r14, #296]
+vstr.32 s4, [r14, #268]
+vstr.32 s3, [r14, #272]
+vstr.32 s2, [r14, #276]
+vstr.32 s1, [r14, #280]
+vstr.32 s0, [r14, #252]
+sub r14, r14, #1700
 ldr r0, [r14, #2100]
 ldr r1, [r14, #2132]
 eor r0, r0, r1
@@ -10486,27 +9374,15 @@ ldr r0, [r14, #2092]
 ldr r1, [r14, #2124]
 eor r0, r0, r1
 vmov s25, r0
-add r14, r14, #2100
-vstr.32 s31, [r14]
-sub r14, r14, #2100
-add r14, r14, #2104
-vstr.32 s30, [r14]
-sub r14, r14, #2104
-add r14, r14, #2108
-vstr.32 s29, [r14]
-sub r14, r14, #2108
 add r14, r14, #2080
-vstr.32 s28, [r14]
+vstr.32 s31, [r14, #20]
+vstr.32 s30, [r14, #24]
+vstr.32 s29, [r14, #28]
+vstr.32 s28, [r14, #0]
+vstr.32 s27, [r14, #4]
+vstr.32 s26, [r14, #8]
+vstr.32 s25, [r14, #12]
 sub r14, r14, #2080
-add r14, r14, #2084
-vstr.32 s27, [r14]
-sub r14, r14, #2084
-add r14, r14, #2088
-vstr.32 s26, [r14]
-sub r14, r14, #2088
-add r14, r14, #2092
-vstr.32 s25, [r14]
-sub r14, r14, #2092
 vpop {d8-d15}
 pop {r0-r12, r14}
 bx lr

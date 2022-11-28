@@ -116,16 +116,42 @@ def gen_unrolled_asm():
             code += xor(dst_reg, src_reg)
 
         # time to store
+        outbounds = []
         if r_count <= 0:
             for reg in registers:
-                code += store(reg)
-                
+                # when storing s registers the maximum offset is +- 1020
+                if reg[0][0] == 's' and reg[1]*4 > 1020:
+                    outbounds.append(reg)
+                else:
+                    code += store(reg)
+
+            if len(outbounds) > 0:
+                offset = min(outbounds, key=lambda x: x[1])[1]
+                code += "add r14, r14, #{}\n".format(offset*4)
+                for reg in outbounds:
+                    newreg = (reg[0], reg[1]-offset)
+                    code += store(newreg)
+                code += "sub r14, r14, #{}\n".format(offset*4)
+
             registers = []
             r_count = 12
             s_count = 31
     
+    outbounds = []
     for reg in registers:
-        code += store(reg)  
+        # when storing s registers the maximum offset is +- 1020
+        if reg[0][0] == 's' and reg[1]*4 > 1020:
+            outbounds.append(reg)
+        else:
+            code += store(reg)
+
+    if len(outbounds) > 0:
+            offset = min(outbounds, key=lambda x: x[1])[1]
+            code += "add r14, r14, #{}\n".format(offset*4)
+            for reg in outbounds:
+                newreg = (reg[0], reg[1]-offset)
+                code += store(newreg)
+            code += "sub r14, r14, #{}\n".format(offset*4)
 
     code += "vpop {d8-d15}\n"
     code += "pop {r0-r12, r14}\n"
