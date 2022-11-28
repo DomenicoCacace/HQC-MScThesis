@@ -84,21 +84,28 @@ def gen_unrolled_asm():
     r_count = 12
     s_registers = True
     registers = []
-    dst_reg = "r0"
+    
     for pair in pairs:
-
+        srcInReg = False
         # check if the source has been modified and not stored in memory
         for r in registers:
             if pair[1] == r[1]:
-                code += store(r)
+                srcInReg = True
+                if r[0][0] == "r":
+                    src_reg = r[0]
+                else:
+                    src_reg = "r0"
+                    code += mov(src_reg, r[0])
+                break
 
         # s registers available
         if s_count >= 0:            
             dst_reg = "r1"
             code += load(dst_reg, pair[0])
 
-            src_reg = "r0"
-            code += load(src_reg, pair[1])
+            if not srcInReg:
+                src_reg = "r0"
+                code += load(src_reg, pair[1])
 
             code += xor(dst_reg, src_reg)
 
@@ -111,8 +118,9 @@ def gen_unrolled_asm():
             dst_reg = "r{}".format(r_count)
             code += load(dst_reg, pair[0])
 
-            src_reg = "r0"
-            code += load(src_reg, pair[1])
+            if not srcInReg:
+                src_reg = "r0"
+                code += load(src_reg, pair[1])
             code += xor(dst_reg, src_reg)
 
             registers.append((dst_reg, pair[0]))
