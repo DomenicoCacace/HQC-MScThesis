@@ -1199,11 +1199,11 @@ void bc_1_32768(uint32_t *poly) {
 
     cvt_to_fft(poly);
 
-    bc_1_256(poly, 32768 / 256);
+    bc_1_256(poly, CEIL_DIVIDE(PARAM_N, 256));
 }
 
 void ibc_1_65536(uint32_t *poly) {
-    ibc_1_256(poly, 65536 / 256);
+    ibc_1_256(poly, CEIL_DIVIDE(PARAM_N*2, 256));
 
     icvt_to_poly_256_65536(poly);
 
