@@ -10,6 +10,7 @@ if env.IsIntegrationDump():
 
 print("Security level: manually set to 128")
 env.Append(CPPDEFINES=[("SECURITY_LEVEL", 128)])
+env.Append(CPPDEFINES=[("_M4_ASM_", 1)])
 
 print("Communication Interface\n[0] STLINK (Default)\n[1] USART2")
 try:

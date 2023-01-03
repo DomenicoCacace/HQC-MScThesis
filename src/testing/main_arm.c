@@ -15,7 +15,7 @@ void kem_timing(void);
 void mul_timing(void);
 #endif
 
-#define BATCH_SIZE 1000
+#define BATCH_SIZE 3
 
 int main(void) {
   setup_board();
@@ -128,17 +128,18 @@ void pke_timing() {
   debug("Passed/Total: %d/%d\n\n", passed, BATCH_SIZE);
   debug("Algorithm\tExec Time\t\tVariance\n");
   debug("Encrypt\t\t");
-	welford_print(encrypt);
+  welford_print(encrypt);
   debug("Decrypt\t\t");
-	welford_print(decrypt);
+  welford_print(decrypt);
 }
 
 void mul_timing() {
 	#define MUL_ORIGINAL vect_mul
-	#define MUL_OPTIMIZED vect_mul
+	#define MUL_OPTIMIZED opt_mul
 
 	uint64_t u[VEC_N_SIZE_64] = {0};
 	uint32_t y[PARAM_OMEGA] = {0};
+    uint64_t y_dense[VEC_N_SIZE_64] = {0};
 	uint64_t res_original[VEC_N_SIZE_64] = {0};
 	uint64_t res_optimized[VEC_N_SIZE_64] = {0};
 	unsigned char sk[SECRET_KEY_BYTES];	// TODO check if can be removed
@@ -159,16 +160,32 @@ void mul_timing() {
 	for(int i = 0; i < BATCH_SIZE; i++) {
 		vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
 		vect_set_random_from_prng(u);
+		memset(res_original, 0, VEC_N_SIZE_BYTES);
+		memset(res_optimized, 0, VEC_N_SIZE_BYTES);
+		memset(y_dense, 0, VEC_N_SIZE_BYTES);
 
+
+        for (size_t j = 0; j < PARAM_OMEGA; ++j) {
+            int32_t index = y[j] / 64;
+            int32_t pos = y[j] % 64;
+            y_dense[index] |= ((uint64_t) 1) << pos;
+        }
 		start = get_systick();
 		MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
 		end = get_systick();
 		welford_update(&mul_original, ((long double)(end-start)));
 
+
+
 		start = get_systick();
-		MUL_OPTIMIZED(res_optimized, y, u, PARAM_OMEGA, &seedexpander);
+		MUL_OPTIMIZED(res_optimized, (uint32_t*)y_dense, u);
 		end = get_systick();
 		welford_update(&mul_optimized, ((long double)(end-start)));
+
+		uint64_t diff[VEC_N_SIZE_64] = {0};
+		vect_add(diff, res_original, res_optimized, VEC_N_SIZE_64);
+		
+
 
 		if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0) {
 			passed++;
