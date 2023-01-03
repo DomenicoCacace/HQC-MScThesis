@@ -171,9 +171,9 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
  * @param[in] ctx Pointer to the randomness context
  */
 void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2) {
-    uint32_t a1_m[65536/32] = {0};
-    uint32_t a2_m[65536/32] = {0};
-    uint64_t res[65536/32*2] = {0};
+    uint32_t a1_m[32768/32] = {0};
+    uint32_t a2_m[32768/32] = {0};
+    uint64_t res[32768/32*2] = {0};
     memcpy(a1_m, a1, VEC_N_SIZE_BYTES);
     memcpy(a2_m, a2, VEC_N_SIZE_BYTES);
 
