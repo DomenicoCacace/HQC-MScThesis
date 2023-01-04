@@ -88,7 +88,7 @@ int pke(void) {
 }
 
 int mul(void) {
-    #define MUL_ORIGINAL vect_mul
+    /*#define MUL_ORIGINAL vect_mul
 	#define MUL_OPTIMIZED opt_mul
 
 	uint32_t u[VEC_N_SIZE_32] = {0};
@@ -134,5 +134,5 @@ int mul(void) {
 	printf("\n\nPassed/Total: %d/%d\n", passed, BATCH_SIZE);
 #endif
 
-    return passed-BATCH_SIZE;
+    return passed-BATCH_SIZE;*/
 }

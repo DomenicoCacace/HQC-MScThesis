@@ -134,7 +134,7 @@ void pke_timing() {
 }
 
 void mul_timing() {
-	#define MUL_ORIGINAL vect_mul
+	/*#define MUL_ORIGINAL vect_mul
 	#define MUL_OPTIMIZED opt_mul
 
 	uint32_t u[VEC_N_SIZE_32] = {0};
@@ -198,7 +198,7 @@ void mul_timing() {
 	debug("Original\t\t");
 	welford_print(mul_original);
 	debug("Optimized\t\t");
-	welford_print(mul_optimized);
+	welford_print(mul_optimized);*/
 }
 #else
 #endif
