@@ -163,26 +163,36 @@ void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta
  */
 void hqc_pke_decrypt(uint32_t *m, const uint32_t *u, const uint32_t *v, const unsigned char *sk) {
     uint32_t x[VEC_N_SIZE_32] = {0};
-    uint32_t y[VEC_N_SIZE_32] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
-    uint32_t tmp1[VEC_N_SIZE_32] = {0};
-    uint32_t tmp2[VEC_N_SIZE_32] = {0};
+    shares_t y;
+    uint32_t _v[VEC_N_SIZE_32] = {0};
+    shares_t _m;
+    shares_t c;
+    shares_t tmp1;
 
     // Retrieve x, y, pk from secret key
-    hqc_secret_key_from_string(x, y, pk, sk);
+    shares_init(&y);
+    hqc_secret_key_from_string(x, y.s0, pk, sk);
+    shares_init_from_data(&y, y.s0);
+
+    // Compute u.y
+    shares_init(&tmp1);
+    shares_vec_mul(&tmp1, &y, u);
+
+    // Generate and encode a random codeword
+    shares_init_random(&_m);
+    shares_init(&c);
+    code_encode_shares(&c, &_m);
+
+    // Mask v with the encoded random codeword
+    vect_resize(_v, PARAM_N, v, PARAM_N1N2);
+    shares_collapse(_v, &c, _v);
 
     // Compute v - u.y
-    vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
-    opt_mul(tmp2, y, u);
-    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_32);
+    shares_collapse(_v, &tmp1, _v);
 
-    #ifdef VERBOSE
-        printf("\n\nu: "); vect_print(u, VEC_N_SIZE_BYTES);
-        printf("\n\nv: "); vect_print(v, VEC_N1N2_SIZE_BYTES);
-        printf("\n\ny: "); vect_print(y, VEC_N_SIZE_BYTES);
-        printf("\n\nv - u.y: "); vect_print(tmp2, VEC_N_SIZE_BYTES);
-    #endif
-
-    // Compute m by decoding v - u.y
-    code_decode(m, tmp2);
+    // Decode v - u.y
+    shares_init(&tmp1);
+    code_decode(tmp1.s0, _v);
+    shares_collapse(m, &_m, tmp1.s0);
 }
