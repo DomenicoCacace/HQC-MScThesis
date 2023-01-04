@@ -17,38 +17,20 @@
 
 
 #if SHARES == 1
-    typedef struct dense_shares_t {
+    typedef struct shares_t {
         uint64_t s0[VEC_N_SIZE_64];
-    } dense_shares_t;
-
-    typedef struct sparse_shares_t {
-        uint32_t s0[PARAM_OMEGA];
-    } sparse_shares_t;
-
-    typedef struct sparse_r_shares_t {
-        uint32_t s0[PARAM_OMEGA_R];
-    } sparse_r_shares_t;
+    } shares_t;
 #elif SHARES == 2
-    typedef struct dense_shares_t {
+    typedef struct shares_t {
         uint64_t s0[VEC_N_SIZE_64];
         uint64_t s1[VEC_N_SIZE_64];
-    } dense_shares_t;
-
-    typedef struct sparse_shares_t {
-        uint32_t s0[PARAM_OMEGA];
-        uint32_t s1[PARAM_OMEGA];
-    } sparse_shares_t;
-
-    typedef struct sparse_r_shares_t {
-        uint32_t s0[PARAM_OMEGA_R];
-        uint32_t s1[PARAM_OMEGA_R];
-    } sparse_r_shares_t;
+    } shares_t;
 #else
 #error TOO_MANY_SHARES
 #endif
 
 static inline
-void dense_shares_init_from_data(sparse_shares_t *o, const uint64_t *data) {
+void shares_init_from_data(shares_t *o, const uint64_t *data) {
     uint64_t mask[VEC_N_SIZE_64];
     RANDOM_BYTES((uint8_t *)mask, VEC_N_SIZE_BYTES);
 
@@ -64,7 +46,7 @@ void dense_shares_init_from_data(sparse_shares_t *o, const uint64_t *data) {
 }
 
 static inline
-void dense_shares_init_random(dense_shares_t *o) {
+void shares_init_random(shares_t *o) {
 #if SHARES == 1
     RANDOM_BYTES((uint8_t *)o->s0, VEC_N_SIZE_BYTES);
 #elif SHARES == 2
@@ -74,57 +56,7 @@ void dense_shares_init_random(dense_shares_t *o) {
 }
 
 static inline
-void sparse_shares_init_from_data(sparse_shares_t *o, const uint32_t *data) {
-    uint8_t seed[SEED_BYTES] = {0};
-    seedexpander_state seedexpander;
-    RANDOM_BYTES(seed, SEED_BYTES);
-    seedexpander_init(&seedexpander, seed, SEED_BYTES);
-
-#if SHARES == 1
-    for(int i = 0; i < PARAM_OMEGA; i++)
-        o->s0[i] = data[i];
-#elif SHARES == 2
-    memcpy(o->s0, data, PARAM_OMEGA * sizeof(uint32_t));
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s1, PARAM_OMEGA);
-    // TODO: swap randomly positions of mask and data
-#endif
-}
-
-static inline
-void sparse_shares_init_random(sparse_shares_t *o) {
-    uint8_t seed[SEED_BYTES] = {0};
-    seedexpander_state seedexpander;
-    RANDOM_BYTES(seed, SEED_BYTES);
-    seedexpander_init(&seedexpander, seed, SEED_BYTES);
-
-#if SHARES == 1
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s0, PARAM_OMEGA);
-#elif SHARES == 2
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s0, PARAM_OMEGA);
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s1, PARAM_OMEGA);
-    // TODO: swap randomly positions of mask and data
-#endif
-}
-
-static inline
-void sparse_r_shares_init_random(sparse_r_shares_t *o) {
-    uint8_t seed[SEED_BYTES] = {0};
-    seedexpander_state seedexpander;
-    RANDOM_BYTES(seed, SEED_BYTES);
-    seedexpander_init(&seedexpander, seed, SEED_BYTES);
-
-#if SHARES == 1
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s0, PARAM_OMEGA_R);
-#elif SHARES == 2
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s0, PARAM_OMEGA_R);
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, o->s1, PARAM_OMEGA_R);
-    // TODO: swap randomly positions of mask and data
-#endif
-}
-
-
-static inline
-void dense_shares_add(dense_shares_t *o, dense_shares_t *a, dense_shares_t *b) {
+void shares_add(shares_t *o, shares_t *a, shares_t *b) {
     uint64_t mask[VEC_N_SIZE_64];
     RANDOM_BYTES((uint8_t *)mask, VEC_N_SIZE_BYTES);
 #if SHARES == 1
@@ -139,37 +71,17 @@ void dense_shares_add(dense_shares_t *o, dense_shares_t *a, dense_shares_t *b) {
 }
 
 static inline
-void dense_sparse_shares_mul(dense_shares_t *o, sparse_shares_t *a, uint64_t *b) {
-    uint8_t seed[SEED_BYTES] = {0};
-    seedexpander_state ctx;
-    RANDOM_BYTES(seed, SEED_BYTES);
-    seedexpander_init(&ctx, seed, SEED_BYTES);
-
+void shares_vec_mul(shares_t *o, shares_t *a, uint64_t *b) {
 #if SHARES == 1
-    vect_mul(o->s0, a-, b->s0, PARAM_OMEGA, ctx);
+    opt_mul(o->s0, a->s0, b);
 #elif SHARES == 2
-    vect_mul(o->s0, a->s0, b, PARAM_OMEGA, &ctx);
-    vect_mul(o->s1, a->s1, b, PARAM_OMEGA, &ctx);
-#endif
-}
-
-static inline
-void dense_sparse_r_shares_mul(dense_shares_t *o, sparse_r_shares_t *a, uint64_t *b) {
-    uint8_t seed[SEED_BYTES] = {0};
-    seedexpander_state ctx;
-    RANDOM_BYTES(seed, SEED_BYTES);
-    seedexpander_init(&ctx, seed, SEED_BYTES);
-
-#if SHARES == 1
-    vect_mul(o->s0, a-, b->s0, PARAM_OMEGA, ctx);
-#elif SHARES == 2
-    vect_mul(o->s0, a->s0, b, PARAM_OMEGA_R, &ctx);
-    vect_mul(o->s1, a->s1, b, PARAM_OMEGA_R, &ctx);
+    opt_mul(o->s0, a->s0, b);
+    opt_mul(o->s1, a->s1, b);
 #endif
 }
 
 static inline 
-void dense_shares_collapse(uint64_t *o, dense_shares_t *shares, uint64_t *v) {
+void shares_collapse(uint64_t *o, shares_t *shares, uint64_t *v) {
 #if SHARES == 1
     for(int i = 0; i < VEC_N_SIZE_64; i++)
         o[i] = v[i] ^ shares->s0[i];
