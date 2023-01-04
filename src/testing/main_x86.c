@@ -13,7 +13,7 @@ int pke(void);
 int mul(void);
 
 int main(void) {
-    return mul();
+    return kem();
 }
 
 int kem(void) {
@@ -58,7 +58,33 @@ int kem(void) {
 }
 
 int pke(void) {
-    return 0;
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    unsigned char sk[SECRET_KEY_BYTES];
+    uint64_t m_in[VEC_K_SIZE_64] = {0};
+	uint64_t m_out[VEC_K_SIZE_64] = {0};
+    uint8_t theta[SHAKE256_512_BYTES] = {0};
+    uint64_t u[VEC_N_SIZE_64] = {0};
+    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    shake256incctx shake256state;
+
+    int passed = 0;
+    printf("Running functional test - %d iterations \r\n\r\n", BATCH_SIZE);
+
+    for(int i = 0; i < BATCH_SIZE; i++) {
+
+        vect_set_random_from_prng(m_in);
+        shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        
+        hqc_pke_keygen(pk, sk);
+        hqc_pke_encrypt(u, v, m_in, theta, pk);
+        hqc_pke_decrypt(m_out, u, v, sk);
+
+        if (memcmp(m_in, m_out, VEC_K_SIZE_BYTES) == 0) {
+            passed++;
+        }
+    }
+    printf("Passed/Total: %d/%d\n", passed, BATCH_SIZE);
+    return passed-BATCH_SIZE;
 }
 
 int mul(void) {
