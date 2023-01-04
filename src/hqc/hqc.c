@@ -33,7 +33,7 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     uint8_t sk_seed[SEED_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
     uint64_t x[VEC_N_SIZE_64] = {0};
-    uint32_t y[PARAM_OMEGA] = {0};
+    uint64_t y[VEC_N_SIZE_64] = {0};
     uint64_t h[VEC_N_SIZE_64] = {0};
     uint64_t s[VEC_N_SIZE_64] = {0};
 
@@ -46,11 +46,11 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
 
     // Compute secret key
     vect_set_random_fixed_weight(&sk_seedexpander, x, PARAM_OMEGA);
-    vect_set_random_fixed_weight_by_coordinates(&sk_seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&sk_seedexpander, y, PARAM_OMEGA);
 
     // Compute public key
     vect_set_random(&pk_seedexpander, h);
-    vect_mul(s, y, h, PARAM_OMEGA, &sk_seedexpander);
+    opt_mul(s, y, h);
     vect_add(s, x, s, VEC_N_SIZE_64);
 
     // Parse keys to string
