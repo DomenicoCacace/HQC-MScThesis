@@ -30,6 +30,11 @@
 #endif
 
 static inline
+void shares_init(shares_t *o) {
+    memset(o, 0, VEC_N_SIZE_BYTES * SHARES);
+}
+
+static inline
 void shares_init_from_data(shares_t *o, const uint64_t *data) {
     uint64_t mask[VEC_N_SIZE_64];
     RANDOM_BYTES((uint8_t *)mask, VEC_N_SIZE_BYTES);
