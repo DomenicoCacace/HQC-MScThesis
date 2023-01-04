@@ -9,6 +9,7 @@
 #include "../common/parsing.h"
 #include "../common/vector.h"
 #include "../fields/gf2x.h"
+#include "../fields/shares.h"
 #include "hqc.h"
 
 #ifdef VERBOSE
@@ -33,9 +34,12 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     uint8_t sk_seed[SEED_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
     uint64_t x[VEC_N_SIZE_64] = {0};
-    uint64_t y[VEC_N_SIZE_64] = {0};
+    shares_t y;
     uint64_t h[VEC_N_SIZE_64] = {0};
-    uint64_t s[VEC_N_SIZE_64] = {0};
+    shares_t s;
+
+    shares_init(&y);
+    shares_init(&s);
 
     // Create seed_expanders for public key and secret key
     shake_prng(sk_seed, SEED_BYTES);
@@ -46,15 +50,16 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
 
     // Compute secret key
     vect_set_random_fixed_weight(&sk_seedexpander, x, PARAM_OMEGA);
-    vect_set_random_fixed_weight(&sk_seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&sk_seedexpander, y.s0, PARAM_OMEGA);
+    shares_init_from_data(&y, y.s0);
 
     // Compute public key
     vect_set_random(&pk_seedexpander, h);
-    opt_mul(s, y, h);
-    vect_add(s, x, s, VEC_N_SIZE_64);
+    shares_vec_mul(&s, &y, h);
+    shares_collapse(s.s0, &s, x);
 
     // Parse keys to string
-    hqc_public_key_to_string(pk, pk_seed, s);
+    hqc_public_key_to_string(pk, pk_seed, s.s0);
     hqc_secret_key_to_string(sk, sk_seed, pk);
 
     #ifdef VERBOSE
