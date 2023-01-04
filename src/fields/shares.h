@@ -3,6 +3,7 @@
  * @brief Definitions of share types and relative operations
  */
 
+#pragma once
 
 #include <stdint.h>
 #include <string.h>
@@ -95,5 +96,26 @@ void shares_collapse(uint64_t *o, shares_t *shares, uint64_t *v) {
         o[i] = v[i] ^ shares->s0[i];
     for(int i = 0; i < VEC_N_SIZE_64; i++)
         o[i] = o[i] ^ shares->s1[i];
+#endif
+}
+
+static inline 
+void shares_collapse_nosum(uint64_t *o, shares_t *shares) {
+#if SHARES == 1
+    for(int i = 0; i < VEC_N_SIZE_64; i++)
+        o[i] = shares->s0[i];
+#elif SHARES == 2
+    for(int i = 0; i < VEC_N_SIZE_64; i++)
+        o[i] = shares->s0[i] ^ shares->s1[i];
+#endif
+}
+
+static inline
+void shares_resize(shares_t *o, uint32_t size_o, shares_t *v, uint32_t size_v) {
+#if SHARES == 1
+    vect_resize(o->s0, size_o, v->s0, size_v);
+#elif SHARES == 2
+    vect_resize(o->s0, size_o, v->s0, size_v);
+    vect_resize(o->s1, size_o, v->s1, size_v);
 #endif
 }

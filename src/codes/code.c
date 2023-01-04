@@ -37,6 +37,16 @@ void code_encode(uint64_t *em, const uint64_t *m) {
 	#endif
 }
 
+void code_encode_shares(shares_t *em, shares_t *m) {
+#if SHARES == 1
+    code_encode(em->s0, m->s0);
+#elif SHARES == 2
+    code_encode(em->s0, m->s0);
+	code_encode(em->s1, m->s1);
+#else
+#error TOO_MANY_SHARES
+#endif
+}
 
 
 /**

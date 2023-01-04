@@ -93,11 +93,20 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
     seedexpander_state seedexpander;
     uint64_t h[VEC_N_SIZE_64] = {0};
     uint64_t s[VEC_N_SIZE_64] = {0};
-    uint64_t r1[VEC_N_SIZE_64] = {0};
-    uint64_t r2[VEC_N_SIZE_64] = {0};
     uint64_t e[VEC_N_SIZE_64] = {0};
-    uint64_t tmp1[VEC_N_SIZE_64] = {0};
-    uint64_t tmp2[VEC_N_SIZE_64] = {0};
+    shares_t r1;
+    shares_t r2;
+    shares_t tmp1;
+    shares_t tmp2;
+    shares_t _v;
+    shares_t _m;
+
+    shares_init(&r1);
+    shares_init(&r2);
+    shares_init(&_v);
+    shares_init(&_m);
+    shares_init(&tmp1);
+    shares_init(&tmp2);
 
     // Create seed_expander from theta
     seedexpander_init(&seedexpander, theta, SEED_BYTES);
@@ -106,23 +115,27 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
     hqc_public_key_from_string(h, s, pk);
 
     // Generate r1, r2 and e
-    vect_set_random_fixed_weight(&seedexpander, r1, PARAM_OMEGA_R);
-    vect_set_random_fixed_weight(&seedexpander, r2, PARAM_OMEGA_R);
+    vect_set_random_fixed_weight(&seedexpander, r1.s0, PARAM_OMEGA_R);
+    vect_set_random_fixed_weight(&seedexpander, r2.s0, PARAM_OMEGA_R);
     vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
+    shares_init_from_data(&r1, r1.s0);
+    shares_init_from_data(&r2, r2.s0);
 
     // Compute u = r1 + r2.h
-    opt_mul(u, r2, h);
-    vect_add(u, r1, u, VEC_N_SIZE_64);
+    shares_vec_mul(&tmp1, &r2, h);
+    shares_add(&tmp1, &tmp1, &r1);
+    shares_collapse_nosum(u, &tmp1);
 
     // Compute v = m.G by encoding the message
-    code_encode(v, m);
-    vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
+    shares_init(&tmp1);
+    shares_init_from_data(&_m, m);
+    code_encode_shares(&_v, &_m);
+    shares_resize(&tmp1, PARAM_N, &_v, PARAM_N1N2);
 
     // Compute v = m.G + s.r2 + e
-    opt_mul(tmp2, r2, s);
-    vect_add(tmp2, e, tmp2, VEC_N_SIZE_64);
-    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_64);
-    vect_resize(v, PARAM_N1N2, tmp2, PARAM_N);
+    shares_vec_mul(&tmp2, &r2, s);
+    shares_add(&tmp1, &tmp1, &tmp2);
+    shares_collapse(v, &tmp1, e);
 
     #ifdef VERBOSE
         printf("\n\nh: "); vect_print(h, VEC_N_SIZE_BYTES);
