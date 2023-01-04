@@ -25,8 +25,8 @@
  * @param[out] em Pointer to an array that is the tensor code word
  * @param[in] m Pointer to an array that is the message
  */
-void code_encode(uint64_t *em, const uint64_t *m) {
-	uint64_t tmp[VEC_N1_SIZE_64] = {0};
+void code_encode(uint32_t *em, const uint32_t *m) {
+	uint32_t tmp[VEC_N1_SIZE_32] = {0};
 
 	reed_solomon_encode(tmp, m);
 	reed_muller_encode(em, tmp);
@@ -55,8 +55,8 @@ void code_encode_shares(shares_t *em, shares_t *m) {
  * @param[out] m Pointer to an array that is the message
  * @param[in] em Pointer to an array that is the code word
  */
-void code_decode(uint64_t *m, const uint64_t *em) {
-	uint64_t tmp[VEC_N1_SIZE_64] = {0};
+void code_decode(uint32_t *m, const uint32_t *em) {
+	uint32_t tmp[VEC_N1_SIZE_32] = {0};
 
 	reed_muller_decode(tmp, em);
     reed_solomon_decode(m, tmp);

@@ -63,7 +63,7 @@ else:
     print("[2] Multiplication")
     executables = input("Select executables to run: \n")
     if executables == "":
-        executables = "2"   
+        executables = "0"   
     executables = executables.split()
     executables = [x for x in executables if x != " "]
     executables = [int(x) for x in executables]

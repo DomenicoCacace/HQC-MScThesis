@@ -55,9 +55,9 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     #endif
 
     uint8_t theta[SHAKE256_512_BYTES] = {0};
-    uint64_t m[VEC_K_SIZE_64] = {0};
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    uint32_t m[VEC_K_SIZE_32] = {0};
+    uint32_t u[VEC_N_SIZE_32] = {0};
+    uint32_t v[VEC_N1N2_SIZE_32] = {0};
     uint8_t d[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
     shake256incctx shake256state;
@@ -111,14 +111,14 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     #endif
 
     uint8_t result;
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    uint32_t u[VEC_N_SIZE_32] = {0};
+    uint32_t v[VEC_N1N2_SIZE_32] = {0};
     uint8_t d[SHAKE256_512_BYTES] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
-    uint64_t m[VEC_K_SIZE_64] = {0};
+    uint32_t m[VEC_K_SIZE_32] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
-    uint64_t u2[VEC_N_SIZE_64] = {0};
-    uint64_t v2[VEC_N1N2_SIZE_64] = {0};
+    uint32_t u2[VEC_N_SIZE_32] = {0};
+    uint32_t v2[VEC_N1N2_SIZE_32] = {0};
     uint8_t d2[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
     shake256incctx shake256state;

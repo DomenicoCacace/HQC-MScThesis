@@ -87,11 +87,11 @@ void kem_timing() {
 void pke_timing() {
 	unsigned char pk[PUBLIC_KEY_BYTES];
   unsigned char sk[SECRET_KEY_BYTES];
-  uint64_t m_in[VEC_K_SIZE_64] = {0};
-	uint64_t m_out[VEC_K_SIZE_64] = {0};
+  uint32_t m_in[VEC_K_SIZE_32] = {0};
+	uint32_t m_out[VEC_K_SIZE_32] = {0};
   uint8_t theta[SHAKE256_512_BYTES] = {0};
-  uint64_t u[VEC_N_SIZE_64] = {0};
-  uint64_t v[VEC_N1N2_SIZE_64] = {0};
+  uint32_t u[VEC_N_SIZE_32] = {0};
+  uint32_t v[VEC_N1N2_SIZE_32] = {0};
   shake256incctx shake256state;
 
   welford_t encrypt;
@@ -137,11 +137,11 @@ void mul_timing() {
 	#define MUL_ORIGINAL vect_mul
 	#define MUL_OPTIMIZED opt_mul
 
-	uint64_t u[VEC_N_SIZE_64] = {0};
+	uint32_t u[VEC_N_SIZE_32] = {0};
 	uint32_t y[PARAM_OMEGA] = {0};
-    uint64_t y_dense[VEC_N_SIZE_64] = {0};
-	uint64_t res_original[VEC_N_SIZE_64] = {0};
-	uint64_t res_optimized[VEC_N_SIZE_64] = {0};
+    uint32_t y_dense[VEC_N_SIZE_32] = {0};
+	uint32_t res_original[VEC_N_SIZE_32] = {0};
+	uint32_t res_optimized[VEC_N_SIZE_32] = {0};
 	unsigned char sk[SECRET_KEY_BYTES];	// TODO check if can be removed
 	seedexpander_state seedexpander;
 
@@ -168,7 +168,7 @@ void mul_timing() {
         for (size_t j = 0; j < PARAM_OMEGA; ++j) {
             int32_t index = y[j] / 64;
             int32_t pos = y[j] % 64;
-            y_dense[index] |= ((uint64_t) 1) << pos;
+            y_dense[index] |= ((uint32_t) 1) << pos;
         }
 		start = get_systick();
 		MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
@@ -182,8 +182,8 @@ void mul_timing() {
 		end = get_systick();
 		welford_update(&mul_optimized, ((long double)(end-start)));
 
-		uint64_t diff[VEC_N_SIZE_64] = {0};
-		vect_add(diff, res_original, res_optimized, VEC_N_SIZE_64);
+		uint32_t diff[VEC_N_SIZE_32] = {0};
+		vect_add(diff, res_original, res_optimized, VEC_N_SIZE_32);
 		
 
 

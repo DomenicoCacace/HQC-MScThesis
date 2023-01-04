@@ -11,7 +11,7 @@
 
 #include "../common/parameters.h"
 
-void reed_muller_encode(uint64_t* cdw, const uint64_t* msg);
-void reed_muller_decode(uint64_t* msg, const uint64_t* cdw);
+void reed_muller_encode(uint32_t* cdw, const uint32_t* msg);
+void reed_muller_decode(uint32_t* msg, const uint32_t* cdw);
 
 #endif

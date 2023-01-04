@@ -33,9 +33,9 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     seedexpander_state pk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
-    uint64_t x[VEC_N_SIZE_64] = {0};
+    uint32_t x[VEC_N_SIZE_32] = {0};
     shares_t y;
-    uint64_t h[VEC_N_SIZE_64] = {0};
+    uint32_t h[VEC_N_SIZE_32] = {0};
     shares_t s;
 
     shares_init(&y);
@@ -89,11 +89,11 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
  * @param[in] theta Seed used to derive randomness required for encryption
  * @param[in] pk String containing the public key
  */
-void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta, const unsigned char *pk) {
+void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta, const unsigned char *pk) {
     seedexpander_state seedexpander;
-    uint64_t h[VEC_N_SIZE_64] = {0};
-    uint64_t s[VEC_N_SIZE_64] = {0};
-    uint64_t e[VEC_N_SIZE_64] = {0};
+    uint32_t h[VEC_N_SIZE_32] = {0};
+    uint32_t s[VEC_N_SIZE_32] = {0};
+    uint32_t e[VEC_N_SIZE_32] = {0};
     shares_t r1;
     shares_t r2;
     shares_t tmp1;
@@ -161,12 +161,12 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
  * @param[in] v Vector v (second part of the ciphertext)
  * @param[in] sk String containing the secret key
  */
-void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const unsigned char *sk) {
-    uint64_t x[VEC_N_SIZE_64] = {0};
-    uint64_t y[VEC_N_SIZE_64] = {0};
+void hqc_pke_decrypt(uint32_t *m, const uint32_t *u, const uint32_t *v, const unsigned char *sk) {
+    uint32_t x[VEC_N_SIZE_32] = {0};
+    uint32_t y[VEC_N_SIZE_32] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
-    uint64_t tmp1[VEC_N_SIZE_64] = {0};
-    uint64_t tmp2[VEC_N_SIZE_64] = {0};
+    uint32_t tmp1[VEC_N_SIZE_32] = {0};
+    uint32_t tmp2[VEC_N_SIZE_32] = {0};
 
     // Retrieve x, y, pk from secret key
     hqc_secret_key_from_string(x, y, pk, sk);
@@ -174,7 +174,7 @@ void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const un
     // Compute v - u.y
     vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
     opt_mul(tmp2, y, u);
-    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_64);
+    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_32);
 
     #ifdef VERBOSE
         printf("\n\nu: "); vect_print(u, VEC_N_SIZE_BYTES);

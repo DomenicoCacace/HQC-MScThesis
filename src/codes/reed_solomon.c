@@ -84,10 +84,10 @@ void compute_generator_poly(uint16_t* poly) {
  * We perform a systematic encoding using a linear (PARAM_N1 - PARAM_K)-stage shift register
  * with feedback connections based on the generator polynomial PARAM_RS_POLY of the Reed-Solomon code.
  *
- * @param[out] cdw Array of size VEC_N1_SIZE_64 receiving the encoded message
- * @param[in] msg Array of size VEC_K_SIZE_64 storing the message
+ * @param[out] cdw Array of size VEC_N1_SIZE_32 receiving the encoded message
+ * @param[in] msg Array of size VEC_K_SIZE_32 storing the message
  */
-void reed_solomon_encode(uint64_t *cdw, const uint64_t *msg) {
+void reed_solomon_encode(uint32_t *cdw, const uint32_t *msg) {
     size_t i, j, k;
     uint8_t gate_value = 0;
 
@@ -371,10 +371,10 @@ static void correct_errors(uint8_t *cdw, const uint16_t *error_values) {
  *    </ol>
  * For a more complete picture on Reed-Solomon decoding, see Shu. Lin and Daniel J. Costello in Error Control Coding: Fundamentals and Applications @cite lin1983error
  *
- * @param[out] msg Array of size VEC_K_SIZE_64 receiving the decoded message
- * @param[in] cdw Array of size VEC_N1_SIZE_64 storing the received word
+ * @param[out] msg Array of size VEC_K_SIZE_32 receiving the decoded message
+ * @param[in] cdw Array of size VEC_N1_SIZE_32 storing the received word
  */
-void reed_solomon_decode(uint64_t *msg, uint64_t *cdw) {
+void reed_solomon_decode(uint32_t *msg, uint32_t *cdw) {
     uint8_t cdw_bytes[PARAM_N1] = {0};
     uint16_t syndromes[2 * PARAM_DELTA] = {0};
     uint16_t sigma[1 << PARAM_FFT] = {0};

@@ -13,7 +13,7 @@
 #include "../fields/shares.h"
 
 void code_encode_shares(shares_t *codeword, shares_t *message);
-void code_encode(uint64_t *codeword, const uint64_t *message);
-void code_decode(uint64_t *message, const uint64_t *vector);
+void code_encode(uint32_t *codeword, const uint32_t *message);
+void code_decode(uint32_t *message, const uint32_t *vector);
 
 #endif

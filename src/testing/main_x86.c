@@ -60,11 +60,11 @@ int kem(void) {
 int pke(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
-    uint64_t m_in[VEC_K_SIZE_64] = {0};
-	uint64_t m_out[VEC_K_SIZE_64] = {0};
+    uint32_t m_in[VEC_K_SIZE_32] = {0};
+	uint32_t m_out[VEC_K_SIZE_32] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    uint32_t u[VEC_N_SIZE_32] = {0};
+    uint32_t v[VEC_N1N2_SIZE_32] = {0};
     shake256incctx shake256state;
 
     int passed = 0;
@@ -91,10 +91,10 @@ int mul(void) {
     #define MUL_ORIGINAL vect_mul
 	#define MUL_OPTIMIZED opt_mul
 
-	uint64_t u[VEC_N_SIZE_64] = {0};
+	uint32_t u[VEC_N_SIZE_32] = {0};
 	uint32_t y[PARAM_OMEGA] = {0};
-	uint64_t res_original[VEC_N_SIZE_64] = {0};
-	uint64_t res_optimized[VEC_N_SIZE_64] = {0};
+	uint32_t res_original[VEC_N_SIZE_32] = {0};
+	uint32_t res_optimized[VEC_N_SIZE_32] = {0};
 	unsigned char sk[SECRET_KEY_BYTES];	// TODO check if can be removed
 	seedexpander_state seedexpander;
 
@@ -106,11 +106,11 @@ int mul(void) {
 		vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
 		vect_generate_random_for_mult(u);
 
-        uint64_t y_dense[VEC_N_SIZE_64] = {0};
+        uint32_t y_dense[VEC_N_SIZE_32] = {0};
         for (size_t j = 0; j < PARAM_OMEGA; ++j) {
             int32_t index = y[j] / 64;
             int32_t pos = y[j] % 64;
-            y_dense[index] |= ((uint64_t) 1) << pos;
+            y_dense[index] |= ((uint32_t) 1) << pos;
         }
 
         MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
@@ -118,13 +118,13 @@ int mul(void) {
 
 #ifdef VERBOSE
     printf("\n\nu: ");
-    for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", u[j]);
+    for(int j = 0 ; j < VEC_N_SIZE_32 ; ++j) printf("%02lx ", u[j]);
     printf("\r\ny: ");
     for(int j = 0 ; j < PARAM_OMEGA ; ++j) printf("%d ", y[j]);
     printf("\r\n res_original: ");
-    for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_original[j]);
+    for(int j = 0 ; j < VEC_N_SIZE_32 ; ++j) printf("%02lx ", res_original[j]);
     printf("\r\nres_optimized: ");
-    for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_optimized[j]);
+    for(int j = 0 ; j < VEC_N_SIZE_32 ; ++j) printf("%02lx ", res_optimized[j]);
 #endif
         if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0) {
             passed++;

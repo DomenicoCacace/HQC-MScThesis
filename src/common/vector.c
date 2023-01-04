@@ -80,7 +80,7 @@ void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32
  * @param[in] weight Integer that is the Hamming weight
  * @param[in] ctx Pointer to the context of the seed expander
  */
-void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t weight) {
+void vect_set_random_fixed_weight(seedexpander_state *ctx, uint32_t *v, uint16_t weight) {
     uint32_t tmp[PARAM_OMEGA_R] = {0};
 
     vect_set_random_fixed_weight_by_coordinates(ctx, tmp, weight);
@@ -88,7 +88,7 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t
     for (size_t i = 0; i < weight; ++i) {
         int32_t index = tmp[i] / 64;
         int32_t pos = tmp[i] % 64;
-        v[index] |= ((uint64_t) 1) << pos;
+        v[index] |= ((uint32_t) 1) << pos;
     }
 }
 
@@ -103,13 +103,13 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t
  * @param[in] v Pointer to an array
  * @param[in] ctx Pointer to the context of the seed expander
  */
-void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
+void vect_set_random(seedexpander_state *ctx, uint32_t *v) {
     uint8_t rand_bytes[VEC_N_SIZE_BYTES] = {0};
 
     seedexpander(ctx, rand_bytes, VEC_N_SIZE_BYTES);
 
     memcpy(v, rand_bytes, VEC_N_SIZE_BYTES);
-    v[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, 64);
+    v[VEC_N_SIZE_32 - 1] &= BITMASK(PARAM_N, 64);
 }
 
 
@@ -121,13 +121,13 @@ void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
  *
  * @param[in] v Pointer to an array
  */
-void vect_set_random_from_prng(uint64_t *v) {
+void vect_set_random_from_prng(uint32_t *v) {
     uint8_t rand_bytes [VEC_K_SIZE_BYTES] = {0};
 
     shake_prng(rand_bytes, VEC_K_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_K_SIZE_BYTES);
 }
-void vect_generate_random_for_mult(uint64_t *v) {
+void vect_generate_random_for_mult(uint32_t *v) {
     uint8_t rand_bytes [VEC_N_SIZE_BYTES] = {0};
 
     shake_prng(rand_bytes, VEC_N_SIZE_BYTES);
@@ -142,7 +142,7 @@ void vect_generate_random_for_mult(uint64_t *v) {
  * @param[in] v2 Pointer to an array that is the second vector
  * @param[in] size Integer that is the size of the vectors
  */
-void vect_add(uint64_t *o, const uint64_t *v1, const uint64_t *v2, uint32_t size) {
+void vect_add(uint32_t *o, const uint32_t *v1, const uint32_t *v2, uint32_t size) {
     for (uint32_t i = 0 ; i < size ; ++i) {
         o[i] = v1[i] ^ v2[i];
     }
@@ -158,7 +158,7 @@ void vect_add(uint64_t *o, const uint64_t *v1, const uint64_t *v2, uint32_t size
  * @returns 0 if the vectors are equals and a negative/psotive value otherwise
  */
 uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size) {
-    uint64_t r = 0;
+    uint32_t r = 0;
 
     for (size_t i = 0; i < size; i++) {
         r |= v1[i] ^ v2[i];
@@ -178,8 +178,8 @@ uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size) {
  * @param[in] v Pointer to the input vector
  * @param[in] size_v Integer that is the size of the input vector in bits
  */
-void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_v) {
-    uint64_t mask = 0x7FFFFFFFFFFFFFFF;
+void vect_resize(uint32_t *o, uint32_t size_o, const uint32_t *v, uint32_t size_v) {
+    uint32_t mask = 0x7FFFFFFF;
     int8_t val = 0;
     if (size_o < size_v) {
 
@@ -190,7 +190,7 @@ void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_
         memcpy(o, v, VEC_N1N2_SIZE_BYTES);
 
         for (int8_t i = 0 ; i < val ; ++i) {
-            o[VEC_N1N2_SIZE_64 - 1] &= (mask >> i);
+            o[VEC_N1N2_SIZE_32 - 1] &= (mask >> i);
         }
     } else {
         memcpy(o, v, CEIL_DIVIDE(size_v, 8));
@@ -205,7 +205,7 @@ void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_
  * @param[in] v Pointer to an array of bytes
  * @param[in] size Integer that is number of bytes to be displayed
  */
-void vect_print(const uint64_t *v, const uint32_t size) {
+void vect_print(const uint32_t *v, const uint32_t size) {
     if(size == VEC_K_SIZE_BYTES) {
         uint8_t tmp [VEC_K_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_K_SIZE_BYTES);

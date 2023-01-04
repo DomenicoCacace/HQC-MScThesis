@@ -21,8 +21,8 @@
     #error INVALID SECURITY LEVEL
 #endif
 
-void reed_solomon_encode(uint64_t* cdw, const uint64_t* msg);
-void reed_solomon_decode(uint64_t* msg, uint64_t* cdw);
+void reed_solomon_encode(uint32_t* cdw, const uint32_t* msg);
+void reed_solomon_decode(uint32_t* msg, uint32_t* cdw);
 
 void compute_generator_poly(uint16_t* poly);
 
