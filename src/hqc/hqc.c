@@ -135,7 +135,8 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
     // Compute v = m.G + s.r2 + e
     shares_vec_mul(&tmp2, &r2, s);
     shares_add(&tmp1, &tmp1, &tmp2);
-    shares_collapse(v, &tmp1, e);
+    shares_collapse(tmp1.s0, &tmp1, e);
+    vect_resize(v, PARAM_N1N2, tmp1.s0, PARAM_N);
 
     #ifdef VERBOSE
         printf("\n\nh: "); vect_print(h, VEC_N_SIZE_BYTES);
