@@ -51,11 +51,19 @@ def gen_code(ops):
                 newDst.memLoc = dst.memLoc
                 newDst.ref = op.ref
                 code += mov(newDst, dst)
+        elif isinstance(op, Zero):
+            dst = reg.getRegisterR()
+            dst.ref = op.ref
+            code += mov(dst, "#0")
+            reg.setZero(dst)
+        elif isinstance(op, Discard):
+            toFree = reg.getRegisterByRef(op.src_reg)
+            reg.freeRegister(toFree)
         elif isinstance(op, Store):
             # find out how many registers are needed to perform
             # the operations up to the next store
             
-
+            """
             requiredRegs = 0
             for op2 in ops[ops.index(op)+1:]:
                 if isinstance(op2, Load):
@@ -64,7 +72,7 @@ def gen_code(ops):
                     break
                 else:
                     requiredRegs += 1
-            
+            """
             toStore = reg.getRegisterByRef(op.src_reg, onlyR=False)
             
             code += store(toStore)
@@ -107,13 +115,25 @@ def gen_code(ops):
             dst = reg.getRegisterByRef(op.op1, onlyR=True)
             src = reg.getRegisterByRef(op.op2, onlyR=True)
             code += xor(dst, dst, src)
-            dst.memLoc = dst.memLoc
             dst.ref = op.ref
-            reg.freeRegister(src)
+            #reg.freeRegister(src)
         elif isinstance(op, LShift):
-            pass
+            if isinstance(op.op1, Zero):
+                reg.Zero.ref = op.ref
+            else:
+                dst = reg.getRegisterByRef(op.op1, onlyR=True)
+                code += lshift(dst, dst, op.amount)
+                dst.ref = op.ref
         elif isinstance(op, RShift):
-            pass
+            if isinstance(op.op1, Zero):
+                reg.Zero.ref = op.ref
+            else:
+                dst = reg.getRegisterByRef(op.op1, onlyR=True)
+                if dst is None:
+                    IPython.embed()
+                code += rshift(dst, dst, op.amount)
+                dst.ref = op.ref
+            
     
     return code
 
@@ -123,6 +143,13 @@ class Instr:
     def __init__(self):
         self.ref = Instr.idx
         Instr.idx +=1
+
+class Zero(Instr):
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return "ZERO: %{}".format(self.ref)
 
 class Load(Instr):
     def __init__(self, src_offset):
@@ -140,6 +167,15 @@ class Store(Instr):
     
     def __str__(self):
         return "STORE: %{} -> [#{}]".format(self.src_reg, self.dest_offset)
+
+class Discard(Instr):
+    def __init__(self, src_reg):
+        super().__init__()
+        self.src_reg = src_reg
+    
+    def __str__(self):
+        return "DISCARD: %{} -> [#{}]".format(self.src_reg, self.dest_offset)
+
 
 class Xor(Instr):
     def __init__(self, op1, op2):

@@ -16,6 +16,7 @@ class RegisterBank:
     def __init__(self):
         self.regS = []
         self.regR = []
+        self.Zero = None
         for s in range(31, -1, -1):
             self.regS.append(Register("s{}".format(s)))
         for r in range(12+1):
@@ -39,6 +40,9 @@ class RegisterBank:
                 s.inUse = True
                 return s
     
+    def setZero(self, zero):
+        self.Zero = zero
+
     def freeRegister(self, reg):
         reg.inUse = False
         reg.ref = None

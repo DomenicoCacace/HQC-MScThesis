@@ -7,6 +7,12 @@ def xor(dst, op1, op2):
 def mov(dst, src):
     return "vmov {}, {}\n".format(dst, src)
 
+def lshift(dst, op1, amount):
+    return "lsl {}, {}, #{}\n".format(dst, op1, amount)
+
+def rshift(dst, op1, amount):
+    return "lsr {}, {}, #{}\n".format(dst, op1, amount)
+
 def storeAll(queue):
     outbounds = []
     code = ""

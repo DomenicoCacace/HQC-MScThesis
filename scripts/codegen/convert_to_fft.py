@@ -33,8 +33,9 @@ def gen_ops():
                         l1 = Load(src_idx)
                         l2 = Load(dst_idx)
                         x = Xor(l2.ref, l1.ref)
+                        d = Discard(l1.ref)
                         s = Store(dst_idx, x.ref)
-                        ops.extend([l2, l1, x, s])
+                        ops.extend([l2, l1, x, s, d])
                     else:
                         break
 
