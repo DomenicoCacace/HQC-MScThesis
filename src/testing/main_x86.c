@@ -10,7 +10,6 @@
 
 int kem(void);
 int pke(void);
-int mul(void);
 
 int main(void) {
     return kem();
@@ -87,52 +86,3 @@ int pke(void) {
     return passed-BATCH_SIZE;
 }
 
-int mul(void) {
-    /*#define MUL_ORIGINAL vect_mul
-	#define MUL_OPTIMIZED opt_mul
-
-	uint32_t u[VEC_N_SIZE_32] = {0};
-	uint32_t y[PARAM_OMEGA] = {0};
-	uint32_t res_original[VEC_N_SIZE_32] = {0};
-	uint32_t res_optimized[VEC_N_SIZE_32] = {0};
-	unsigned char sk[SECRET_KEY_BYTES];	// TODO check if can be removed
-	seedexpander_state seedexpander;
-
-	int passed = 0;
-
-	seedexpander_init(&seedexpander, sk, SEED_BYTES);
-
-	for(int i = 0; i < BATCH_SIZE; i++) {
-		vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
-		vect_generate_random_for_mult(u);
-
-        uint32_t y_dense[VEC_N_SIZE_32] = {0};
-        for (size_t j = 0; j < PARAM_OMEGA; ++j) {
-            int32_t index = y[j] / 64;
-            int32_t pos = y[j] % 64;
-            y_dense[index] |= ((uint32_t) 1) << pos;
-        }
-
-        MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
-		MUL_OPTIMIZED(res_optimized, (const uint32_t *) y_dense, u);
-
-#ifdef VERBOSE
-    printf("\n\nu: ");
-    for(int j = 0 ; j < VEC_N_SIZE_32 ; ++j) printf("%02lx ", u[j]);
-    printf("\r\ny: ");
-    for(int j = 0 ; j < PARAM_OMEGA ; ++j) printf("%d ", y[j]);
-    printf("\r\n res_original: ");
-    for(int j = 0 ; j < VEC_N_SIZE_32 ; ++j) printf("%02lx ", res_original[j]);
-    printf("\r\nres_optimized: ");
-    for(int j = 0 ; j < VEC_N_SIZE_32 ; ++j) printf("%02lx ", res_optimized[j]);
-#endif
-        if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0) {
-            passed++;
-        }
-	}
-#ifdef VERBOSE
-	printf("\n\nPassed/Total: %d/%d\n", passed, BATCH_SIZE);
-#endif
-
-    return passed-BATCH_SIZE;*/
-}
