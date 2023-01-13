@@ -12,7 +12,7 @@
 #include "../common/parameters.h"
 #include "../fields/shares.h"
 
-void code_encode_shares(shares_t *codeword, shares_t *message);
+void code_encode_shares(shares_n1n2_t *codeword, shares_k_t *message);
 void code_encode(uint32_t *codeword, const uint32_t *message);
 void code_decode(uint32_t *message, const uint32_t *vector);
 

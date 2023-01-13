@@ -34,12 +34,12 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     uint8_t sk_seed[SEED_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
     uint32_t x[VEC_N_SIZE_32] = {0};
-    shares_t y;
+    shares_n_t y;
     uint32_t h[VEC_N_SIZE_32] = {0};
-    shares_t s;
+    shares_n_t s;
 
-    shares_init(&y);
-    shares_init(&s);
+    shares_n_init(&y);
+    shares_n_init(&s);
 
     // Create seed_expanders for public key and secret key
     shake_prng(sk_seed, SEED_BYTES);
@@ -56,7 +56,7 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     // Compute public key
     vect_set_random(&pk_seedexpander, h);
     shares_vec_mul(&s, &y, h);
-    shares_collapse(s.s0, &s, x);
+    shares_n_collapse(s.s0, &s, x);
 
     // Parse keys to string
     hqc_public_key_to_string(pk, pk_seed, s.s0);
@@ -94,19 +94,19 @@ void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta
     uint32_t h[VEC_N_SIZE_32] = {0};
     uint32_t s[VEC_N_SIZE_32] = {0};
     uint32_t e[VEC_N_SIZE_32] = {0};
-    shares_t r1;
-    shares_t r2;
-    shares_t tmp1;
-    shares_t tmp2;
-    shares_t _v;
-    shares_t _m;
+    shares_n_t r1;
+    shares_n_t r2;
+    shares_n_t tmp1;
+    shares_n_t tmp2;
+    shares_n1n2_t _v;
+    shares_k_t _m;
 
-    shares_init(&r1);
-    shares_init(&r2);
-    shares_init(&_v);
-    shares_init(&_m);
-    shares_init(&tmp1);
-    shares_init(&tmp2);
+    shares_n_init(&r1);
+    shares_n_init(&r2);
+    shares_n1n2_init(&_v);
+    shares_k_init(&_m);
+    shares_n_init(&tmp1);
+    shares_n_init(&tmp2);
 
     // Create seed_expander from theta
     seedexpander_init(&seedexpander, theta, SEED_BYTES);
@@ -127,15 +127,15 @@ void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta
     shares_collapse_nosum(u, &tmp1);
 
     // Compute v = m.G by encoding the message
-    shares_init(&tmp1);
-    shares_init_from_data(&_m, m);
+    shares_n_init(&tmp1);
+    shares_init_from_msg(&_m, m);
     code_encode_shares(&_v, &_m);
-    shares_resize(&tmp1, PARAM_N, &_v, PARAM_N1N2);
+    shares_resize_n(&tmp1, &_v);
 
     // Compute v = m.G + s.r2 + e
     shares_vec_mul(&tmp2, &r2, s);
     shares_add(&tmp1, &tmp1, &tmp2);
-    shares_collapse(tmp1.s0, &tmp1, e);
+    shares_n_collapse(tmp1.s0, &tmp1, e);
     vect_resize(v, PARAM_N1N2, tmp1.s0, PARAM_N);
 
     #ifdef VERBOSE
@@ -164,35 +164,37 @@ void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta
 void hqc_pke_decrypt(uint32_t *m, const uint32_t *u, const uint32_t *v, const unsigned char *sk) {
     uint32_t x[VEC_N_SIZE_32] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
-    shares_t y;
+    shares_n_t y;
     uint32_t _v[VEC_N_SIZE_32] = {0};
-    shares_t _m;
-    shares_t c;
-    shares_t tmp1;
+    shares_k_t _m;
+    shares_n1n2_t c;
+    shares_n_t tmp1;
 
     // Retrieve x, y, pk from secret key
-    shares_init(&y);
+    shares_n_init(&y);
     hqc_secret_key_from_string(x, y.s0, pk, sk);
     shares_init_from_data(&y, y.s0);
 
-    // Compute u.y
-    shares_init(&tmp1);
-    shares_vec_mul(&tmp1, &y, u);
-
     // Generate and encode a random codeword
-    shares_init_random(&_m);
-    shares_init(&c);
+    shares_init_random_msg(&_m);
+    shares_n1n2_init(&c);
     code_encode_shares(&c, &_m);
 
     // Mask v with the encoded random codeword
+    shares_n_init(&tmp1);
     vect_resize(_v, PARAM_N, v, PARAM_N1N2);
-    shares_collapse(_v, &c, _v);
+    shares_resize_n(&tmp1, &c);
+    shares_n_collapse(_v, &tmp1, _v);
+
+    // Compute u.y
+    shares_n_init(&tmp1);
+    shares_vec_mul(&tmp1, &y, u);
 
     // Compute v - u.y
-    shares_collapse(_v, &tmp1, _v);
+    shares_n_collapse(_v, &tmp1, _v);
 
     // Decode v - u.y
-    shares_init(&tmp1);
-    code_decode(tmp1.s0, _v);
-    shares_collapse(m, &_m, tmp1.s0);
+    //shares_n_init(&tmp1);
+    code_decode(m, _v);
+    shares_collapse_msg(m, &_m, m);
 }

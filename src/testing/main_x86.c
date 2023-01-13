@@ -4,6 +4,7 @@
 #include "../common/parameters.h"
 #include "../common/vector.h"
 #include "../fields/gf2x.h"
+#include "../hqc/hqc.h"
 #include "../lib/shake_prng.h"
 
 #define BATCH_SIZE 10

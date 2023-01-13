@@ -37,7 +37,7 @@ void code_encode(uint32_t *em, const uint32_t *m) {
 	#endif
 }
 
-void code_encode_shares(shares_t *em, shares_t *m) {
+void code_encode_shares(shares_n1n2_t *em, shares_k_t *m) {
 #if SHARES == 1
     code_encode(em->s0, m->s0);
 #elif SHARES == 2
