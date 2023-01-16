@@ -819,9 +819,9 @@ void icvt_to_poly_256_65536(uint32_t *poly) {
 #undef DEG_L
 }
 
-
+#if !defined(_M4_ASM_)
 static
-void repr_s8_1_32768(uint32_t *poly) {
+void repr_s8(uint32_t *poly) {
     const unsigned w = 32768;
     uint32_t *ptr;
 
@@ -993,6 +993,7 @@ void repr_s8_1_32768(uint32_t *poly) {
         ptr += (512 / 32);
     }
 }
+#endif
 
 static
 void irepr_s8_1_65536(uint32_t *poly) {
@@ -1195,7 +1196,7 @@ void irepr_s8_1_65536(uint32_t *poly) {
 
 
 void bc_1_32768(uint32_t *poly) {
-    repr_s8_1_32768(poly);
+    repr_s8(poly);
 
     cvt_to_fft(poly);
 
