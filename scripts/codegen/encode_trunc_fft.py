@@ -6,11 +6,11 @@ MAXLEN = PARAM_N // 32
 
 
 def main():
-    # getdeps()
+    getdeps()
     ops = parse()
     code = gen_C(ops)
     print(code)
-    # clean()
+    clean()
 
 
 def gen_C(ops):
