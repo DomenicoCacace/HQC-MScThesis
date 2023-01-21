@@ -7,9 +7,10 @@
  */
 
 #include <stdint.h>
+#include <immintrin.h>
 
 void hqc_pke_keygen(unsigned char* pk, unsigned char* sk);
 void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta, const unsigned char *pk);
-void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const unsigned char *sk);
+void hqc_pke_decrypt(uint64_t *m, const __m256i *u_256, const uint64_t *v, const uint8_t *sk);
 
 #endif

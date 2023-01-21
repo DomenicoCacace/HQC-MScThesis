@@ -3,13 +3,13 @@
  * @brief Functions to parse secret key, public key and ciphertext of the HQC scheme
  */
 
-#include <stdint.h>
-#include <string.h>
-
+#include "../fields/fft.h"
+#include "../common/parameters.h"
 #include "../lib/shake_prng.h"
-#include "parameters.h"
 #include "parsing.h"
 #include "vector.h"
+#include <stdint.h>
+#include <string.h>
 
 
 /**
@@ -36,19 +36,19 @@ void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t
  * As technicality, the public key is appended to the secret key in order to respect NIST API.
  *
  * @param[out] x uint64_t representation of vector x
- * @param[out] y uint32_t representation of vector y
+ * @param[out] y uint64_t representation of vector y
  * @param[out] pk String containing the public key
  * @param[in] sk String containing the secret key
  */
-void hqc_secret_key_from_string(uint64_t *x, uint32_t *y, uint8_t *pk, const uint8_t *sk) {
+void hqc_secret_key_from_string(__m256i *x256, __m256i *y256, uint8_t *pk, const uint8_t *sk) {
     seedexpander_state sk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
 
     memcpy(sk_seed, sk, SEED_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
-    vect_set_random_fixed_weight(&sk_seedexpander, x, PARAM_OMEGA);
-    vect_set_random_fixed_weight_by_coordinates(&sk_seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&sk_seedexpander, x256, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&sk_seedexpander, y256, PARAM_OMEGA);
     memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
 }
 

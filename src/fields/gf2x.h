@@ -7,9 +7,8 @@
  */
 
 #include <stdint.h>
+#include <immintrin.h>
 
-#include "../lib/shake_prng.h"
-
-void vect_mul(uint64_t *o, const uint32_t *v1, const uint64_t *v2, const uint16_t weight, seedexpander_state *ctx);
+void vect_mul(__m256i *o, const __m256i *v1, const __m256i *v2);
 
 #endif

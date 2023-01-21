@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(HQC)
 
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -std=c99 -funroll-all-loops -flto -pedantic -Wall -Wextra")
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -march=native -std=c99 -funroll-all-loops -flto -pedantic -Wall -Wextra")
 set(CMAKE_C_FLAGS_RNG "${CMAKE_C_FLAGS} -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-sign-compare")
 set(SECLVL 128)
 

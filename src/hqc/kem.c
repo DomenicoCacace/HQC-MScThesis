@@ -3,18 +3,19 @@
  * @brief Implementation of api.h
  */
 
-#include <stdint.h>
-#include <string.h>
-
 #include "../common/api.h"
+#include "hqc.h"
 #include "../common/parameters.h"
 #include "../common/parsing.h"
-#include "../common/vector.h"
+#include "../lib/shake_prng.h"
 #include "../lib/shake_ds.h"
-#include "hqc.h"
-
+#include "../lib/fips202.h"
+#include "../common/vector.h"
+#include <stdint.h>
+#include <string.h>
+#include <immintrin.h>
 #ifdef VERBOSE
-    #include <stdio.h>
+#include <stdio.h>
 #endif
 
 
@@ -56,8 +57,8 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
 
     uint8_t theta[SHAKE256_512_BYTES] = {0};
     uint64_t m[VEC_K_SIZE_64] = {0};
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    static uint64_t u[VEC_N_256_SIZE_64] = {0};
+    uint64_t v[VEC_N1N2_256_SIZE_64] = {0};
     uint8_t d[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
     shake256incctx shake256state;
@@ -111,26 +112,26 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     #endif
 
     uint8_t result;
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    __m256i u_256[VEC_N_256_SIZE_64 >> 2] = {0};
+    uint64_t v[VEC_N1N2_256_SIZE_64] = {0};
     uint8_t d[SHAKE256_512_BYTES] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
     uint64_t m[VEC_K_SIZE_64] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
-    uint64_t u2[VEC_N_SIZE_64] = {0};
-    uint64_t v2[VEC_N1N2_SIZE_64] = {0};
+    uint64_t u2[VEC_N_256_SIZE_64] = {0};
+    uint64_t v2[VEC_N1N2_256_SIZE_64] = {0};
     uint8_t d2[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
     shake256incctx shake256state;
 
     // Retrieving u, v and d from ciphertext
-    hqc_ciphertext_from_string(u, v , d, ct);
+    hqc_ciphertext_from_string((uint64_t *) u_256, v , d, ct);
 
     // Retrieving pk from sk
     memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
 
     // Decryting
-    hqc_pke_decrypt(m, u, v, sk);
+    hqc_pke_decrypt(m, u_256, v, sk);
 
     // Computing theta
     shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
@@ -143,13 +144,13 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
 
     // Computing shared secret
     memcpy(mc, m, VEC_K_SIZE_BYTES);
-    memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
+    memcpy(mc + VEC_K_SIZE_BYTES, u_256, VEC_N_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
     shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
 
     // Abort if c != c' or d != d'
-    result = vect_compare((uint8_t *)u, (uint8_t *)u2, VEC_N_SIZE_BYTES);
-    result |= vect_compare((uint8_t *)v, (uint8_t *)v2, VEC_N1N2_SIZE_BYTES);
+    result = vect_compare((uint8_t *) u_256, (uint8_t *) u2, VEC_N_SIZE_BYTES);
+    result |= vect_compare((uint8_t *) v, (uint8_t *) v2, VEC_N1N2_SIZE_BYTES);
     result |= vect_compare(d, d2, SHAKE256_512_BYTES);
 
     result = (uint8_t) (-((int16_t) result) >> 15);
