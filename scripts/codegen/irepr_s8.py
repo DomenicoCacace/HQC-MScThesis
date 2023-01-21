@@ -52,52 +52,59 @@ def gen_code():
         increment = DEG_H*2//32
 
         for j in range(j_max, 0, -1):
-            code += xor("r0", "r0", "r0")   # leftover = 0
+            in_code = ""
+            in_code += xor("r0", "r0", "r0")   # leftover = 0
             for i in range(0, i_max, 4):
                 dst_idx = i+(j_max-j)*increment + 3
                 src_idx = i+src+(j_max-j)*increment + 3
 
                 if dst_idx-3 <= MAXLEN:
-                    code += load_adjusted("r1", src_idx)     # p3
-                    code += load_adjusted("r2", src_idx-1)   # p2
-                    code += load_adjusted("r3", src_idx-2)   # p1
-                    code += load_adjusted("r4", src_idx-3)   # p0
-                    code += load_adjusted("r5", dst_idx)     # q3
-                    code += load_adjusted("r6", dst_idx-1)   # q2
-                    code += load_adjusted("r7", dst_idx-2)   # q1
-                    code += load_adjusted("r8", dst_idx-3)   # q0
+                    in_code += load_adjusted("r1", src_idx)     # p3
+                    in_code += load_adjusted("r2", src_idx-1)   # p2
+                    in_code += load_adjusted("r3", src_idx-2)   # p1
+                    in_code += load_adjusted("r4", src_idx-3)   # p0
+                    in_code += load_adjusted("r5", dst_idx)     # q3
+                    in_code += load_adjusted("r6", dst_idx-1)   # q2
+                    in_code += load_adjusted("r7", dst_idx-2)   # q1
+                    in_code += load_adjusted("r8", dst_idx-3)   # q0
 
-                    code += lshift("r9", "r1", DEG_L)  # p3 << 16
-                    code += rshift("r10", "r2", 32-DEG_L)  # p2 >> 16
-                    code += xor("r11", "r9", "r10")   # (p3 << 16) ^ (p2 >> 16)
-                    code += xor("r5", "r5", "r11")   # q3 ^ ((p3 << 16) ^ (p2 >> 16))
+                    in_code += lshift("r9", "r1", DEG_L)  # p3 << 16
+                    in_code += rshift("r10", "r2", 32-DEG_L)  # p2 >> 16
+                    in_code += xor("r11", "r9", "r10")   # (p3 << 16) ^ (p2 >> 16)
+                    in_code += xor("r5", "r5", "r11")   # q3 ^ ((p3 << 16) ^ (p2 >> 16))
 
-                    code += lshift("r9", "r2", DEG_L)  # p2 << 16
-                    code += rshift("r10", "r3", 32-DEG_L)  # p1 >> 16
-                    code += xor("r11", "r9", "r10")   # (p2 << 16) ^ (p1 >> 16)
-                    code += xor("r6", "r6", "r11")   # q2 ^ ((p2 << 16) ^ (p1 >> 16))
+                    in_code += lshift("r9", "r2", DEG_L)  # p2 << 16
+                    in_code += rshift("r10", "r3", 32-DEG_L)  # p1 >> 16
+                    in_code += xor("r11", "r9", "r10")   # (p2 << 16) ^ (p1 >> 16)
+                    in_code += xor("r6", "r6", "r11")   # q2 ^ ((p2 << 16) ^ (p1 >> 16))
 
-                    code += lshift("r9", "r3", DEG_L)  # p1 << 16
-                    code += rshift("r10", "r4", 32-DEG_L)  # p0 >> 16
-                    code += xor("r11", "r9", "r10")   # (p1 << 16) ^ (p0 >> 16)
-                    code += xor("r7", "r7", "r11")   # q1 ^ ((p1 << 16) ^ (p0 >> 16))
+                    in_code += lshift("r9", "r3", DEG_L)  # p1 << 16
+                    in_code += rshift("r10", "r4", 32-DEG_L)  # p0 >> 16
+                    in_code += xor("r11", "r9", "r10")   # (p1 << 16) ^ (p0 >> 16)
+                    in_code += xor("r7", "r7", "r11")   # q1 ^ ((p1 << 16) ^ (p0 >> 16))
 
-                    code += lshift("r9", "r4", DEG_L)  # p0 << 16
-                    code += rshift("r10", "r0", 32-DEG_L)  # leftover >> 16
-                    code += xor("r11", "r9", "r10")   # (p0 << 16) ^ (leftover >> 16)
-                    code += xor("r8", "r8", "r11")   # q0 ^ ((p0 << 16) ^ (leftover >> 16))
+                    in_code += lshift("r9", "r4", DEG_L)  # p0 << 16
+                    in_code += rshift("r10", "r0", 32-DEG_L)  # leftover >> 16
+                    in_code += xor("r11", "r9", "r10")   # (p0 << 16) ^ (leftover >> 16)
+                    in_code += xor("r8", "r8", "r11")   # q0 ^ ((p0 << 16) ^ (leftover >> 16))
 
-                    code += store_adjusted("r5", dst_idx)
-                    code += store_adjusted("r6", dst_idx-1)
-                    code += store_adjusted("r7", dst_idx-2)
-                    code += store_adjusted("r8", dst_idx-3)
+                    in_code += store_adjusted("r5", dst_idx)
+                    in_code += store_adjusted("r6", dst_idx-1)
+                    in_code += store_adjusted("r7", dst_idx-2)
+                    in_code += store_adjusted("r8", dst_idx-3)
 
-                    code += mov("r0", "r1")         # leftover = p3
+                    in_code += mov("r0", "r1")         # leftover = p3
 
-            code += rshift("r0", "r0", 32-DEG_L)  # leftover >> 16
-            code += load_adjusted("r1", (j_max-j)*increment + i_max)     # ptr[i_max]
-            code += xor("r1", "r1", "r0")   # ptr[i_max] ^ (leftover >> 16)
-            code += store_adjusted("r1", (j_max-j)*increment + i_max)
+            in_code += rshift("r0", "r0", 32-DEG_L)  # leftover >> 16
+            in_code += load_adjusted("r1", (j_max-j)*increment + i_max)     # ptr[i_max]
+            in_code += xor("r1", "r1", "r0")   # ptr[i_max] ^ (leftover >> 16)
+            in_code += store_adjusted("r1", (j_max-j)*increment + i_max)
+
+            num_newline = in_code.count("\n")
+            # 5 is the amount of instructions which are outside the loop
+            if num_newline > 5:
+                code += in_code
+
 
     for k in range(5, len(deg_h)):
         DEG_H = deg_h[k]
