@@ -117,16 +117,26 @@ def gen_code():
 
         for j in range(j_max, 0, -1):
             for i in range(0, i_max, +4):
-                for _ in range(4):
-                    dst_idx = i+dst+(j_max-j)*increment + _
-                    src_idx = i+src+(j_max-j)*increment + _
-                    if dst_idx <= MAXLEN:
-                        code += load_adjusted("r0", src_idx)
-                        code += load_adjusted("r1", dst_idx)
-                        code += xor("r0", "r0", "r1")
-                        code += store_adjusted("r0", dst_idx)
-                    else:
-                        break
+                dst_idx = i+dst+(j_max-j)*increment
+                src_idx = i+src+(j_max-j)*increment
+                if dst_idx+3 <= MAXLEN:
+                    code += load_adjusted("r0", src_idx)
+                    code += load_adjusted("r1", src_idx+1)
+                    code += load_adjusted("r2", src_idx+2)
+                    code += load_adjusted("r3", src_idx+3)
+                    code += load_adjusted("r4", dst_idx)
+                    code += load_adjusted("r5", dst_idx+1)
+                    code += load_adjusted("r6", dst_idx+2)
+                    code += load_adjusted("r7", dst_idx+3)
+                    code += xor("r4", "r0", "r4")
+                    code += xor("r5", "r1", "r5")
+                    code += xor("r6", "r2", "r6")
+                    code += xor("r7", "r3", "r7")
+                    code += store_adjusted("r4", dst_idx)
+                    code += store_adjusted("r5", dst_idx+1)
+                    code += store_adjusted("r6", dst_idx+2)
+                    code += store_adjusted("r7", dst_idx+3)
+
 
     return code
 

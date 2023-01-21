@@ -50,16 +50,26 @@ def gen_code():
 
         for j in range(j_max, 0, -1):
             for i in range(i_max, -1, -4):
-                for _ in range(4):
-                    dst_idx = i+dst+(j_max-j)*increment + _
-                    src_idx = i+src+(j_max-j)*increment + _
-                    if src_idx <= MAXLEN and dst_idx <= MAXLEN:
-                        code += load("r0", src_idx)
-                        code += load("r1", dst_idx)
-                        code += xor("r0", "r0", "r1")
-                        code += store_plain("r0", dst_idx)
-                    else:
-                        break
+                dst_idx = i+dst+(j_max-j)*increment
+                src_idx = i+src+(j_max-j)*increment
+                if src_idx <= MAXLEN and dst_idx <= MAXLEN:
+                    code += load("r0", src_idx)
+                    code += load("r1", src_idx+1)
+                    code += load("r2", src_idx+2)
+                    code += load("r3", src_idx+3)
+                    code += load("r4", dst_idx)
+                    code += load("r5", dst_idx+1)
+                    code += load("r6", dst_idx+2)
+                    code += load("r7", dst_idx+3)
+                    code += xor("r4", "r0", "r4")
+                    code += xor("r5", "r1", "r5")
+                    code += xor("r6", "r2", "r6")
+                    code += xor("r7", "r3", "r7")
+                    code += store_plain("r4", dst_idx)
+                    code += store_plain("r5", dst_idx+1)
+                    code += store_plain("r6", dst_idx+2)
+                    code += store_plain("r7", dst_idx+3)
+
 
     for k in range(2, len(deg_h)):
         DEG_H = deg_h[k]

@@ -2,13 +2,35 @@ import math
 from codegen import *
 
 def main():
+    fname = "cvt_to_fft"
     code = ""
-    ops = gen_ops()
-    code += gen_unrolled_asm("cvt_to_fft", ops)
+    code += ".syntax unified\n"
+    code += ".cpu cortex-m4\n"
+    code += ".fpu fpv4-sp-d16\n"
+    code += ".global {}\n".format(fname)
+    code += ".type {}, %function\n".format(fname)
+    code += ".align 2\n"
+    code += "\n"
+    code += "{}:\n".format(fname)
+    code += "push {r0-r12, r14}\n"
+    code += "vpush {d8-d15}\n"
+    code += "\n"
+
+    code += "mov r14, r0\n"
+
+    code += gen_code()
+
+    code += "vpop {d8-d15}\n"
+    code += "pop {r0-r12, r14}\n"
+    code += "bx lr\n"
+    code += ".size {}, .-{}\n".format(fname, fname)
+
     print(code)
 
 
-def gen_ops():
+
+def gen_code():
+    code = ""
     deg_h = [16384, 8192, 4096, 16384, 8192, 2048, 1024, 2048, 512]
     deg_l = [ 1024,  512,  256,  4096, 4096,  512,  256, 1024, 256]
     PARAM_N = 17669
@@ -26,20 +48,27 @@ def gen_ops():
 
         for j in range(j_max, 0, -1):
             for i in range(i_max, -1, -4):
-                for _ in range(4):
-                    dst_idx = i+dst+(j_max-j)*increment + _
-                    src_idx = i+src+(j_max-j)*increment + _
-                    if src_idx <= MAXLEN and dst_idx <= MAXLEN:
-                        l1 = Load(src_idx)
-                        l2 = Load(dst_idx)
-                        x = Xor(l2.ref, l1.ref)
-                        d = Discard(l1.ref)
-                        s = Store(dst_idx, x.ref)
-                        ops.extend([l2, l1, x, s, d])
-                    else:
-                        break
+                dst_idx = i+dst+(j_max-j)*increment
+                src_idx = i+src+(j_max-j)*increment
+                if src_idx <= MAXLEN and dst_idx <= MAXLEN:
+                    code += load("r0", src_idx)
+                    code += load("r1", src_idx+1)
+                    code += load("r2", src_idx+2)
+                    code += load("r3", src_idx+3)
+                    code += load("r4", dst_idx)
+                    code += load("r5", dst_idx+1)
+                    code += load("r6", dst_idx+2)
+                    code += load("r7", dst_idx+3)
+                    code += xor("r4", "r0", "r4")
+                    code += xor("r5", "r1", "r5")
+                    code += xor("r6", "r2", "r6")
+                    code += xor("r7", "r3", "r7")
+                    code += store_plain("r4", dst_idx)
+                    code += store_plain("r5", dst_idx+1)
+                    code += store_plain("r6", dst_idx+2)
+                    code += store_plain("r7", dst_idx+3)
 
-    return ops
+    return code
 
 
 
