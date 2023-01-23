@@ -1,7 +1,7 @@
-commit,mean, var,branch, note
-04a9bd,698998.82,13098.04487204,fastmul, Reference implementation
-8f47c6,745506.546,5785.706160674,fastmul, Reference implementation without shuffling
-c51465,3473858.118,0.3227695465627,fastmul, bitpolymul from BIKE
+commit,mean,var,branch,note
+04a9bd,698998.82,13098.04487204,fastmul,Reference implementation
+8f47c6,745506.546,5785.706160674,fastmul,Reference implementation without shuffling
+c51465,3473858.118,0.3227695465627,fastmul,bitpolymul from BIKE
 a85b2b,3380243.118,0.3227695465627,fastmul,optimized cvt_to_fft
 6e51ac,3349349.118,0.3227695465627,fastmul,optimized poly→s8
 9556e4,3334630.118,0.3227695465627,fastmul,optimized gft encoding
