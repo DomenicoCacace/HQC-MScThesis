@@ -1,2 +1,3 @@
 commit,mean,var,branch,note
 0298cf,1918176.907,3823.291514697,sparsemul,variable-time implementation
+b5765f,9738189.236,0.6455390930489,sparsemul,constant-time implementation
