@@ -132,6 +132,7 @@ void vect_generate_random_for_mult(uint64_t *v) {
 
     shake_prng(rand_bytes, VEC_N_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_N_SIZE_BYTES);
+    v[VEC_N_SIZE_64-1] &= BITMASK(PARAM_N, 64);
 }
 
 /**
