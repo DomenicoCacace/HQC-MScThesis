@@ -7,7 +7,7 @@
 #include "../lib/shake_prng.h"
 #include "../sparsemul/gf2x_arith_mod_xPplusOne.h"
 
-#define BATCH_SIZE 100
+#define BATCH_SIZE 1000
 
 int kem(void);
 int pke(void);
@@ -67,7 +67,6 @@ int mul(void) {
     #define MUL_OPTIMIZED gf2x_mod_mul_dense_to_sparse
 
 	uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t u_rev[VEC_N_SIZE_64] = {0};
     uint32_t y[PARAM_OMEGA] = {0};
     uint64_t res_original[VEC_N_SIZE_64] = {0};
     uint64_t res_optimized[VEC_N_SIZE_64] = {0};
@@ -79,21 +78,12 @@ int mul(void) {
 	seedexpander_init(&seedexpander, sk, SEED_BYTES);
 
 	for(int i = 0; i < BATCH_SIZE; i++) {
-		vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
-		vect_generate_random_for_mult(u);
+        vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
+        vect_generate_random_for_mult(u);
 
-        for(int j = 0; j < VEC_N_SIZE_64; ++j) {
-            u_rev[j] = u[VEC_N_SIZE_64 - j - 1];
-            res_optimized[j] = 0;
-            res_original[j] = 0;
-        }
-        y[0] = 0;
+		MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
+		MUL_OPTIMIZED(res_optimized, u, y, PARAM_OMEGA);
 
-        //uint64_t tmp[VEC_N_SIZE_64] = {0};
-		MUL_ORIGINAL(res_original, y, u, 1, &seedexpander);
-		MUL_OPTIMIZED(res_optimized, u, y, 1);
-        //for(int j = 0; j < VEC_N_SIZE_64; ++j)
-        //    res_optimized[j] = tmp[VEC_N_SIZE_64-j-1];
 
 #ifdef VERBOSE
     printf("\n\nu: ");
@@ -104,17 +94,10 @@ int mul(void) {
     for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_original[j]);
     printf("\r\nres_optimized: ");
     for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_optimized[j]);
-    printf("\r\n         diff: ");
-    for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_optimized[j]^res_original[j]);
 #endif
-
 
         if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0) {
             passed++;
-        }
-        else {
-            printf("\r\n         diff: ");
-            for(int j = 0 ; j < VEC_N_SIZE_64 ; ++j) printf("%02lx ", res_original[j]^u[j]);
         }
 	}
 #ifdef VERBOSE
