@@ -39,7 +39,7 @@
 #include "../common/parameters.h"
 
 #define P PARAM_N
-#define CONSTANT_TIME
+//#define CONSTANT_TIME
 
 /*----------------------------------------------------------------------------*/
 /* limb size definitions for the multi-precision GF(2^x) library              */
