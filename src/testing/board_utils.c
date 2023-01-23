@@ -4,7 +4,6 @@ void setup_board(void) {
    // HSE connects the PLL to an external High Speed oscillator, I believe.
    // Since there is none attached to the board...
    // rcc_clock_setup_pll(&rcc_hse_16mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
-   rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
    setup_gpio();
    setup_usart();
 #ifdef TIMING
