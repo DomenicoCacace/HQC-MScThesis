@@ -1,16 +1,58 @@
 #include "board_utils.h"
 
 void setup_board(void) {
-   // HSE connects the PLL to an external High Speed oscillator, I believe.
-   // Since there is none attached to the board...
-   // rcc_clock_setup_pll(&rcc_hse_16mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
-   // Needed for F401RE, not L476RG
-   //rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
+   setup_clock();
    setup_gpio();
    setup_usart();
+   setup_trng();
 #ifdef TIMING
    setup_systick();
 #endif
+}
+
+void setup_clock(void) {
+   /* Enable the HSI16 clock */
+   rcc_osc_on(RCC_HSI16);
+   rcc_wait_for_osc_ready(RCC_HSI16);
+
+   /* Set the HSI16 as the system clock source */
+   rcc_set_sysclk_source(RCC_PLLCFGR_PLLSRC_HSI16);
+
+   /*
+   * Set prescalers for AHB, ADC, APB1, APB2.
+   * Do this before touching the PLL (TODO: why?).
+   */
+   rcc_set_hpre(RCC_CFGR_HPRE_NODIV);
+   rcc_set_ppre1(RCC_CFGR_PPRE1_NODIV);
+   rcc_set_ppre2(RCC_CFGR_PPRE2_NODIV);
+
+   /* Disable PLL oscillator before changing its configuration. */
+   rcc_osc_off(RCC_PLL);
+
+   /* Configure the PLL oscillator. */
+   rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, 2, 10, RCC_PLLCFGR_PLLP_DIV7, RCC_PLLCFGR_PLLQ_DIV2, RCC_PLLCFGR_PLLR_DIV2);
+
+   /* Enable PLL oscillator and wait for it to stabilize. */
+   rcc_osc_on(RCC_PLL);
+   rcc_wait_for_osc_ready(RCC_PLL);
+
+   /* Select PLL as SYSCLK source. */
+   rcc_set_sysclk_source(RCC_CFGR_SW_PLL);
+
+   /* Wait for PLL clock to be selected. */
+   rcc_wait_for_sysclk_status(RCC_PLL);
+
+   /* Set the peripheral clock frequencies used. */
+   rcc_ahb_frequency =  40000000;
+   rcc_apb1_frequency = 40000000;
+   rcc_apb2_frequency = 40000000;
+
+   /* Enable the 48MHz clock (set to 8MHz) */
+   rcc_set_msi_range(RCC_CR_MSIRANGE_8MHZ);
+   rcc_osc_on(RCC_MSI);
+   rcc_wait_for_osc_ready(RCC_MSI);
+   rcc_set_clock48_source(RCC_CCIPR_CLK48SEL_MSI);
+
 }
 
 /* Sets up trigger GPIO as Port B - Pin 9 
@@ -91,6 +133,12 @@ void setup_systick(void) {
         ARM_CM_DWT_CYCCNT  = 0;                
         ARM_CM_DWT_CTRL   |= 1 << 0;             // Set bit 0
     }
+}
+
+void setup_trng(void) {
+   rcc_periph_clock_enable(RCC_RNG);
+   rng_enable();
+   rng_interrupt_enable();
 }
 
 void usart_send_str(char *str, int bytes) {
