@@ -13,8 +13,11 @@
 #define WORD 64
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
+
 static void reduce(uint64_t *o, const uint64_t *a);
-static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
+
+static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, uint16_t weight,
+                                  seedexpander_state *ctx);
 
 /**
  * @brief swap two elements in a table
@@ -33,7 +36,6 @@ static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2) {
 }
 
 
-
 /**
  * @brief Compute o(x) = a(x) mod \f$ X^n - 1\f$
  *
@@ -49,12 +51,11 @@ static void reduce(uint64_t *o, const uint64_t *a) {
 
     for (i = 0; i < VEC_N_SIZE_64; i++) {
         r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N & 0x3F);
-        carry = (uint64_t ) (a[i + VEC_N_SIZE_64 ] << (64 - (PARAM_N & 0x3F)));
+        carry = (uint64_t) (a[i + VEC_N_SIZE_64] << (64 - (PARAM_N & 0x3F)));
         o[i] = a[i] ^ r ^ carry;
     }
     o[VEC_N_SIZE_64 - 1] &= RED_MASK;
 }
-
 
 
 /**
@@ -68,7 +69,8 @@ static void reduce(uint64_t *o, const uint64_t *a) {
  * @param[in] weight Hamming wifht of the sparse polynomial a2
  * @param[in] ctx Pointer to a seed expander used to randomize the multiplication process
  */
-static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx){
+static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight,
+                                  seedexpander_state *ctx) {
     uint64_t carry;
     int32_t dec, s;
     uint64_t table[TABLE * (VEC_N_SIZE_64 + 1)];
@@ -89,7 +91,7 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
 
     uint64_t *pt = table + (permuted_table[0] * (VEC_N_SIZE_64 + 1));
 
-    for (size_t i = 0 ; i < VEC_N_SIZE_64 ; i++) {
+    for (size_t i = 0; i < VEC_N_SIZE_64; i++) {
         pt[i] = a2[i];
     }
 
@@ -129,14 +131,13 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
 
         for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
             uint64_t tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
-                (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
+                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
             tmp ^= pt[j];
             memcpy(res_16, &tmp, 8);
             res_16 += 4;
         }
     }
 }
-
 
 
 /**

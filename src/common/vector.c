@@ -44,7 +44,7 @@ void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32
                 j = 0;
             }
 
-            v[i]  = ((uint32_t) rand_bytes[j++]) << 16;
+            v[i] = ((uint32_t) rand_bytes[j++]) << 16;
             v[i] |= ((uint32_t) rand_bytes[j++]) << 8;
             v[i] |= rand_bytes[j++];
 
@@ -61,7 +61,6 @@ void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32
         i += inc;
     }
 }
-
 
 
 /**
@@ -93,7 +92,6 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t
 }
 
 
-
 /**
  * @brief Generates a random vector of dimension <b>PARAM_N</b>
  *
@@ -113,7 +111,6 @@ void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
 }
 
 
-
 /**
  * @brief Generates a random vector
  *
@@ -122,13 +119,14 @@ void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
  * @param[in] v Pointer to an array
  */
 void vect_set_random_from_prng(uint64_t *v) {
-    uint8_t rand_bytes [VEC_K_SIZE_BYTES] = {0};
+    uint8_t rand_bytes[VEC_K_SIZE_BYTES] = {0};
 
     shake_prng(rand_bytes, VEC_K_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_K_SIZE_BYTES);
 }
+
 void vect_generate_random_for_mult(uint64_t *v) {
-    uint8_t rand_bytes [VEC_N_SIZE_BYTES] = {0};
+    uint8_t rand_bytes[VEC_N_SIZE_BYTES] = {0};
 
     shake_prng(rand_bytes, VEC_N_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_N_SIZE_BYTES);
@@ -143,7 +141,7 @@ void vect_generate_random_for_mult(uint64_t *v) {
  * @param[in] size Integer that is the size of the vectors
  */
 void vect_add(uint64_t *o, const uint64_t *v1, const uint64_t *v2, uint32_t size) {
-    for (uint32_t i = 0 ; i < size ; ++i) {
+    for (uint32_t i = 0; i < size; ++i) {
         o[i] = v1[i] ^ v2[i];
     }
 }
@@ -169,7 +167,6 @@ uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size) {
 }
 
 
-
 /**
  * @brief Resize a vector so that it contains <b>size_o</b> bits
  *
@@ -189,14 +186,13 @@ void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_
 
         memcpy(o, v, VEC_N1N2_SIZE_BYTES);
 
-        for (int8_t i = 0 ; i < val ; ++i) {
+        for (int8_t i = 0; i < val; ++i) {
             o[VEC_N1N2_SIZE_64 - 1] &= (mask >> i);
         }
     } else {
         memcpy(o, v, CEIL_DIVIDE(size_v, 8));
     }
 }
-
 
 
 /**
@@ -206,26 +202,26 @@ void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_
  * @param[in] size Integer that is number of bytes to be displayed
  */
 void vect_print(const uint64_t *v, const uint32_t size) {
-    if(size == VEC_K_SIZE_BYTES) {
-        uint8_t tmp [VEC_K_SIZE_BYTES] = {0};
+    if (size == VEC_K_SIZE_BYTES) {
+        uint8_t tmp[VEC_K_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_K_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_K_SIZE_BYTES; ++i) {
             printf("%02x", tmp[i]);
         }
     } else if (size == VEC_N_SIZE_BYTES) {
-        uint8_t tmp [VEC_N_SIZE_BYTES] = {0};
+        uint8_t tmp[VEC_N_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N_SIZE_BYTES; ++i) {
             printf("%02x", tmp[i]);
         }
     } else if (size == VEC_N1N2_SIZE_BYTES) {
-        uint8_t tmp [VEC_N1N2_SIZE_BYTES] = {0};
+        uint8_t tmp[VEC_N1N2_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N1N2_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N1N2_SIZE_BYTES; ++i) {
             printf("%02x", tmp[i]);
         }
-    }  else if (size == VEC_N1_SIZE_BYTES) {
-        uint8_t tmp [VEC_N1_SIZE_BYTES] = {0};
+    } else if (size == VEC_N1_SIZE_BYTES) {
+        uint8_t tmp[VEC_N1_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N1_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N1_SIZE_BYTES; ++i) {
             printf("%02x", tmp[i]);
@@ -241,7 +237,7 @@ void vect_print(const uint64_t *v, const uint32_t size) {
  * @param[in] weight Integer that is number positions to be displayed
  */
 void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
-    for (uint16_t i = 0; i < weight-1; ++i) {
+    for (uint16_t i = 0; i < weight - 1; ++i) {
         printf("%d ,", v[i]);
     }
     printf("%d", v[weight - 1]);

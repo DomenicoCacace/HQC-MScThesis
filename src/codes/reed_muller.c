@@ -25,10 +25,12 @@ typedef int16_t expandedCodeword[128];
 
 
 void encode(codeword *word, int32_t message);
-void hadamard(expandedCodeword *src, expandedCodeword *dst);
-void expand_and_sum(expandedCodeword *dest, codeword src[]);
-int32_t find_peaks(expandedCodeword *transform);
 
+void hadamard(expandedCodeword *src, expandedCodeword *dst);
+
+void expand_and_sum(expandedCodeword *dest, codeword src[]);
+
+int32_t find_peaks(expandedCodeword *transform);
 
 
 /**
@@ -71,7 +73,6 @@ void encode(codeword *word, int32_t message) {
 }
 
 
-
 /**
  * @brief Hadamard transform
  *
@@ -98,7 +99,6 @@ void hadamard(expandedCodeword *src, expandedCodeword *dst) {
         p2 = p3;
     }
 }
-
 
 
 /**
@@ -132,7 +132,6 @@ void expand_and_sum(expandedCodeword *dest, codeword src[]) {
 }
 
 
-
 /**
  * @brief Finding the location of the highest value
  *
@@ -162,7 +161,6 @@ int32_t find_peaks(expandedCodeword *transform) {
 }
 
 
-
 /**
  * @brief Encodes the received word
  *
@@ -187,7 +185,6 @@ void reed_muller_encode(uint64_t *cdw, const uint64_t *msg) {
     }
     return;
 }
-
 
 
 /**

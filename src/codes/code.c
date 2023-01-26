@@ -10,8 +10,10 @@
 #include "reed_solomon.h"
 
 #ifdef VERBOSE
-    #include <stdio.h>
-#   include "../common/vector.h"
+
+#include <stdio.h>
+#include "../common/vector.h"
+
 #endif
 
 
@@ -26,17 +28,18 @@
  * @param[in] m Pointer to an array that is the message
  */
 void code_encode(uint64_t *em, const uint64_t *m) {
-	uint64_t tmp[VEC_N1_SIZE_64] = {0};
+    uint64_t tmp[VEC_N1_SIZE_64] = {0};
 
-	reed_solomon_encode(tmp, m);
-	reed_muller_encode(em, tmp);
+    reed_solomon_encode(tmp, m);
+    reed_muller_encode(em, tmp);
 
-	#ifdef VERBOSE
-		printf("\n\nReed-Solomon code word: "); vect_print(tmp, VEC_N1_SIZE_BYTES);
-		printf("\n\nConcatenated code word: "); vect_print(em, VEC_N1N2_SIZE_BYTES);
-	#endif
+#ifdef VERBOSE
+    printf("\n\nReed-Solomon code word: ");
+    vect_print(tmp, VEC_N1_SIZE_BYTES);
+    printf("\n\nConcatenated code word: ");
+    vect_print(em, VEC_N1N2_SIZE_BYTES);
+#endif
 }
-
 
 
 /**
@@ -46,13 +49,14 @@ void code_encode(uint64_t *em, const uint64_t *m) {
  * @param[in] em Pointer to an array that is the code word
  */
 void code_decode(uint64_t *m, const uint64_t *em) {
-	uint64_t tmp[VEC_N1_SIZE_64] = {0};
+    uint64_t tmp[VEC_N1_SIZE_64] = {0};
 
-	reed_muller_decode(tmp, em);
+    reed_muller_decode(tmp, em);
     reed_solomon_decode(m, tmp);
 
 
-	#ifdef VERBOSE
-		printf("\n\nReed-Muller decoding result (the input for the Reed-Solomon decoding algorithm): "); vect_print(tmp, VEC_N1_SIZE_BYTES);
-	#endif
+#ifdef VERBOSE
+    printf("\n\nReed-Muller decoding result (the input for the Reed-Solomon decoding algorithm): ");
+    vect_print(tmp, VEC_N1_SIZE_BYTES);
+#endif
 }

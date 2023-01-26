@@ -12,7 +12,9 @@
 #include "hqc.h"
 
 #ifdef VERBOSE
-    #include <stdio.h>
+
+#include <stdio.h>
+
 #endif
 
 
@@ -27,7 +29,7 @@
  * @param[out] pk String containing the public key
  * @param[out] sk String containing the secret key
  */
-void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
+void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     seedexpander_state sk_seedexpander;
     seedexpander_state pk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
@@ -57,20 +59,27 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     hqc_public_key_to_string(pk, pk_seed, s);
     hqc_secret_key_to_string(sk, sk_seed, pk);
 
-    #ifdef VERBOSE
-        printf("\n\nsk_seed: "); for(int i = 0 ; i < SEED_BYTES ; ++i) printf("%02x", sk_seed[i]);
-        printf("\n\nx: "); vect_print(x, VEC_N_SIZE_BYTES);
-        printf("\n\ny: "); vect_print_sparse(y, PARAM_OMEGA);
+#ifdef VERBOSE
+    printf("\n\nsk_seed: ");
+    for (int i = 0; i < SEED_BYTES; ++i) printf("%02x", sk_seed[i]);
+    printf("\n\nx: ");
+    vect_print(x, VEC_N_SIZE_BYTES);
+    printf("\n\ny: ");
+    vect_print_sparse(y, PARAM_OMEGA);
 
-        printf("\n\npk_seed: "); for(int i = 0 ; i < SEED_BYTES ; ++i) printf("%02x", pk_seed[i]);
-        printf("\n\nh: "); vect_print(h, VEC_N_SIZE_BYTES);
-        printf("\n\ns: "); vect_print(s, VEC_N_SIZE_BYTES);
+    printf("\n\npk_seed: ");
+    for (int i = 0; i < SEED_BYTES; ++i) printf("%02x", pk_seed[i]);
+    printf("\n\nh: ");
+    vect_print(h, VEC_N_SIZE_BYTES);
+    printf("\n\ns: ");
+    vect_print(s, VEC_N_SIZE_BYTES);
 
-        printf("\n\nsk: "); for(int i = 0 ; i < SECRET_KEY_BYTES ; ++i) printf("%02x", sk[i]);
-        printf("\n\npk: "); for(int i = 0 ; i < PUBLIC_KEY_BYTES ; ++i) printf("%02x", pk[i]);
-    #endif
+    printf("\n\nsk: ");
+    for (int i = 0; i < SECRET_KEY_BYTES; ++i) printf("%02x", sk[i]);
+    printf("\n\npk: ");
+    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) printf("%02x", pk[i]);
+#endif
 }
-
 
 
 /**
@@ -119,19 +128,26 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_64);
     vect_resize(v, PARAM_N1N2, tmp2, PARAM_N);
 
-    #ifdef VERBOSE
-        printf("\n\nh: "); vect_print(h, VEC_N_SIZE_BYTES);
-        printf("\n\ns: "); vect_print(s, VEC_N_SIZE_BYTES);
-        printf("\n\nr1: "); vect_print(r1, VEC_N_SIZE_BYTES);
-        printf("\n\nr2: "); vect_print_sparse(r2, PARAM_OMEGA_R);
-        printf("\n\ne: "); vect_print(e, VEC_N_SIZE_BYTES);
-        printf("\n\ntmp2: "); vect_print(tmp2, VEC_N_SIZE_BYTES);
+#ifdef VERBOSE
+    printf("\n\nh: ");
+    vect_print(h, VEC_N_SIZE_BYTES);
+    printf("\n\ns: ");
+    vect_print(s, VEC_N_SIZE_BYTES);
+    printf("\n\nr1: ");
+    vect_print(r1, VEC_N_SIZE_BYTES);
+    printf("\n\nr2: ");
+    vect_print_sparse(r2, PARAM_OMEGA_R);
+    printf("\n\ne: ");
+    vect_print(e, VEC_N_SIZE_BYTES);
+    printf("\n\ntmp2: ");
+    vect_print(tmp2, VEC_N_SIZE_BYTES);
 
-        printf("\n\nu: "); vect_print(u, VEC_N_SIZE_BYTES);
-        printf("\n\nv: "); vect_print(v, VEC_N1N2_SIZE_BYTES);
-    #endif
+    printf("\n\nu: ");
+    vect_print(u, VEC_N_SIZE_BYTES);
+    printf("\n\nv: ");
+    vect_print(v, VEC_N1N2_SIZE_BYTES);
+#endif
 }
-
 
 
 /**
@@ -162,12 +178,16 @@ void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const un
     vect_mul(tmp2, y, u, PARAM_OMEGA, &perm_seedexpander);
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_64);
 
-    #ifdef VERBOSE
-        printf("\n\nu: "); vect_print(u, VEC_N_SIZE_BYTES);
-        printf("\n\nv: "); vect_print(v, VEC_N1N2_SIZE_BYTES);
-        printf("\n\ny: "); vect_print_sparse(y, PARAM_OMEGA);
-        printf("\n\nv - u.y: "); vect_print(tmp2, VEC_N_SIZE_BYTES);
-    #endif
+#ifdef VERBOSE
+    printf("\n\nu: ");
+    vect_print(u, VEC_N_SIZE_BYTES);
+    printf("\n\nv: ");
+    vect_print(v, VEC_N1N2_SIZE_BYTES);
+    printf("\n\ny: ");
+    vect_print_sparse(y, PARAM_OMEGA);
+    printf("\n\nv - u.y: ");
+    vect_print(tmp2, VEC_N_SIZE_BYTES);
+#endif
 
     // Compute m by decoding v - u.y
     code_decode(m, tmp2);

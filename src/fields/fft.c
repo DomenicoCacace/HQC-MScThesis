@@ -17,9 +17,13 @@
 #include "gf.h"
 
 static void compute_fft_betas(uint16_t *betas);
+
 static void compute_subset_sums(uint16_t *subset_sums, const uint16_t *set, uint16_t set_size);
+
 static void radix(uint16_t *f0, uint16_t *f1, const uint16_t *f, uint32_t m_f);
+
 static void radix_big(uint16_t *f0, uint16_t *f1, const uint16_t *f, uint32_t m_f);
+
 static void fft_rec(uint16_t *w, uint16_t *f, size_t f_coeffs, uint8_t m, uint32_t m_f, const uint16_t *betas);
 
 
@@ -34,7 +38,6 @@ static void compute_fft_betas(uint16_t *betas) {
         betas[i] = 1 << (PARAM_M - 1 - i);
     }
 }
-
 
 
 /**
@@ -57,7 +60,6 @@ static void compute_subset_sums(uint16_t *subset_sums, const uint16_t *set, uint
         }
     }
 }
-
 
 
 /**
@@ -155,7 +157,6 @@ static void radix_big(uint16_t *f0, uint16_t *f1, const uint16_t *f, uint32_t m_
 }
 
 
-
 /**
  * @brief Evaluates f at all subset sums of a given set
  *
@@ -250,7 +251,6 @@ static void fft_rec(uint16_t *w, uint16_t *f, size_t f_coeffs, uint8_t m, uint32
 }
 
 
-
 /**
  * @brief Evaluates f on all fields elements using an additive FFT algorithm
  *
@@ -321,7 +321,6 @@ void fft(uint16_t *w, const uint16_t *f, size_t f_coeffs) {
 }
 
 
-
 /**
  * @brief Retrieves the error polynomial error from the evaluations w of the ELP (Error Locator Polynomial) on all field elements.
  *
@@ -339,14 +338,14 @@ void fft_retrieve_error_poly(uint8_t *error, const uint16_t *w) {
     compute_subset_sums(gammas_sums, gammas, PARAM_M - 1);
 
     k = 1 << (PARAM_M - 1);
-    error[0] ^= 1 ^ ((uint16_t) - w[0] >> 15);
-    error[0] ^= 1 ^ ((uint16_t) - w[k] >> 15);
+    error[0] ^= 1 ^ ((uint16_t) -w[0] >> 15);
+    error[0] ^= 1 ^ ((uint16_t) -w[k] >> 15);
 
     for (i = 1; i < k; ++i) {
         index = PARAM_GF_MUL_ORDER - gf_log[gammas_sums[i]];
-        error[index] ^= 1 ^ ((uint16_t) - w[i] >> 15);
+        error[index] ^= 1 ^ ((uint16_t) -w[i] >> 15);
 
         index = PARAM_GF_MUL_ORDER - gf_log[gammas_sums[i] ^ 1];
-        error[index] ^= 1 ^ ((uint16_t) - w[k + i] >> 15);
+        error[index] ^= 1 ^ ((uint16_t) -w[k + i] >> 15);
     }
 }
