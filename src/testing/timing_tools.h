@@ -1,8 +1,10 @@
-#pragma once
+#ifndef TIMING_TOOLS_H
+#define TIMING_TOOLS_H
 
 #include <math.h>
+#include <stdint.h>
 #include <stdlib.h>
-#include "board_utils.h"
+#include "architecture_detect.h"
 
 typedef struct {
     long double mean;
@@ -12,7 +14,19 @@ typedef struct {
 
 static inline
 uint32_t get_systick(void) {
+#ifdef CORTEX_M4
     return dwt_read_cycle_counter();
+#else
+    unsigned long long result;
+    __asm__ __volatile__(
+        "rdtscp;"
+        "shl $32, %%rdx;"
+        "or %%rdx, %%rax"
+        : "=a"(result)
+        :
+        : "%rcx", "%rdx");
+    return result;
+#endif
 }
 
 static inline
@@ -35,8 +49,14 @@ void welford_update(welford_t *state, long double sample) {
 
 static inline
 void welford_print(const welford_t state) {
+    #ifdef CORTEX_M4
     char mean[13], variance[13];
     gcvt(state.mean, 13, mean);
     gcvt(sqrtl(state.M2 / (long double) (state.count - 1)), 13, variance);
-    debug("%s \t %s\r\n", mean, variance);
+    PRINTF("%s \t %s\r\n", mean, variance);
+    #else
+    PRINTF("%Lf \t %Lf\r\n", state.mean, sqrtl(state.M2 / (long double) (state.count - 1)));
+    #endif
 }
+
+#endif
