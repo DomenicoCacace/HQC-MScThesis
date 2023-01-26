@@ -7,9 +7,8 @@ void setup_board(void) {
     // rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
     setup_gpio();
     setup_usart();
-#ifdef TIMING
     setup_systick();
-#endif
+}
 }
 
 /* Sets up trigger GPIO as Port B - Pin 9 
@@ -85,11 +84,9 @@ void setup_usart(void) {
 }
 
 void setup_systick(void) {
-    if (ARM_CM_DWT_CTRL != 0) {                  // See if DWT is available
-        ARM_CM_DEMCR |= 1 << 24;            // Set bit 24
-        ARM_CM_DWT_CYCCNT = 0;
-        ARM_CM_DWT_CTRL |= 1 << 0;             // Set bit 0
-    }
+#ifdef TIMING
+    dwt_enable_cycle_counter();
+#endif
 }
 
 void usart_send_str(char *str, int bytes) {

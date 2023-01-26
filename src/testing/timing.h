@@ -1,6 +1,7 @@
 #pragma once
 
 #include <math.h>
+#include <stdlib.h>
 #include "board_utils.h"
 
 typedef struct {
@@ -11,9 +12,7 @@ typedef struct {
 
 static inline
 uint32_t get_systick(void) {
-#ifdef TIMING
-    return ARM_CM_DWT_CYCCNT;
-#endif
+    return dwt_read_cycle_counter();
 }
 
 static inline

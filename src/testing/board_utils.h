@@ -1,16 +1,19 @@
 #pragma once
 
-#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/pwr.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/rng.h>
+#include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
-#include <libopencm3/stm32/f4/rcc.h>
-#include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
-#define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
-#define  ARM_CM_DWT_CTRL   (*(uint32_t *)0xE0001000)
-#define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
+// USART COMMUNICATION
+#ifdef STLINK_COMM
+#define USART USART2
 
 void setup_board(void);
 
