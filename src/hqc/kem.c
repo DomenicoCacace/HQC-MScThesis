@@ -15,7 +15,7 @@
 
 #ifdef VERBOSE
 
-#include <stdio.h>
+#include "../testing/architecture_detect.h"
 
 #endif
 
@@ -34,7 +34,7 @@
  */
 int crypto_kem_keypair(unsigned char *pk, unsigned char *sk) {
 #ifdef VERBOSE
-    printf("\n\n\n\n### KEYGEN ###");
+    PRINTF("\n\n\n\n### KEYGEN ###");
 #endif
 
     hqc_pke_keygen(pk, sk);
@@ -52,7 +52,7 @@ int crypto_kem_keypair(unsigned char *pk, unsigned char *sk) {
  */
 int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk) {
 #ifdef VERBOSE
-    printf("\n\n\n\n### ENCAPS ###");
+    PRINTF("\n\n\n\n### ENCAPS ###");
 #endif
 
     uint8_t theta[SHAKE256_512_BYTES] = {0};
@@ -85,18 +85,18 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     hqc_ciphertext_to_string(ct, u, v, d);
 
 #ifdef VERBOSE
-    printf("\n\npk: ");
-    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) printf("%02x", pk[i]);
-    printf("\n\nm: ");
+    PRINTF("\n\npk: ");
+    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) PRINTF("%02x", pk[i]);
+    PRINTF("\n\nm: ");
     vect_print(m, VEC_K_SIZE_BYTES);
-    printf("\n\ntheta: ");
-    for (int i = 0; i < SHAKE256_512_BYTES; ++i) printf("%02x", theta[i]);
-    printf("\n\nd: ");
-    for (int i = 0; i < SHAKE256_512_BYTES; ++i) printf("%02x", d[i]);
-    printf("\n\nciphertext: ");
-    for (int i = 0; i < CIPHERTEXT_BYTES; ++i) printf("%02x", ct[i]);
-    printf("\n\nsecret 1: ");
-    for (int i = 0; i < SHARED_SECRET_BYTES; ++i) printf("%02x", ss[i]);
+    PRINTF("\n\ntheta: ");
+    for (int i = 0; i < SHAKE256_512_BYTES; ++i) PRINTF("%02x", theta[i]);
+    PRINTF("\n\nd: ");
+    for (int i = 0; i < SHAKE256_512_BYTES; ++i) PRINTF("%02x", d[i]);
+    PRINTF("\n\nciphertext: ");
+    for (int i = 0; i < CIPHERTEXT_BYTES; ++i) PRINTF("%02x", ct[i]);
+    PRINTF("\n\nsecret 1: ");
+    for (int i = 0; i < SHARED_SECRET_BYTES; ++i) PRINTF("%02x", ss[i]);
 #endif
 
     return 0;
@@ -113,7 +113,7 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
  */
 int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned char *sk) {
 #ifdef VERBOSE
-    printf("\n\n\n\n### DECAPS ###");
+    PRINTF("\n\n\n\n### DECAPS ###");
 #endif
 
     uint8_t result;
@@ -165,24 +165,24 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     }
 
 #ifdef VERBOSE
-    printf("\n\npk: ");
-    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) printf("%02x", pk[i]);
-    printf("\n\nsk: ");
-    for (int i = 0; i < SECRET_KEY_BYTES; ++i) printf("%02x", sk[i]);
-    printf("\n\nciphertext: ");
-    for (int i = 0; i < CIPHERTEXT_BYTES; ++i) printf("%02x", ct[i]);
-    printf("\n\nm: ");
+    PRINTF("\n\npk: ");
+    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) PRINTF("%02x", pk[i]);
+    PRINTF("\n\nsk: ");
+    for (int i = 0; i < SECRET_KEY_BYTES; ++i) PRINTF("%02x", sk[i]);
+    PRINTF("\n\nciphertext: ");
+    for (int i = 0; i < CIPHERTEXT_BYTES; ++i) PRINTF("%02x", ct[i]);
+    PRINTF("\n\nm: ");
     vect_print(m, VEC_K_SIZE_BYTES);
-    printf("\n\ntheta: ");
-    for (int i = 0; i < SHAKE256_512_BYTES; ++i) printf("%02x", theta[i]);
-    printf("\n\n\n# Checking Ciphertext- Begin #");
-    printf("\n\nu2: ");
+    PRINTF("\n\ntheta: ");
+    for (int i = 0; i < SHAKE256_512_BYTES; ++i) PRINTF("%02x", theta[i]);
+    PRINTF("\n\n\n# Checking Ciphertext- Begin #");
+    PRINTF("\n\nu2: ");
     vect_print(u2, VEC_N_SIZE_BYTES);
-    printf("\n\nv2: ");
+    PRINTF("\n\nv2: ");
     vect_print(v2, VEC_N1N2_SIZE_BYTES);
-    printf("\n\nd2: ");
-    for (int i = 0; i < SHAKE256_512_BYTES; ++i) printf("%02x", d2[i]);
-    printf("\n\n# Checking Ciphertext - End #\n");
+    PRINTF("\n\nd2: ");
+    for (int i = 0; i < SHAKE256_512_BYTES; ++i) PRINTF("%02x", d2[i]);
+    PRINTF("\n\n# Checking Ciphertext - End #\n");
 #endif
 
     return -(result & 1);

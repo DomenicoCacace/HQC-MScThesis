@@ -18,10 +18,14 @@
 #define TRIGGER_RESET trigger_reset();
 
 #else
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define TRIGGER_SET
-#define TRIGGER_RESET
+    #include <stdio.h>
+    #include "../lib/shake_prng.h"
+
+    #define PRINTF(...) printf(__VA_ARGS__)
+
+    #define TRIGGER_SET
+    #define TRIGGER_RESET
+
 #endif
 
 #endif

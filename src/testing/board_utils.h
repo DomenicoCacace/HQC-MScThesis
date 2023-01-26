@@ -15,7 +15,7 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
 #include <stdarg.h>
-#include <stdio.h>
+#include "../testing/architecture_detect.h"
 #include <string.h>
 
 // USART COMMUNICATION

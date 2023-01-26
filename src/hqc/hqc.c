@@ -9,13 +9,8 @@
 #include "../common/parsing.h"
 #include "../common/vector.h"
 #include "../fields/gf2x.h"
+#include "../testing/architecture_detect.h"
 #include "hqc.h"
-
-#ifdef VERBOSE
-
-#include <stdio.h>
-
-#endif
 
 
 /**
@@ -60,24 +55,24 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     hqc_secret_key_to_string(sk, sk_seed, pk);
 
 #ifdef VERBOSE
-    printf("\n\nsk_seed: ");
-    for (int i = 0; i < SEED_BYTES; ++i) printf("%02x", sk_seed[i]);
-    printf("\n\nx: ");
+    PRINTF("\n\nsk_seed: ");
+    for (int i = 0; i < SEED_BYTES; ++i) PRINTF("%02x", sk_seed[i]);
+    PRINTF("\n\nx: ");
     vect_print(x, VEC_N_SIZE_BYTES);
-    printf("\n\ny: ");
+    PRINTF("\n\ny: ");
     vect_print_sparse(y, PARAM_OMEGA);
 
-    printf("\n\npk_seed: ");
-    for (int i = 0; i < SEED_BYTES; ++i) printf("%02x", pk_seed[i]);
-    printf("\n\nh: ");
+    PRINTF("\n\npk_seed: ");
+    for (int i = 0; i < SEED_BYTES; ++i) PRINTF("%02x", pk_seed[i]);
+    PRINTF("\n\nh: ");
     vect_print(h, VEC_N_SIZE_BYTES);
-    printf("\n\ns: ");
+    PRINTF("\n\ns: ");
     vect_print(s, VEC_N_SIZE_BYTES);
 
-    printf("\n\nsk: ");
-    for (int i = 0; i < SECRET_KEY_BYTES; ++i) printf("%02x", sk[i]);
-    printf("\n\npk: ");
-    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) printf("%02x", pk[i]);
+    PRINTF("\n\nsk: ");
+    for (int i = 0; i < SECRET_KEY_BYTES; ++i) PRINTF("%02x", sk[i]);
+    PRINTF("\n\npk: ");
+    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) PRINTF("%02x", pk[i]);
 #endif
 }
 

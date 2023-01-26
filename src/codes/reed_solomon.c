@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
+#include "../testing/architecture_detect.h"
 
 #include "../codes/reed_solomon.h"
 #include "../fields/fft.h"
@@ -355,62 +355,62 @@ void reed_solomon_decode(uint64_t *msg, uint64_t *cdw) {
     memcpy(msg, cdw_bytes + (PARAM_G - 1), PARAM_K);
 
 #ifdef VERBOSE
-    printf("\n\nThe syndromes: ");
+    PRINTF("\n\nThe syndromes: ");
     for (size_t i = 0; i < 2 * PARAM_DELTA; ++i) {
-        printf("%u ", syndromes[i]);
+        PRINTF("%u ", syndromes[i]);
     }
-    printf("\n\nThe error locator polynomial: sigma(x) = ");
+    PRINTF("\n\nThe error locator polynomial: sigma(x) = ");
     bool first_coeff = true;
     if (sigma[0]) {
-        printf("%u", sigma[0]);
+        PRINTF("%u", sigma[0]);
         first_coeff = false;
     }
     for (size_t i = 1; i < (1 << PARAM_FFT); ++i) {
         if (sigma[i] == 0)
             continue;
         if (!first_coeff)
-            printf(" + ");
+            PRINTF(" + ");
         first_coeff = false;
         if (sigma[i] != 1)
-            printf("%u ", sigma[i]);
+            PRINTF("%u ", sigma[i]);
         if (i == 1)
-            printf("x");
+            PRINTF("x");
         else
-            printf("x^%zu", i);
+            PRINTF("x^%zu", i);
     }
     if (first_coeff)
-        printf("0");
+        PRINTF("0");
 
-    printf("\n\nThe polynomial: z(x) = ");
+    PRINTF("\n\nThe polynomial: z(x) = ");
     bool first_coeff_1 = true;
     if (z[0]) {
-        printf("%u", z[0]);
+        PRINTF("%u", z[0]);
         first_coeff_1 = false;
     }
     for (size_t i = 1; i < (PARAM_DELTA + 1); ++i) {
         if (z[i] == 0)
             continue;
         if (!first_coeff_1)
-            printf(" + ");
+            PRINTF(" + ");
         first_coeff_1 = false;
         if (z[i] != 1)
-            printf("%u ", z[i]);
+            PRINTF("%u ", z[i]);
         if (i == 1)
-            printf("x");
+            PRINTF("x");
         else
-            printf("x^%zu", i);
+            PRINTF("x^%zu", i);
     }
     if (first_coeff_1)
-        printf("0");
+        PRINTF("0");
 
-    printf("\n\nThe pairs of (error locator numbers, error values): ");
+    PRINTF("\n\nThe pairs of (error locator numbers, error values): ");
     size_t j = 0;
     for (size_t i = 0; i < PARAM_N1; ++i) {
         if (error[i]) {
-            printf("(%zu, %d) ", i, error_values[j]);
+            PRINTF("(%zu, %d) ", i, error_values[j]);
             j++;
         }
     }
-    printf("\n");
+    PRINTF("\n");
 #endif
 }

@@ -8,13 +8,8 @@
 #include "code.h"
 #include "reed_muller.h"
 #include "reed_solomon.h"
-
-#ifdef VERBOSE
-
-#include <stdio.h>
+#include "../testing/architecture_detect.h"
 #include "../common/vector.h"
-
-#endif
 
 
 /**
@@ -34,9 +29,9 @@ void code_encode(uint64_t *em, const uint64_t *m) {
     reed_muller_encode(em, tmp);
 
 #ifdef VERBOSE
-    printf("\n\nReed-Solomon code word: ");
+    PRINTF("\n\nReed-Solomon code word: ");
     vect_print(tmp, VEC_N1_SIZE_BYTES);
-    printf("\n\nConcatenated code word: ");
+    PRINTF("\n\nConcatenated code word: ");
     vect_print(em, VEC_N1N2_SIZE_BYTES);
 #endif
 }
@@ -56,7 +51,7 @@ void code_decode(uint64_t *m, const uint64_t *em) {
 
 
 #ifdef VERBOSE
-    printf("\n\nReed-Muller decoding result (the input for the Reed-Solomon decoding algorithm): ");
+    PRINTF("\n\nReed-Muller decoding result (the input for the Reed-Solomon decoding algorithm): ");
     vect_print(tmp, VEC_N1_SIZE_BYTES);
 #endif
 }

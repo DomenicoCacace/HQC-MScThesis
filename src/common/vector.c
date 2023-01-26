@@ -5,12 +5,11 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
 
-#include "../lib/shake_prng.h"
 #include "parameters.h"
 #include "vector.h"
 
+#include "../testing/architecture_detect.h"
 
 /**
  * @brief Generates a vector of a given Hamming weight
@@ -211,25 +210,25 @@ void vect_print(const uint64_t *v, const uint32_t size) {
         uint8_t tmp[VEC_K_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_K_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_K_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     } else if (size == VEC_N_SIZE_BYTES) {
         uint8_t tmp[VEC_N_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     } else if (size == VEC_N1N2_SIZE_BYTES) {
         uint8_t tmp[VEC_N1N2_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N1N2_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N1N2_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     } else if (size == VEC_N1_SIZE_BYTES) {
         uint8_t tmp[VEC_N1_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N1_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N1_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     }
 }
@@ -243,7 +242,7 @@ void vect_print(const uint64_t *v, const uint32_t size) {
  */
 void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
     for (uint16_t i = 0; i < weight - 1; ++i) {
-        printf("%d ,", v[i]);
+        PRINTF("%d ,", v[i]);
     }
-    printf("%d", v[weight - 1]);
+    PRINTF("%d", v[weight - 1]);
 }
