@@ -32,13 +32,13 @@ void setup_clock(void) {
    /* Set the flash wait states */
    flash_dcache_enable();
    flash_icache_enable();
-   flash_set_ws(FLASH_ACR_LATENCY_2WS);
+   flash_set_ws(FLASH_ACR_LATENCY_0WS);
 
    /* Disable PLL oscillator before changing its configuration. */
    rcc_osc_off(RCC_PLL);
 
    /* Configure the PLL oscillator. */
-   rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, 2, 20, RCC_PLLCFGR_PLLP_DIV7, RCC_PLLCFGR_PLLQ_DIV8, RCC_PLLCFGR_PLLR_DIV2);
+   rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, 2, 20, RCC_PLLCFGR_PLLP_DIV7, RCC_PLLCFGR_PLLQ_DIV8, RCC_PLLCFGR_PLLR_DIV8);
    /* Enable PLL oscillator and wait for it to stabilize. */
    rcc_osc_on(RCC_PLL);
    rcc_wait_for_osc_ready(RCC_PLL);
@@ -54,9 +54,9 @@ void setup_clock(void) {
 
                                 
    /* Set the peripheral clock frequencies used. */
-   rcc_ahb_frequency =  80000000;
-   rcc_apb1_frequency = 40000000;
-   rcc_apb2_frequency = 80000000;
+   rcc_ahb_frequency =  20000000;
+   rcc_apb1_frequency = 10000000;
+   rcc_apb2_frequency = 20000000;
 
    /* Enable the 48MHz clock */
    rcc_set_msi_range(RCC_CR_MSIRANGE_48MHZ);
