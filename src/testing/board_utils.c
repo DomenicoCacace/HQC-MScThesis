@@ -1,14 +1,127 @@
+/**
+ * @file board_utils.c
+ * @brief Tools to set up and operate the board
+ */
+
 #include "board_utils.h"
 
+void setup_clock(const struct rcc_clock_scale *clock);
+
+void setup_gpio(void);
+
+void setup_usart(void);
+
+void setup_systick(void);
+
+void usart_send_str(char *str, int bytes);
+
+void usart_recv_str(char *str, int bytes);
+
+const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
+        { /* 80MHz */
+            .pllm = 2,
+            .plln = 20,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV2,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_3WS,
+            .ahb_frequency  = 80000000,
+            .apb1_frequency = 40000000,
+            .apb2_frequency = 80000000,
+        },
+        {   /* 20 MHz*/
+            .pllm = 2,
+            .plln = 20,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV8,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_0WS,
+            .ahb_frequency  = 20000000,
+            .apb1_frequency = 10000000,
+            .apb2_frequency = 20000000,
+        }
+};
+
+
 void setup_board(void) {
-    // HSE connects the PLL to an external High Speed oscillator, I believe.
-    // Since there is none attached to the board...
-    // rcc_clock_setup_pll(&rcc_hse_16mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
-    // rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_84MHZ]);
+    #define CLK_CFG &rcc_l476rg[RCC_CLOCK_L476RG_20MHz]
+    setup_clock(CLK_CFG);
     setup_gpio();
     setup_usart();
     setup_systick();
 }
+
+void setup_clock(const struct rcc_clock_scale *clock) {
+    /* Set the voltage range */
+    pwr_set_vos_scale(clock->voltage_scale);
+
+    /* Enable the HSI16 clock */
+    rcc_osc_on(RCC_HSI16);
+    rcc_wait_for_osc_ready(RCC_HSI16);
+
+    /* Set the HSI16 as the system clock source */
+    rcc_set_sysclk_source(RCC_PLLCFGR_PLLSRC_HSI16);
+
+    /*
+    * Set prescalers for AHB, ADC, APB1, APB2.
+    * Do this before touching the PLL (TODO: why?).
+    */
+    rcc_set_hpre(clock->hpre);
+    rcc_set_ppre1(clock->ppre1);
+    rcc_set_ppre2(clock->ppre2);
+
+    /* Set the flash wait states */
+   /* Configure flash settings. */
+    if (clock->flash_config & FLASH_ACR_DCEN) {
+            flash_dcache_enable();
+    } else {
+            flash_dcache_disable();
+    }
+    if (clock->flash_config & FLASH_ACR_ICEN) {
+            flash_icache_enable();
+    } else {
+            flash_icache_disable();
+    }
+    flash_set_ws(clock->flash_config);
+
+    /* Disable PLL oscillator before changing its configuration. */
+    rcc_osc_off(RCC_PLL);
+
+    /* Configure the PLL oscillator. */
+    rcc_set_main_pll(clock->pll_source, clock->pllm, clock->plln, clock->pllp, clock->pllq, clock->pllr);
+    /* Enable PLL oscillator and wait for it to stabilize. */
+    rcc_osc_on(RCC_PLL);
+    rcc_wait_for_osc_ready(RCC_PLL);
+
+    /* Select PLL as SYSCLK source. */
+    rcc_set_sysclk_source(RCC_CFGR_SWS_PLL);
+
+    /* Wait for PLL clock to be selected. */
+    rcc_wait_for_sysclk_status(RCC_PLL);
+    trigger_set();
+
+    /* Set the peripheral clock frequencies used. */
+    rcc_ahb_frequency =  clock->ahb_frequency;
+    rcc_apb1_frequency = clock->apb1_frequency;
+    rcc_apb2_frequency = clock->apb2_frequency;
+
+    /* Enable the 48MHz clock */
+    rcc_set_msi_range(RCC_CR_MSIRANGE_48MHZ);
+    rcc_osc_on(RCC_MSI);
+    rcc_wait_for_osc_ready(RCC_MSI);
+    rcc_set_clock48_source(RCC_CCIPR_CLK48SEL_MSI);
 }
 
 /* Sets up trigger GPIO as Port B - Pin 9 
@@ -40,23 +153,6 @@ void setup_gpio(void) {
     gpio_set_af(GPIOA, GPIO_AF7, GPIO2);
 
 }
-
-// USART COMMUNICATION
-#ifdef STLINK_COMM
-#define USART USART2
-#define RCC_USART RCC_USART2
-#elif USART2_COMM
-/* Enables USART 2
-* place board as described above, same column of pins as the trigger,
-* the LAST pin is RX, the penultimate one is TX
-* the closest digital GND is the tenth from the bottom on the
-* other column of pins of the same connector */
-#define USART USART1
-#define RCC_USART RCC_USART1
-#else
-#error "No communication method defined"
-#endif
-
 
 void setup_usart(void) {
 // Enable the UART clock
@@ -121,3 +217,5 @@ void debug(const char *str, ...) {
     usart_send_str(buffer, strlen(buffer));
 #endif
 }
+
+
