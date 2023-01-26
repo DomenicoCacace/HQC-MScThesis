@@ -120,7 +120,7 @@ void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
 void vect_set_random_from_prng(uint64_t *v) {
     uint8_t rand_bytes[VEC_K_SIZE_BYTES] = {0};
 
-    shake_prng(rand_bytes, VEC_K_SIZE_BYTES);
+    randombytes(rand_bytes, VEC_K_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_K_SIZE_BYTES);
 }
 
@@ -131,7 +131,7 @@ void vect_set_random_from_prng(uint64_t *v) {
 void vect_generate_random_for_mult(uint64_t *v) {
     uint8_t rand_bytes [VEC_N_SIZE_BYTES] = {0};
 
-    shake_prng(rand_bytes, VEC_N_SIZE_BYTES);
+    randombytes(rand_bytes, VEC_N_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_N_SIZE_BYTES);
     v[VEC_N_SIZE_64-1] &= BITMASK(PARAM_N, 64);
 }

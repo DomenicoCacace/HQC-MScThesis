@@ -35,10 +35,10 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     uint64_t s[VEC_N_SIZE_64] = {0};
 
     // Create seed_expanders for public key and secret key
-    shake_prng(sk_seed, SEED_BYTES);
+    randombytes(sk_seed, SEED_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
-    shake_prng(pk_seed, SEED_BYTES);
+    randombytes(pk_seed, SEED_BYTES);
     seedexpander_init(&pk_seedexpander, pk_seed, SEED_BYTES);
 
     // Compute secret key
@@ -124,22 +124,22 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
     vect_resize(v, PARAM_N1N2, tmp2, PARAM_N);
 
 #ifdef VERBOSE
-    printf("\n\nh: ");
+    PRINTF("\n\nh: ");
     vect_print(h, VEC_N_SIZE_BYTES);
-    printf("\n\ns: ");
+    PRINTF("\n\ns: ");
     vect_print(s, VEC_N_SIZE_BYTES);
-    printf("\n\nr1: ");
+    PRINTF("\n\nr1: ");
     vect_print(r1, VEC_N_SIZE_BYTES);
-    printf("\n\nr2: ");
+    PRINTF("\n\nr2: ");
     vect_print_sparse(r2, PARAM_OMEGA_R);
-    printf("\n\ne: ");
+    PRINTF("\n\ne: ");
     vect_print(e, VEC_N_SIZE_BYTES);
-    printf("\n\ntmp2: ");
+    PRINTF("\n\ntmp2: ");
     vect_print(tmp2, VEC_N_SIZE_BYTES);
 
-    printf("\n\nu: ");
+    PRINTF("\n\nu: ");
     vect_print(u, VEC_N_SIZE_BYTES);
-    printf("\n\nv: ");
+    PRINTF("\n\nv: ");
     vect_print(v, VEC_N1N2_SIZE_BYTES);
 #endif
 }
@@ -165,7 +165,7 @@ void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const un
     // Retrieve x, y, pk from secret key
     hqc_secret_key_from_string(x, y, pk, sk);
 
-    shake_prng(perm_seed, SEED_BYTES);
+    randombytes(perm_seed, SEED_BYTES);
     seedexpander_init(&perm_seedexpander, perm_seed, SEED_BYTES);
 
     // Compute v - u.y
@@ -174,13 +174,13 @@ void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const un
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_64);
 
 #ifdef VERBOSE
-    printf("\n\nu: ");
+    PRINTF("\n\nu: ");
     vect_print(u, VEC_N_SIZE_BYTES);
-    printf("\n\nv: ");
+    PRINTF("\n\nv: ");
     vect_print(v, VEC_N1N2_SIZE_BYTES);
-    printf("\n\ny: ");
+    PRINTF("\n\ny: ");
     vect_print_sparse(y, PARAM_OMEGA);
-    printf("\n\nv - u.y: ");
+    PRINTF("\n\nv - u.y: ");
     vect_print(tmp2, VEC_N_SIZE_BYTES);
 #endif
 
