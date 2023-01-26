@@ -1,8 +1,8 @@
 #include "board_utils.h"
 
 void setup_board(void) {
-   setup_clock();
    setup_gpio();
+   setup_clock();
    setup_usart();
    setup_trng();
 #ifdef TIMING
@@ -11,6 +11,9 @@ void setup_board(void) {
 }
 
 void setup_clock(void) {
+   /* Set the voltage range */
+   pwr_set_vos_scale(PWR_SCALE1);
+
    /* Enable the HSI16 clock */
    rcc_osc_on(RCC_HSI16);
    rcc_wait_for_osc_ready(RCC_HSI16);
@@ -23,36 +26,43 @@ void setup_clock(void) {
    * Do this before touching the PLL (TODO: why?).
    */
    rcc_set_hpre(RCC_CFGR_HPRE_NODIV);
-   rcc_set_ppre1(RCC_CFGR_PPRE1_NODIV);
+   rcc_set_ppre1(RCC_CFGR_PPRE1_DIV2);
    rcc_set_ppre2(RCC_CFGR_PPRE2_NODIV);
+
+   /* Set the flash wait states */
+   flash_dcache_enable();
+   flash_icache_enable();
+   flash_set_ws(FLASH_ACR_LATENCY_2WS);
 
    /* Disable PLL oscillator before changing its configuration. */
    rcc_osc_off(RCC_PLL);
 
    /* Configure the PLL oscillator. */
-   rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, 2, 10, RCC_PLLCFGR_PLLP_DIV7, RCC_PLLCFGR_PLLQ_DIV2, RCC_PLLCFGR_PLLR_DIV2);
-
+   rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, 2, 20, RCC_PLLCFGR_PLLP_DIV7, RCC_PLLCFGR_PLLQ_DIV8, RCC_PLLCFGR_PLLR_DIV2);
    /* Enable PLL oscillator and wait for it to stabilize. */
    rcc_osc_on(RCC_PLL);
    rcc_wait_for_osc_ready(RCC_PLL);
 
    /* Select PLL as SYSCLK source. */
-   rcc_set_sysclk_source(RCC_CFGR_SW_PLL);
+   rcc_set_sysclk_source(RCC_CFGR_SWS_PLL);
 
    /* Wait for PLL clock to be selected. */
    rcc_wait_for_sysclk_status(RCC_PLL);
+   trigger_set();
 
+
+
+                                
    /* Set the peripheral clock frequencies used. */
-   rcc_ahb_frequency =  40000000;
+   rcc_ahb_frequency =  80000000;
    rcc_apb1_frequency = 40000000;
-   rcc_apb2_frequency = 40000000;
+   rcc_apb2_frequency = 80000000;
 
-   /* Enable the 48MHz clock (set to 8MHz) */
-   rcc_set_msi_range(RCC_CR_MSIRANGE_8MHZ);
+   /* Enable the 48MHz clock */
+   rcc_set_msi_range(RCC_CR_MSIRANGE_48MHZ);
    rcc_osc_on(RCC_MSI);
    rcc_wait_for_osc_ready(RCC_MSI);
    rcc_set_clock48_source(RCC_CCIPR_CLK48SEL_MSI);
-
 }
 
 /* Sets up trigger GPIO as Port B - Pin 9 
