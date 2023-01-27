@@ -13,6 +13,8 @@ void setup_usart(void);
 
 void setup_systick(void);
 
+void setup_trng(void);
+
 void usart_send_str(char *str, int bytes);
 
 void usart_recv_str(char *str, int bytes);
@@ -61,6 +63,7 @@ void setup_board(void) {
     setup_gpio();
     setup_usart();
     setup_systick();
+    setup_trng();
 }
 
 void setup_clock(const struct rcc_clock_scale *clock) {
@@ -183,6 +186,12 @@ void setup_systick(void) {
 #ifdef TIMING
     dwt_enable_cycle_counter();
 #endif
+}
+
+void setup_trng(void) {
+   rcc_periph_clock_enable(RCC_RNG);
+   rng_enable();
+   rng_interrupt_enable();
 }
 
 void usart_send_str(char *str, int bytes) {
