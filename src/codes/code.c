@@ -5,11 +5,11 @@
 
 #include <stdint.h>
 
+#include "architecture_detect.h"
 #include "code.h"
 #include "reed_muller.h"
 #include "reed_solomon.h"
-#include "../testing/architecture_detect.h"
-#include "../common/vector.h"
+#include "vector.h"
 
 
 /**

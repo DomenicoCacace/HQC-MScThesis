@@ -8,8 +8,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "../lib/shake_prng.h"
-#include "../common/api.h"
+#include "api.h"
+#include "shake_prng.h"
 
 #define MAX_MARKER_LEN      50
 #define KAT_SUCCESS          0

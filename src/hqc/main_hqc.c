@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "../common/api.h"
-#include "../common/parameters.h"
+#include "api.h"
+#include "parameters.h"
 
 int main(void) {
 

@@ -6,16 +6,16 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../common/api.h"
-#include "../common/parameters.h"
-#include "../common/parsing.h"
-#include "../common/vector.h"
-#include "../lib/shake_ds.h"
+#include "api.h"
 #include "hqc.h"
+#include "parameters.h"
+#include "parsing.h"
+#include "shake_ds.h"
+#include "vector.h"
 
 #ifdef VERBOSE
 
-#include "../testing/architecture_detect.h"
+#include "architecture_detect.h"
 
 #endif
 

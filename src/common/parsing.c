@@ -6,9 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../lib/shake_prng.h"
 #include "parameters.h"
 #include "parsing.h"
+#include "shake_prng.h"
 #include "vector.h"
 
 

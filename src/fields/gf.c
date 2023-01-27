@@ -5,8 +5,8 @@
 
 #include <stdint.h>
 
-#include "../common/parameters.h"
 #include "gf.h"
+#include "parameters.h"
 
 /**
  * Multiplies nonzero element 'a' by element 'b'.

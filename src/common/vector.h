@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#include "../lib/shake_prng.h"
+#include "shake_prng.h"
 
 void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32_t *v, uint16_t weight);
 

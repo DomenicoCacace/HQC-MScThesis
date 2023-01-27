@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "../common/parameters.h"
+#include "parameters.h"
 
 #if SECURITY_LEVEL == 128
 static const uint16_t alpha_ij_pow[30][45] = {{2,   4,   8,   16,  32,  64,  128, 29,  58,  116, 232, 205, 135, 19,  38,  76,  152, 45,  90,  180, 117, 234, 201, 143, 3,   6,   12,  24,  48,  96,  192, 157, 39,  78,  156, 37,  74,  148, 53,  106, 212, 181, 119, 238, 193},

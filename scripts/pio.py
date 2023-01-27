@@ -1,3 +1,4 @@
+import os
 Import("env")
 
 # Do not run a script when external applications, such as IDEs,
@@ -7,6 +8,15 @@ if env.IsIntegrationDump():
     # stop the current script execution
     print("Running in IDE, returning...")
     Return()
+    
+project_dir = os.path.abspath(os.getcwd())
+# Add subdirectories to CPPPATH
+env.Append(CPPPATH=[project_dir + "/src/codes"])
+env.Append(CPPPATH=[project_dir + "/src/common/"])
+env.Append(CPPPATH=[project_dir + "/src/fields"])
+env.Append(CPPPATH=[project_dir + "/src/hqc"])
+env.Append(CPPPATH=[project_dir + "/src/lib"])
+env.Append(CPPPATH=[project_dir + "/src/testing"])
 
 print("Security level: manually set to 128")
 env.Append(CPPDEFINES=[("SECURITY_LEVEL", 128)])

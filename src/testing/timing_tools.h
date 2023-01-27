@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include "architecture_detect.h"
 
 typedef struct {

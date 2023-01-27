@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "../common/parameters.h"
+#include "parameters.h"
 
 void code_encode(uint64_t *codeword, const uint64_t *message);
 

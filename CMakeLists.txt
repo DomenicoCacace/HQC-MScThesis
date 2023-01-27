@@ -41,5 +41,12 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/testing/architecture_detect.h
 			${BASE_DIR}/testing/timing_tools.h)
 
+include_directories(${BASE_DIR}/codes)
+include_directories(${BASE_DIR}/common)
+include_directories(${BASE_DIR}/fields)
+include_directories(${BASE_DIR}/hqc)
+include_directories(${BASE_DIR}/lib)
+include_directories(${BASE_DIR}/testing)
+
 add_executable(hqc-${SECLVL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main.c)
 set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECLVL} -DVERBOSE=1 -DMODE=1 -DALG=MULT")

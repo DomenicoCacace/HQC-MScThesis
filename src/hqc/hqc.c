@@ -5,12 +5,12 @@
 
 #include <stdint.h>
 
-#include "../codes/code.h"
-#include "../common/parsing.h"
-#include "../common/vector.h"
-#include "../fields/gf2x.h"
-#include "../testing/architecture_detect.h"
+#include "architecture_detect.h"
+#include "code.h"
+#include "gf2x.h"
 #include "hqc.h"
+#include "parsing.h"
+#include "vector.h"
 
 
 /**

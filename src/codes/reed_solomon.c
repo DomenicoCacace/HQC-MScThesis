@@ -5,11 +5,11 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "../testing/architecture_detect.h"
+#include "architecture_detect.h"
 
-#include "../codes/reed_solomon.h"
-#include "../fields/fft.h"
-#include "../fields/gf.h"
+#include "reed_solomon.h"
+#include "fft.h"
+#include "gf.h"
 
 #ifdef VERBOSE
 

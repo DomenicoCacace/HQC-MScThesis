@@ -36,7 +36,7 @@ static void randombytes(uint8_t *x, uint16_t xlen);
 
 #else
 #include <stdio.h>
-#include "../lib/shake_prng.h"
+#include "shake_prng.h"
 
 #define PRINTF(...) printf(__VA_ARGS__)
 

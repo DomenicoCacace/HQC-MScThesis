@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "../common/parameters.h"
+#include "parameters.h"
 
 void reed_muller_encode(uint64_t *cdw, const uint64_t *msg);
 

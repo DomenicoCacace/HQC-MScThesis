@@ -12,9 +12,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../common/parameters.h"
 #include "fft.h"
 #include "gf.h"
+#include "parameters.h"
 
 static void compute_fft_betas(uint16_t *betas);
 

@@ -6,10 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "architecture_detect.h"
 #include "parameters.h"
 #include "vector.h"
-
-#include "../testing/architecture_detect.h"
 
 /**
  * @brief Generates a vector of a given Hamming weight

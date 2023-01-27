@@ -7,12 +7,12 @@
 
 #if MODE == PLAIN
 
-#include "../common/api.h"
-#include "../common/parameters.h"
-#include "../common/vector.h"
-#include "../fields/gf2x.h"
-#include "../hqc/hqc.h"
-#include "../lib/shake_ds.h"
+#include "api.h"
+#include "gf2x.h"
+#include "hqc.h"
+#include "parameters.h"
+#include "shake_ds.h"
+#include "vector.h"
 
 
 void FULL_KEM(void);
