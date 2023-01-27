@@ -80,6 +80,7 @@ void MULT(void) {
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
+    randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
     vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
     vect_generate_random_for_mult(u);

@@ -15,12 +15,13 @@
 /**
  * @brief Fills a vector with random bytes
  * @param[out] x The vector to fill
- * @param[in] xlen The length of the vector in bytes (must be a multiple of 4)
+ * @param[in] xlen The length of the vector in bytes
  */
 static void randombytes(uint8_t *x, uint16_t xlen);
 
 #ifdef CORTEX_M4
 #include "board_utils.h"
+#include "shake_prng.h"
 
     #define PRINTF(...) debug(__VA_ARGS__)
 
@@ -28,9 +29,14 @@ static void randombytes(uint8_t *x, uint16_t xlen);
     #define TRIGGER_RESET trigger_reset();
 
     static void randombytes(uint8_t *x, uint16_t xlen) {
-
-        for (int i = 0; i < xlen; i+=4) {
-            x[i] = rand();
+        uint8_t rand[4];
+        for (int i = 0; i < (xlen/4)*4; i+=4) {
+            rng_get_random((uint32_t *)rand);
+            x[i] = *rand;
+        }
+        rng_get_random((uint32_t *)rand);
+        for (int i = (xlen/4)*4; i < xlen; i++) {
+            x[i] = rand[i-(xlen/4)*4];
         }
     }
 

@@ -77,8 +77,11 @@ int MULT(void) {
     uint32_t y[PARAM_OMEGA] = {0};
     uint64_t res_original[VEC_N_SIZE_64] = {0};
     uint64_t res_optimized[VEC_N_SIZE_64] = {0};
+    unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
+    randombytes(sk, SEED_BYTES);
+    seedexpander_init(&seedexpander, sk, SEED_BYTES);
     vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
     vect_generate_random_for_mult(u);
 
