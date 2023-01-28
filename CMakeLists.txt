@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.0)
 project(HQC)
 
 set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -std=c99 -funroll-all-loops -flto -pedantic -Wall -Wextra -lm")
-set(SECLVL 128)
 
 set(BASE_DIR ./src)
 
@@ -49,4 +48,4 @@ include_directories(${BASE_DIR}/lib)
 include_directories(${BASE_DIR}/testing)
 
 add_executable(hqc-${SECLVL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main.c)
-set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECLVL} -DVERBOSE=1 -DMODE=1 -DALG=MULT")
+set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS)
