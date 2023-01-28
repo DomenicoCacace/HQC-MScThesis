@@ -35,7 +35,7 @@ void KEYGEN(void);
 
 uint32_t start, end;
 
-void run(int BATCH_SIZE) {    
+int run(int BATCH_SIZE) {    
     welford_t timer;
     welford_init(&timer);
 
@@ -46,6 +46,7 @@ void run(int BATCH_SIZE) {
     }
     TRIGGER_RESET
     welford_print(timer);
+    return 0;
 }
 
 void FULL_KEM(void) {

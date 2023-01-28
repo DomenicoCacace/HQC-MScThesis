@@ -22,13 +22,15 @@ int FULL_PKE(void);
 int MULT(void);
 
 
-void run(int BATCH_SIZE) {
+int run(int BATCH_SIZE) {
     int passed = 0;
     TRIGGER_SET
     for(int i = 0; i < BATCH_SIZE; i++) 
         passed += ALG();
     TRIGGER_RESET
     PRINTF("Passed/Total: %d/%d\n\n", passed, BATCH_SIZE);  
+
+    return BATCH_SIZE-passed;
 }
 
 int FULL_KEM(void) {

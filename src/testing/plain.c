@@ -31,10 +31,11 @@ void DECAPS(void);
 
 void KEYGEN(void);
 
-void run(int BATCH_SIZE) {    
+int run(int BATCH_SIZE) {    
     for(int i = 0; i < BATCH_SIZE; i++) {
         ALG();
     }
+    return 0;
 }
 
 void FULL_KEM(void) {

@@ -13,5 +13,5 @@ int main(void) {
 #ifdef CORTEX_M4
     setup_board();
 #endif
-    run(BATCH_SIZE);
+    return run(BATCH_SIZE);
 }
