@@ -6,10 +6,9 @@
  * @brief Header file for gf2x.c
  */
 
-#include <stdint.h>
-
+#include "parameters.h"
 #include "shake_prng.h"
 
-void vect_mul(uint64_t *o, const uint32_t *v1, const uint64_t *v2, uint16_t weight, seedexpander_state *ctx);
+void vect_mul(DIGIT *o, const uint32_t *v1, const DIGIT *v2, uint16_t weight, seedexpander_state *ctx);
 
 #endif

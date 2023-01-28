@@ -50,11 +50,11 @@ int FULL_KEM(void) {
 int FULL_PKE(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
-    uint64_t m_in[VEC_K_SIZE_64] = {0};
-    uint64_t m_out[VEC_K_SIZE_64] = {0};
+    DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT m_out[VEC_K_SIZE_DIGIT] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
 
     vect_set_random_from_prng(m_in);
@@ -73,10 +73,10 @@ int MULT(void) {
     #define MUL_ORIGINAL vect_mul
     #define MUL_OPTIMIZED vect_mul
 
-    uint64_t u[VEC_N_SIZE_64] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     uint32_t y[PARAM_OMEGA] = {0};
-    uint64_t res_original[VEC_N_SIZE_64] = {0};
-    uint64_t res_optimized[VEC_N_SIZE_64] = {0};
+    DIGIT res_original[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT res_optimized[VEC_N_SIZE_DIGIT] = {0};
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 

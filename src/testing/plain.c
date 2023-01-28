@@ -54,11 +54,11 @@ void FULL_KEM(void) {
 void FULL_PKE(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
-    uint64_t m_in[VEC_K_SIZE_64] = {0};
-    uint64_t m_out[VEC_K_SIZE_64] = {0};
+    DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT m_out[VEC_K_SIZE_DIGIT] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
 
     vect_set_random_from_prng(m_in);
@@ -74,9 +74,9 @@ void FULL_PKE(void) {
 void MULT(void) {
     #define MUL vect_mul
 
-    uint64_t u[VEC_N_SIZE_64] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     uint32_t y[PARAM_OMEGA] = {0};
-    uint64_t res[VEC_N_SIZE_64] = {0};
+    DIGIT res[VEC_N_SIZE_DIGIT] = {0};
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
@@ -91,9 +91,9 @@ void MULT(void) {
 }
 
 void ENC(void) {
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
-    uint64_t m[VEC_K_SIZE_64] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
+    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
@@ -109,9 +109,9 @@ void ENC(void) {
 }
 
 void DEC(void) {
-    uint64_t u[VEC_N_SIZE_64] = {0};
-    uint64_t v[VEC_N1N2_SIZE_64] = {0};
-    uint64_t m[VEC_K_SIZE_64] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
+    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
 

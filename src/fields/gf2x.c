@@ -10,13 +10,13 @@
 #include "parameters.h"
 
 #define TABLE 16
-#define WORD 64
+#define WORD DIGIT_SIZE_b
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
 
-static void reduce(uint64_t *o, const uint64_t *a);
+static void reduce(DIGIT *o, const DIGIT *a);
 
-static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, uint16_t weight,
+static void fast_convolution_mult(DIGIT *o, const uint32_t *a1, const DIGIT *a2, uint16_t weight,
                                   seedexpander_state *ctx);
 
 /**
@@ -44,17 +44,17 @@ static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2) {
  * @param[in] a Pointer to the polynomial a(x)
  * @param[out] o Pointer to the result
  */
-static void reduce(uint64_t *o, const uint64_t *a) {
+static void reduce(DIGIT *o, const DIGIT *a) {
     size_t i;
-    uint64_t r;
-    uint64_t carry;
+    DIGIT r;
+    DIGIT carry;
 
-    for (i = 0; i < VEC_N_SIZE_64; i++) {
-        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N & 0x3F);
-        carry = (uint64_t) (a[i + VEC_N_SIZE_64] << (64 - (PARAM_N & 0x3F)));
+    for (i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        r = a[i + VEC_N_SIZE_DIGIT - 1] >> (PARAM_N &(WORD-1));
+        carry = (DIGIT) (a[i + VEC_N_SIZE_DIGIT] << (WORD - (PARAM_N & (WORD-1))));
         o[i] = a[i] ^ r ^ carry;
     }
-    o[VEC_N_SIZE_64 - 1] &= RED_MASK;
+    o[VEC_N_SIZE_DIGIT - 1] &= RED_MASK;
 }
 
 
@@ -69,11 +69,11 @@ static void reduce(uint64_t *o, const uint64_t *a) {
  * @param[in] weight Hamming wifht of the sparse polynomial a2
  * @param[in] ctx Pointer to a seed expander used to randomize the multiplication process
  */
-static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight,
+static void fast_convolution_mult(DIGIT *o, const uint32_t *a1, const DIGIT *a2, const uint16_t weight,
                                   seedexpander_state *ctx) {
-    uint64_t carry;
+    DIGIT carry;
     int32_t dec, s;
-    uint64_t table[TABLE * (VEC_N_SIZE_64 + 1)];
+    DIGIT table[TABLE * (VEC_N_SIZE_DIGIT + 1)];
     uint16_t permuted_table[TABLE];
     uint16_t permutation_table[TABLE];
     uint16_t permuted_sparse_vect[PARAM_OMEGA_E];
@@ -89,25 +89,25 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
         swap(permuted_table + i, 0, permutation_table[i] % (TABLE - i));
     }
 
-    uint64_t *pt = table + (permuted_table[0] * (VEC_N_SIZE_64 + 1));
+    DIGIT *pt = table + (permuted_table[0] * (VEC_N_SIZE_DIGIT + 1));
 
-    for (size_t i = 0; i < VEC_N_SIZE_64; i++) {
+    for (size_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
         pt[i] = a2[i];
     }
 
-    pt[VEC_N_SIZE_64] = 0x0UL;
+    pt[VEC_N_SIZE_DIGIT] = 0x0UL;
 
     for (size_t i = 1; i < TABLE; i++) {
         carry = 0x0UL;
-        int32_t idx = permuted_table[i] * (VEC_N_SIZE_64 + 1);
-        uint64_t *pt = table + idx;
+        int32_t idx = permuted_table[i] * (VEC_N_SIZE_DIGIT + 1);
+        DIGIT *pt = table + idx;
 
-        for (size_t j = 0; j < VEC_N_SIZE_64; j++) {
+        for (size_t j = 0; j < VEC_N_SIZE_DIGIT; j++) {
             pt[j] = (a2[j] << i) ^ carry;
             carry = (a2[j] >> ((WORD - i)));
         }
 
-        pt[VEC_N_SIZE_64] = carry;
+        pt[VEC_N_SIZE_DIGIT] = carry;
     }
 
     for (size_t i = 0; i < weight; i++) {
@@ -125,16 +125,16 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
         dec = a1[permuted_sparse_vect[i]] & 0xf;
         s = a1[permuted_sparse_vect[i]] >> 4;
 
-        uint16_t *res_16 = (uint16_t *) o;
-        res_16 += s;
-        uint64_t *pt = table + (permuted_table[dec] * (VEC_N_SIZE_64 + 1));
+        DIGIT_QUARTER *res_q = (DIGIT_QUARTER *) o;
+        res_q += s;
+        DIGIT *pt = table + (permuted_table[dec] * (VEC_N_SIZE_DIGIT + 1));
 
-        for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
-            uint64_t tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
-                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
+        for (size_t j = 0; j < VEC_N_SIZE_DIGIT + 1; j++) {
+            DIGIT tmp = (DIGIT) res_q[0] | ((DIGIT) (res_q[1])) << (DIGIT_SIZE_b/4) |
+                           (DIGIT) (res_q[2]) << (DIGIT_SIZE_b/2) | ((DIGIT) (res_q[3])) << (DIGIT_SIZE_b*3/4);
             tmp ^= pt[j];
-            memcpy(res_16, &tmp, 8);
-            res_16 += 4;
+            memcpy(res_q, &tmp, DIGIT_SIZE_B);
+            res_q += 4;
         }
     }
 }
@@ -152,8 +152,8 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
  * @param[in] weight Integer that is the weigt of the sparse polynomial
  * @param[in] ctx Pointer to the randomness context
  */
-void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx) {
-    uint64_t tmp[(VEC_N_SIZE_64 << 1) + 1] = {0};
+void vect_mul(DIGIT *o, const uint32_t *a1, const DIGIT *a2, const uint16_t weight, seedexpander_state *ctx) {
+    DIGIT tmp[(VEC_N_SIZE_DIGIT << 1) + 1] = {0};
 
     fast_convolution_mult(tmp, a1, a2, weight, ctx);
     reduce(o, tmp);

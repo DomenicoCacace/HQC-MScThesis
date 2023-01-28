@@ -50,9 +50,9 @@ static const uint16_t alpha_ij_pow [58][89] = {{2, 4, 8, 16, 32, 64, 128, 29, 58
 #error INVALID SECURITY LEVEL
 #endif
 
-void reed_solomon_encode(uint64_t *cdw, const uint64_t *msg);
+void reed_solomon_encode(DIGIT *cdw, const DIGIT *msg);
 
-void reed_solomon_decode(uint64_t *msg, uint64_t *cdw);
+void reed_solomon_decode(DIGIT *msg, DIGIT *cdw);
 
 void compute_generator_poly(uint16_t *poly);
 

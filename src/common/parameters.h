@@ -11,6 +11,19 @@
 #define CEIL_DIVIDE(a, b)  (((a)/(b)) + ((a) % (b) == 0 ? 0 : 1)) /*!< Divide a by b and ceil the result*/
 #define BITMASK(a, size) ((1UL << (a % size)) - 1) /*!< Create a mask*/
 
+#ifdef CORTEX_M4
+#define DIGIT                                       uint32_t
+#define DIGIT_QUARTER                               uint8_t
+#define DIGIT_SIZE_B                                4
+#define DIGIT_SIZE_b                                32
+#else
+#define DIGIT                                       uint64_t
+#define DIGIT_QUARTER                               uint16_t
+#define DIGIT_SIZE_B                                8
+#define DIGIT_SIZE_b                                64  
+#endif
+
+
 /*
     #define PARAM_N                             	Define the parameter n of the scheme
     #define PARAM_N1                            	Define the parameter n1 of the scheme (length of Reed-Solomon code)
@@ -59,6 +72,17 @@
     #define SEED_BYTES                          	Define the size of the seed in bytes
 */
 
+#define SECRET_KEY_BYTES                        CRYPTO_SECRETKEYBYTES
+#define PUBLIC_KEY_BYTES                        CRYPTO_PUBLICKEYBYTES
+#define SHARED_SECRET_BYTES                     CRYPTO_BYTES
+#define CIPHERTEXT_BYTES                        CRYPTO_CIPHERTEXTBYTES
+
+#define PARAM_SECURITY                      	SECURITY_LEVEL
+#define PARAM_DFR_EXP                       	SECURITY_LEVEL
+
+#define SHAKE256_512_BYTES                      64
+#define SEED_BYTES                          	40
+
 #if SECURITY_LEVEL == 128
 
 #define PARAM_N                                 17669
@@ -68,29 +92,8 @@
 #define PARAM_OMEGA                             66
 #define PARAM_OMEGA_E                           75
 #define PARAM_OMEGA_R                           75
-#define PARAM_SECURITY                          128
-#define PARAM_DFR_EXP                           128
-
-#define SECRET_KEY_BYTES                        CRYPTO_SECRETKEYBYTES
-#define PUBLIC_KEY_BYTES                        CRYPTO_PUBLICKEYBYTES
-#define SHARED_SECRET_BYTES                     CRYPTO_BYTES
-#define CIPHERTEXT_BYTES                        CRYPTO_CIPHERTEXTBYTES
 
 #define UTILS_REJECTION_THRESHOLD               16767881
-#define VEC_N_SIZE_BYTES                        CEIL_DIVIDE(PARAM_N, 8)
-#define VEC_K_SIZE_BYTES                        PARAM_K
-#define VEC_N1_SIZE_BYTES                       PARAM_N1
-#define VEC_N1N2_SIZE_BYTES                     CEIL_DIVIDE(PARAM_N1N2, 8)
-
-#define VEC_N_SIZE_32                           CEIL_DIVIDE(PARAM_N, 32)
-#define VEC_K_SIZE_32                           CEIL_DIVIDE(PARAM_K, 4)
-#define VEC_N1_SIZE_32                          CEIL_DIVIDE(PARAM_N1, 4)
-#define VEC_N1N2_SIZE_32                        CEIL_DIVIDE(PARAM_N1N2, 32)
-
-#define VEC_N_SIZE_64                           CEIL_DIVIDE(PARAM_N, 64)
-#define VEC_K_SIZE_64                           CEIL_DIVIDE(PARAM_K, 8)
-#define VEC_N1_SIZE_64                          CEIL_DIVIDE(PARAM_N1, 8)
-#define VEC_N1N2_SIZE_64                        CEIL_DIVIDE(PARAM_N1N2, 64)
 
 #define PARAM_DELTA                             15
 #define PARAM_M                                 8
@@ -101,11 +104,8 @@
 #define PARAM_FFT                               4
 #define RS_POLY_COEFFS                          89,69,153,116,176,117,111,75,73,233,242,233,65,210,21,139,103,173,67,118,105,210,174,110,74,69,228,82,255,181,1
 
-#define RED_MASK                                BITMASK(PARAM_N, 64)
-#define SHAKE256_512_BYTES                      64
-#define SEED_BYTES                              40
-
 #elif SECURITY_LEVEL == 192
+
 #define PARAM_N								    35851
 #define PARAM_N1                            	56
 #define PARAM_N2                            	640
@@ -113,29 +113,8 @@
 #define PARAM_OMEGA                         	100
 #define PARAM_OMEGA_E                       	114
 #define PARAM_OMEGA_R                       	114
-#define PARAM_SECURITY                      	192
-#define PARAM_DFR_EXP                       	192
-
-#define SECRET_KEY_BYTES                    	CRYPTO_SECRETKEYBYTES
-#define PUBLIC_KEY_BYTES                    	CRYPTO_PUBLICKEYBYTES
-#define SHARED_SECRET_BYTES                 	CRYPTO_BYTES
-#define CIPHERTEXT_BYTES                    	CRYPTO_CIPHERTEXTBYTES
 
 #define UTILS_REJECTION_THRESHOLD               16742417
-#define VEC_N_SIZE_BYTES                    	CEIL_DIVIDE(PARAM_N, 8)
-#define VEC_K_SIZE_BYTES                    	PARAM_K
-#define VEC_N1_SIZE_BYTES                   	PARAM_N1
-#define VEC_N1N2_SIZE_BYTES                 	CEIL_DIVIDE(PARAM_N1N2, 8)
-
-#define VEC_N_SIZE_32                       	CEIL_DIVIDE(PARAM_N, 32)
-#define VEC_K_SIZE_32                       	CEIL_DIVIDE(PARAM_K, 4)
-#define VEC_N1_SIZE_32                      	CEIL_DIVIDE(PARAM_N1, 4)
-#define VEC_N1N2_SIZE_32                    	CEIL_DIVIDE(PARAM_N1N2, 32)
-
-#define VEC_N_SIZE_64                       	CEIL_DIVIDE(PARAM_N, 64)
-#define VEC_K_SIZE_64                       	CEIL_DIVIDE(PARAM_K, 8)
-#define VEC_N1_SIZE_64                      	CEIL_DIVIDE(PARAM_N1, 8)
-#define VEC_N1N2_SIZE_64                    	CEIL_DIVIDE(PARAM_N1N2, 64)
 
 #define PARAM_DELTA                         	16
 #define PARAM_M                            	    8
@@ -146,11 +125,8 @@
 #define PARAM_FFT                           	5
 #define RS_POLY_COEFFS                          45,216,239,24,253,104,27,40,107,50,163,210,227,134,224,158,119,13,158,1,238,164,82,43,15,232,246,142,50,189,29,232,1
 
-#define RED_MASK                            	BITMASK(PARAM_N, 64)
-#define SHAKE256_512_BYTES                      64
-#define SEED_BYTES                          	40
-
 #elif SECURITY_LEVEL == 256
+
 #define PARAM_N								    57637
 #define PARAM_N1                            	90
 #define PARAM_N2                            	640
@@ -158,29 +134,8 @@
 #define PARAM_OMEGA                         	131
 #define PARAM_OMEGA_E                       	149
 #define PARAM_OMEGA_R                       	149
-#define PARAM_SECURITY                      	256
-#define PARAM_DFR_EXP                       	256
-
-#define SECRET_KEY_BYTES                    	CRYPTO_SECRETKEYBYTES
-#define PUBLIC_KEY_BYTES                    	CRYPTO_PUBLICKEYBYTES
-#define SHARED_SECRET_BYTES                 	CRYPTO_BYTES
-#define CIPHERTEXT_BYTES                    	CRYPTO_CIPHERTEXTBYTES
 
 #define UTILS_REJECTION_THRESHOLD               16772367
-#define VEC_N_SIZE_BYTES                    	CEIL_DIVIDE(PARAM_N, 8)
-#define VEC_K_SIZE_BYTES                    	PARAM_K
-#define VEC_N1_SIZE_BYTES                   	PARAM_N1
-#define VEC_N1N2_SIZE_BYTES                 	CEIL_DIVIDE(PARAM_N1N2, 8)
-
-#define VEC_N_SIZE_64                       	CEIL_DIVIDE(PARAM_N, 64)
-#define VEC_K_SIZE_64                       	CEIL_DIVIDE(PARAM_K, 8)
-#define VEC_N1_SIZE_64                      	CEIL_DIVIDE(PARAM_N1, 8)
-#define VEC_N1N2_SIZE_64                    	CEIL_DIVIDE(PARAM_N1N2, 64)
-
-#define VEC_N_SIZE_32                       	CEIL_DIVIDE(PARAM_N, 32)
-#define VEC_K_SIZE_32                       	CEIL_DIVIDE(PARAM_K, 4)
-#define VEC_N1_SIZE_32                      	CEIL_DIVIDE(PARAM_N1, 4)
-#define VEC_N1N2_SIZE_32                    	CEIL_DIVIDE(PARAM_N1N2, 32)
 
 #define PARAM_DELTA                         	29
 #define PARAM_M                            	    8
@@ -191,11 +146,19 @@
 #define PARAM_FFT                           	5
 #define RS_POLY_COEFFS                          49,167,49,39,200,121,124,91,240,63,148,71,150,123,87,101,32,215,159,71,201,115,97,210,186,183,141,217,123,12,31,243,180,219,152,239,99,141,4,246,191,144,8,232,47,27,141,178,130,64,124,47,39,188,216,48,199,187,1
 
-#define RED_MASK                            	BITMASK(PARAM_N, 64)
-#define SHAKE256_512_BYTES                      64
-#define SEED_BYTES                          	40
 #else
 #error INVALID SECURITY LEVEL
 #endif
+
+#define VEC_N_SIZE_BYTES                    	CEIL_DIVIDE(PARAM_N, 8)
+#define VEC_K_SIZE_BYTES                    	PARAM_K
+#define VEC_N1_SIZE_BYTES                   	PARAM_N1
+#define VEC_N1N2_SIZE_BYTES                 	CEIL_DIVIDE(PARAM_N1N2, 8)
+
+#define VEC_N_SIZE_DIGIT                        CEIL_DIVIDE(PARAM_N, DIGIT_SIZE_b)
+#define VEC_K_SIZE_DIGIT                        CEIL_DIVIDE(PARAM_K, DIGIT_SIZE_B)
+#define VEC_N1_SIZE_DIGIT                       CEIL_DIVIDE(PARAM_N1, DIGIT_SIZE_B)
+#define VEC_N1N2_SIZE_DIGIT                     CEIL_DIVIDE(PARAM_N1N2, DIGIT_SIZE_b)
+#define RED_MASK                                BITMASK(PARAM_N, DIGIT_SIZE_b)
 
 #endif

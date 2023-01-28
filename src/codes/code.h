@@ -11,8 +11,8 @@
 
 #include "parameters.h"
 
-void code_encode(uint64_t *codeword, const uint64_t *message);
+void code_encode(DIGIT *codeword, const DIGIT *message);
 
-void code_decode(uint64_t *message, const uint64_t *vector);
+void code_decode(DIGIT *message, const DIGIT *vector);
 
 #endif
