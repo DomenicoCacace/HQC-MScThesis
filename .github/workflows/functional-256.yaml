@@ -1,0 +1,50 @@
+name: functional-test-256
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Multiplication - Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSECURITY_LEVEL=256 -DMODE=1 -DALG=MULT
+    - name: Multiplication - Make executable
+      run: |
+        cd build/
+        make hqc-256
+    - name: Multiplication - Run test
+      run: |
+        cd build/
+        chmod +x hqc-256
+        ./hqc-256
+
+    - name: KEM - Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSECURITY_LEVEL=256 -DMODE=1 -DALG=FULL_KEM
+    - name: KEM - Make executable
+      run: |
+        cd build/
+        make hqc-256
+    - name: KEM - Run test
+      run: |
+        cd build/
+        chmod +x hqc-256
+        ./hqc-256
+
+    - name: PKE - Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSECURITY_LEVEL=256 -DMODE=1 -DALG=FULL_PKE
+    - name: PKE - Make executable
+      run: |
+        cd build/
+        make hqc-256
+    - name: PKE - Run test
+      run: |
+        cd build/
+        chmod +x hqc-256
+        ./hqc-256

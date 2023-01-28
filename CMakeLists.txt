@@ -47,5 +47,6 @@ include_directories(${BASE_DIR}/hqc)
 include_directories(${BASE_DIR}/lib)
 include_directories(${BASE_DIR}/testing)
 
-add_executable(hqc-${SECLVL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main.c)
-set_property(TARGET hqc-${SECLVL} APPEND PROPERTY COMPILE_FLAGS)
+add_executable(hqc-${SECURITY_LEVEL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main.c)
+set_property(TARGET hqc-${SECURITY_LEVEL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECURITY_LEVEL} -DMODE=${MODE} -DALG=${ALG}")
+target_link_libraries(hqc-${SECURITY_LEVEL} m)
