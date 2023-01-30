@@ -30,4 +30,6 @@ void vect_print(const DIGIT *v, uint32_t size);
 
 void vect_print_sparse(const uint32_t *v, uint16_t weight);
 
+void vect_sparse_to_dense(DIGIT *dense, const uint32_t *sparse, const uint16_t weight);
+
 #endif

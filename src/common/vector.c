@@ -81,14 +81,8 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, DIGIT *v, uint16_t we
     uint32_t tmp[PARAM_OMEGA_R] = {0};
 
     vect_set_random_fixed_weight_by_coordinates(ctx, tmp, weight);
-
-    for (size_t i = 0; i < weight; ++i) {
-        int32_t index = tmp[i] / DIGIT_SIZE_b;
-        int32_t pos = tmp[i] % DIGIT_SIZE_b;
-        v[index] |= ((DIGIT) 1) << pos;
-    }
+    vect_sparse_to_dense(v, tmp, weight);
 }
-
 
 /**
  * @brief Generates a random vector of dimension <b>PARAM_N</b>
@@ -244,3 +238,20 @@ void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
     }
     PRINTF("%d", v[weight - 1]);
 }
+
+
+/**
+ * @brief Converts a sparse vector to a dense vector
+ * 
+ * @param[out] dense Pointer to the dense vector
+ * @param[in] sparse Pointer to the sparse vector
+ * @param[in] weight Integer that is the Hamming weight
+*/
+void vect_sparse_to_dense(DIGIT *dense, const uint32_t *sparse, const uint16_t weight) {
+    for (size_t i = 0; i < weight; ++i) {
+        int32_t index = sparse[i] / DIGIT_SIZE_b;
+        int32_t pos = sparse[i] % DIGIT_SIZE_b;
+        dense[index] |= ((DIGIT) 1) << pos;
+    }
+}
+
