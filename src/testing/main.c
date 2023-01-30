@@ -2,7 +2,6 @@
  * @file main_arm.c
  */
 
-#include "architecture_detect.h"
 #include "main.h"
 
 #ifdef CORTEX_M4

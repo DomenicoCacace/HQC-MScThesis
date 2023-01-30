@@ -13,7 +13,6 @@
 #include "gf2x.h"
 #include "hqc.h"
 #include "main.h"
-#include "parameters.h"
 #include "shake_ds.h"
 #include "vector.h"
 

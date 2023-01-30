@@ -5,7 +5,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "architecture_detect.h"
 
 #include "reed_solomon.h"
 #include "fft.h"

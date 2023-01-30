@@ -5,11 +5,9 @@
 
 #include <stdint.h>
 
-#include "architecture_detect.h"
 #include "code.h"
 #include "reed_muller.h"
 #include "reed_solomon.h"
-#include "vector.h"
 
 
 /**

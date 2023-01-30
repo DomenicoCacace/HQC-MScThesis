@@ -6,18 +6,12 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "architecture_detect.h"
 #include "api.h"
 #include "hqc.h"
-#include "parameters.h"
 #include "parsing.h"
 #include "shake_ds.h"
 #include "vector.h"
-
-#ifdef VERBOSE
-
-#include "architecture_detect.h"
-
-#endif
 
 
 /**

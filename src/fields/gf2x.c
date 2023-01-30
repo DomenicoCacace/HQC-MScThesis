@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "gf2x.h"
-#include "parameters.h"
 
 #define TABLE 16
 #define WORD DIGIT_SIZE_b
