@@ -159,7 +159,7 @@ uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size) {
         r |= v1[i] ^ v2[i];
     }
 
-    r = (~r + 1) >> 63;
+    r = (~r + 1) >> (DIGIT_SIZE_b-1);
     return (uint8_t) r;
 }
 
