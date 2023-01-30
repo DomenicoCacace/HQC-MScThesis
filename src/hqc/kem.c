@@ -116,7 +116,7 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     PRINTF("\n\n\n\n### DECAPS ###");
 #endif
 
-    uint8_t *pk;
+    const uint8_t *pk;
     uint8_t result;
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
