@@ -3,6 +3,8 @@
  */
 
 #include "architecture_detect.h"
+#include "main.h"
+
 #ifdef CORTEX_M4
 #include "board_utils.h"
 #endif

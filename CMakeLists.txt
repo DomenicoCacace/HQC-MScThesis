@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(HQC)
 
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -std=c99 -funroll-all-loops -flto -pedantic -Wall -Wextra -lm")
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -O3 -std=c99 -pedantic -Wall -Wextra -Wno-unused-function -lm")
 
 set(BASE_DIR ./src)
 
