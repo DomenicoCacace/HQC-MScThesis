@@ -192,7 +192,7 @@ void vect_resize(DIGIT *o, uint32_t size_o, const DIGIT *v, uint32_t size_v) {
             o[VEC_N1N2_SIZE_DIGIT - 1] &= (RED_MASK >> i);
         }
     } else {
-        memcpy(o, v, CEIL_DIVIDE(size_v, DIGIT_SIZE_B));
+        memcpy(o, v, CEIL_DIVIDE(size_v, 8));
     }
 }
 
