@@ -12,6 +12,7 @@
 #define WORD 64
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
+
 static void reduce(uint64_t *o, const uint64_t *a);
 static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
 
@@ -47,13 +48,12 @@ static void reduce(uint64_t *o, const uint64_t *a) {
     uint64_t carry;
 
     for (i = 0; i < VEC_N_SIZE_64; i++) {
-        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N & 0x3F);
-        carry = (uint64_t ) (a[i + VEC_N_SIZE_64 ] << (64 - (PARAM_N & 0x3F)));
+        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N &(WORD-1));
+        carry = (uint64_t) (a[i + VEC_N_SIZE_64] << (WORD - (PARAM_N & (WORD-1))));
         o[i] = a[i] ^ r ^ carry;
     }
-    o[VEC_N_SIZE_64 - 1] &= RED_MASK;
+    o[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, WORD);
 }
-
 
 
 /**
@@ -128,7 +128,7 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
 
         for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
             uint64_t tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
-                (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
+                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
             tmp ^= pt[j];
             memcpy(res_16, &tmp, 8);
             res_16 += 4;
@@ -170,16 +170,13 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
  * @param[in] weight Integer that is the weigt of the sparse polynomial
  * @param[in] ctx Pointer to the randomness context
  */
-void opt_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2) {
-    uint32_t a1_m[65536/32] = {0};
-    uint32_t a2_m[65536/32] = {0};
-    uint64_t res[65536/32*2] = {0};
+void opt_mul(DIGIT *o, const DIGIT *a1, const DIGIT *a2) {
+    DIGIT a1_m[65536/DIGIT_SIZE_b] = {0};
+    DIGIT a2_m[65536/DIGIT_SIZE_b] = {0};
+    DIGIT res[65536/DIGIT_SIZE_b*2] = {0};
     memcpy(a1_m, a1, VEC_N_SIZE_BYTES);
     memcpy(a2_m, a2, VEC_N_SIZE_BYTES);
 
     bmul2((uint8_t *) res, (const uint8_t *) a1_m, (const uint8_t *) a2_m);
     reduce(o, res);
 }
-
-
-
