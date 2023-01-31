@@ -6,9 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../lib/shake_prng.h"
 #include "parameters.h"
 #include "parsing.h"
+#include "shake_prng.h"
 #include "vector.h"
 
 
@@ -28,19 +28,18 @@ void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t
 }
 
 
-
 /**
  * @brief Parse a secret key from a string
  *
  * The secret key is composed of the seed used to generate vectors <b>x</b> and <b>y</b>.
  * As technicality, the public key is appended to the secret key in order to respect NIST API.
  *
- * @param[out] x uint64_t representation of vector x
+ * @param[out] x DIGIT representation of vector x
  * @param[out] y uint32_t representation of vector y
  * @param[out] pk String containing the public key
  * @param[in] sk String containing the secret key
  */
-void hqc_secret_key_from_string(uint64_t *x, uint32_t *y, uint8_t *pk, const uint8_t *sk) {
+void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *sk) {
     seedexpander_state sk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
 
@@ -53,7 +52,6 @@ void hqc_secret_key_from_string(uint64_t *x, uint32_t *y, uint8_t *pk, const uin
 }
 
 
-
 /**
  * @brief Parse a public key into a string
  *
@@ -63,11 +61,10 @@ void hqc_secret_key_from_string(uint64_t *x, uint32_t *y, uint8_t *pk, const uin
  * @param[in] pk_seed Seed used to generate the public key
  * @param[in] s uint8_t representation of vector s
  */
-void hqc_public_key_to_string(uint8_t *pk, const uint8_t *pk_seed, const uint64_t *s) {
+void hqc_public_key_to_string(uint8_t *pk, const uint8_t *pk_seed, const DIGIT *s) {
     memcpy(pk, pk_seed, SEED_BYTES);
     memcpy(pk + SEED_BYTES, s, VEC_N_SIZE_BYTES);
 }
-
 
 
 /**
@@ -79,7 +76,7 @@ void hqc_public_key_to_string(uint8_t *pk, const uint8_t *pk_seed, const uint64_
  * @param[out] s uint8_t representation of vector s
  * @param[in] pk String containing the public key
  */
-void hqc_public_key_from_string(uint64_t *h, uint64_t *s, const uint8_t *pk) {
+void hqc_public_key_from_string(DIGIT *h, DIGIT *s, const uint8_t *pk) {
     seedexpander_state pk_seedexpander;
     uint8_t pk_seed[SEED_BYTES] = {0};
 
@@ -89,7 +86,6 @@ void hqc_public_key_from_string(uint64_t *h, uint64_t *s, const uint8_t *pk) {
 
     memcpy(s, pk + SEED_BYTES, VEC_N_SIZE_BYTES);
 }
-
 
 
 /**
@@ -102,12 +98,11 @@ void hqc_public_key_from_string(uint64_t *h, uint64_t *s, const uint8_t *pk) {
  * @param[in] v uint8_t representation of vector v
  * @param[in] d String containing the hash d
  */
-void hqc_ciphertext_to_string(uint8_t *ct, const uint64_t *u, const uint64_t *v, const uint8_t *d) {
+void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const uint8_t *d) {
     memcpy(ct, u, VEC_N_SIZE_BYTES);
     memcpy(ct + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
     memcpy(ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, d, SHAKE256_512_BYTES);
 }
-
 
 
 /**
@@ -120,7 +115,7 @@ void hqc_ciphertext_to_string(uint8_t *ct, const uint64_t *u, const uint64_t *v,
  * @param[out] d String containing the hash d
  * @param[in] ct String containing the ciphertext
  */
-void hqc_ciphertext_from_string(uint64_t *u, uint64_t *v, uint8_t *d, const uint8_t *ct) {
+void hqc_ciphertext_from_string(DIGIT *u, DIGIT *v, uint8_t *d, const uint8_t *ct) {
     memcpy(u, ct, VEC_N_SIZE_BYTES);
     memcpy(v, ct + VEC_N_SIZE_BYTES, VEC_N1N2_SIZE_BYTES);
     memcpy(d, ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, SHAKE256_512_BYTES);

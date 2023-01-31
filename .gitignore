@@ -5,7 +5,10 @@
 *.code-workspace
 
 # Build folders
+cmake-build-debug/
 .pio/
 build/
 cmake-build-debug/
 
+# Docs
+docs/

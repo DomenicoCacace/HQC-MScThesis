@@ -30,9 +30,9 @@
 
 #pragma once
 
-#include "../common/parameters.h"
 #include "gf2x_limbs.h"
 #include "gf2x_arith.h"
+#include "parameters.h"
 #include <string.h>
 /*----------------------------------------------------------------------------*/
 

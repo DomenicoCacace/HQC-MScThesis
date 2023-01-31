@@ -757,18 +757,7 @@ void gf2x_mod_mul_dense_to_sparse(DIGIT Res[],
                                   const POSITION_T sparse[],
                                   unsigned int nPos)
 {
-    DIGIT temp[NUM_DIGITS_GF2X_ELEMENT] = {0};
-    DIGIT res[NUM_DIGITS_GF2X_ELEMENT] = {0};
-    // invert dense endianness
-    for(int i = 0; i < NUM_DIGITS_GF2X_ELEMENT; i++)
-        temp[i] = dense[NUM_DIGITS_GF2X_ELEMENT - 1 - i];
-
-
     for(int i = 0; i < nPos; i++) {
-        gf2x_mod_fmac(res,sparse[i],temp);
+        gf2x_mod_fmac(Res, sparse[i], dense);
     }
-
-    // invert result endianness
-    for(int i = 0; i < NUM_DIGITS_GF2X_ELEMENT; i++)
-        Res[i] = res[NUM_DIGITS_GF2X_ELEMENT - 1 - i];
 }

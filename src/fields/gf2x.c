@@ -6,13 +6,13 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../common/parameters.h"
 #include "gf2x.h"
 
 #define TABLE 16
 #define WORD 64
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
+
 static void reduce(uint64_t *o, const uint64_t *a);
 static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
 
@@ -48,13 +48,12 @@ static void reduce(uint64_t *o, const uint64_t *a) {
     uint64_t carry;
 
     for (i = 0; i < VEC_N_SIZE_64; i++) {
-        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N & 0x3F);
-        carry = (uint64_t ) (a[i + VEC_N_SIZE_64 ] << (64 - (PARAM_N & 0x3F)));
+        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N &(WORD-1));
+        carry = (uint64_t) (a[i + VEC_N_SIZE_64] << (WORD - (PARAM_N & (WORD-1))));
         o[i] = a[i] ^ r ^ carry;
     }
-    o[VEC_N_SIZE_64 - 1] &= RED_MASK;
+    o[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, WORD);
 }
-
 
 
 /**
@@ -129,7 +128,7 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
 
         for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
             uint64_t tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
-                (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
+                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
             tmp ^= pt[j];
             memcpy(res_16, &tmp, 8);
             res_16 += 4;
@@ -156,4 +155,32 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
 
     fast_convolution_mult(tmp, a1, a2, weight, ctx);
     reduce(o, tmp);
+}
+
+
+/**
+ * @brief Multiply two polynomials modulo \f$ X^n - 1\f$.
+ *
+ * This functions multiplies a sparse polynomial <b>a1</b> (of Hamming weight equal to <b>weight</b>)
+ * and a dense polynomial <b>a2</b>. The multiplication is done modulo \f$ X^n - 1\f$.
+ *
+ * @param[out] o Pointer to the result
+ * @param[in] a1 Pointer to the sparse polynomial
+ * @param[in] a2 Pointer to the dense polynomial
+ * @param[in] weight Integer that is the weigt of the sparse polynomial
+ * @param[in] ctx Pointer to the randomness context
+ */
+void opt_mul(DIGIT *o, const uint32_t *a1, const DIGIT *a2, const uint16_t weight) {
+    DIGIT temp[NUM_DIGITS_GF2X_ELEMENT] = {0};
+    DIGIT res[NUM_DIGITS_GF2X_ELEMENT] = {0};
+
+    // invert dense endianness
+    for(int i = 0; i < NUM_DIGITS_GF2X_ELEMENT; i++)
+        temp[i] = a2[NUM_DIGITS_GF2X_ELEMENT - 1 - i];
+
+    gf2x_mod_mul_dense_to_sparse(res, temp, a1, weight);
+
+    // invert result endianness
+    for(int i = 0; i < NUM_DIGITS_GF2X_ELEMENT; i++)
+        o[i] = res[NUM_DIGITS_GF2X_ELEMENT - 1 - i];
 }
