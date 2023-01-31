@@ -12,7 +12,7 @@ if env.IsIntegrationDump():
 project_dir = os.path.abspath(os.getcwd())
 # Add subdirectories to CPPPATH
 env.Append(CPPPATH=[project_dir + "/src/codes"])
-env.Append(CPPPATH=[project_dir + "/src/common/"])
+env.Append(CPPPATH=[project_dir + "/src/common"])
 env.Append(CPPPATH=[project_dir + "/src/fields"])
 env.Append(CPPPATH=[project_dir + "/src/hqc"])
 env.Append(CPPPATH=[project_dir + "/src/lib"])
@@ -21,6 +21,7 @@ env.Append(CPPPATH=[project_dir + "/src/testing"])
 print("Security level: manually set to 128")
 env.Append(CPPDEFINES=[("SECURITY_LEVEL", 128)])
 env.Append(CPPDEFINES=[("CORTEX_M4")])
+env.Append(CPPDEFINES=[("_M4_ASM_")])
 
 # Select the communication interface
 print("Communication Interface\n[0] STLINK (Default)\n[1] USART2")

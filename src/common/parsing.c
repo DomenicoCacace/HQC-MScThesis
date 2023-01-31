@@ -39,7 +39,7 @@ void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t
  * @param[out] pk String containing the public key
  * @param[in] sk String containing the secret key
  */
-void hqc_secret_key_from_string(DIGIT *x, uint32_t *y, uint8_t *pk, const uint8_t *sk) {
+void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *sk) {
     seedexpander_state sk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
 

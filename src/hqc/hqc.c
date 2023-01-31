@@ -90,7 +90,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
  */
 void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk) {
     seedexpander_state seedexpander;
-    DIGIT h[VEC_N_SIZE_DIGIT] = {0};
+    uint64_t h[VEC_N_SIZE_64] = {0};
     DIGIT s[VEC_N_SIZE_DIGIT] = {0};
     DIGIT r1[VEC_N_SIZE_DIGIT] = {0};
     uint32_t r2[PARAM_OMEGA_R] = {0};

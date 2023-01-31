@@ -10,7 +10,7 @@
 
 void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t *pk);
 
-void hqc_secret_key_from_string(DIGIT *x, uint32_t *y, uint8_t *pk, const uint8_t *sk);
+void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *sk);
 
 void hqc_public_key_to_string(uint8_t *pk, const uint8_t *pk_seed, const DIGIT *s);
 

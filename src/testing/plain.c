@@ -80,7 +80,7 @@ void MULT(void) {
 
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     uint32_t y[PARAM_OMEGA] = {0};
-    DIGIT res[VEC_N_SIZE_DIGIT] = {0};
+    uint64_t res[VEC_N_SIZE_64] = {0};
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
