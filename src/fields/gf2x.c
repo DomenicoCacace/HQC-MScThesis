@@ -6,13 +6,13 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../common/parameters.h"
 #include "gf2x.h"
 
 #define TABLE 16
 #define WORD 64
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
+
 static void reduce(uint64_t *o, const uint64_t *a);
 static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
 
@@ -48,13 +48,12 @@ static void reduce(uint64_t *o, const uint64_t *a) {
     uint64_t carry;
 
     for (i = 0; i < VEC_N_SIZE_64; i++) {
-        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N & 0x3F);
-        carry = (uint64_t ) (a[i + VEC_N_SIZE_64 ] << (64 - (PARAM_N & 0x3F)));
+        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N &(WORD-1));
+        carry = (uint64_t) (a[i + VEC_N_SIZE_64] << (WORD - (PARAM_N & (WORD-1))));
         o[i] = a[i] ^ r ^ carry;
     }
-    o[VEC_N_SIZE_64 - 1] &= RED_MASK;
+    o[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, WORD);
 }
-
 
 
 /**
@@ -129,7 +128,7 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
 
         for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
             uint64_t tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
-                (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
+                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
             tmp ^= pt[j];
             memcpy(res_16, &tmp, 8);
             res_16 += 4;

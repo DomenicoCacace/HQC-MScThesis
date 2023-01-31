@@ -7,11 +7,11 @@
  */
 
 #include <stddef.h>
-#include <stdint.h>
 
-#include "../common/parameters.h"
+#include "parameters.h"
 
-void reed_muller_encode(uint64_t* cdw, const uint64_t* msg);
-void reed_muller_decode(uint64_t* msg, const uint64_t* cdw);
+void reed_muller_encode(DIGIT *cdw, const DIGIT *msg);
+
+void reed_muller_decode(DIGIT *msg, const DIGIT *cdw);
 
 #endif
