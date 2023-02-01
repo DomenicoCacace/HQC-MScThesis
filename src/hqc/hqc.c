@@ -5,16 +5,12 @@
 
 #include <stdint.h>
 
-#include "../codes/code.h"
-#include "../common/parsing.h"
-#include "../common/vector.h"
-#include "../fields/gf2x.h"
-#include "../fields/shares.h"
+#include "architecture_detect.h"
+#include "code.h"
+#include "gf2x.h"
 #include "hqc.h"
-
-#ifdef VERBOSE
-    #include <stdio.h>
-#endif
+#include "parsing.h"
+#include "vector.h"
 
 
 /**
@@ -28,24 +24,24 @@
  * @param[out] pk String containing the public key
  * @param[out] sk String containing the secret key
  */
-void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
+void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     seedexpander_state sk_seedexpander;
     seedexpander_state pk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
-    uint32_t x[VEC_N_SIZE_32] = {0};
+    DIGIT x[VEC_N_SIZE_DIGIT] = {0};
     shares_n_t y;
-    uint32_t h[VEC_N_SIZE_32] = {0};
+    DIGIT h[VEC_N_SIZE_DIGIT] = {0};
     shares_n_t s;
 
     shares_n_init(&y);
     shares_n_init(&s);
 
     // Create seed_expanders for public key and secret key
-    shake_prng(sk_seed, SEED_BYTES);
+    randombytes(sk_seed, SEED_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
-    shake_prng(pk_seed, SEED_BYTES);
+    randombytes(pk_seed, SEED_BYTES);
     seedexpander_init(&pk_seedexpander, pk_seed, SEED_BYTES);
 
     // Compute secret key
@@ -63,19 +59,26 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
     hqc_secret_key_to_string(sk, sk_seed, pk);
 
     #ifdef VERBOSE
-        printf("\n\nsk_seed: "); for(int i = 0 ; i < SEED_BYTES ; ++i) printf("%02x", sk_seed[i]);
-        printf("\n\nx: "); vect_print(x, VEC_N_SIZE_BYTES);
-        printf("\n\ny: "); vect_print(y, VEC_N_SIZE_BYTES);
+    PRINTF("\n\nsk_seed: ");
+    for(int i = 0 ; i < SEED_BYTES ; ++i) PRINTF("%02x", sk_seed[i]);
+    PRINTF("\n\nx: ");
+    vect_print(x, VEC_N_SIZE_BYTES);
+    PRINTF("\n\ny: ");
+    vect_print(y, VEC_N_SIZE_BYTES);
 
-        printf("\n\npk_seed: "); for(int i = 0 ; i < SEED_BYTES ; ++i) printf("%02x", pk_seed[i]);
-        printf("\n\nh: "); vect_print(h, VEC_N_SIZE_BYTES);
-        printf("\n\ns: "); vect_print(s, VEC_N_SIZE_BYTES);
+    PRINTF("\n\npk_seed: ");
+    for (int i = 0; i < SEED_BYTES; ++i) PRINTF("%02x", pk_seed[i]);
+    PRINTF("\n\nh: ");
+    vect_print(h, VEC_N_SIZE_BYTES);
+    PRINTF("\n\ns: ");
+    vect_print(s, VEC_N_SIZE_BYTES);
 
-        printf("\n\nsk: "); for(int i = 0 ; i < SECRET_KEY_BYTES ; ++i) printf("%02x", sk[i]);
-        printf("\n\npk: "); for(int i = 0 ; i < PUBLIC_KEY_BYTES ; ++i) printf("%02x", pk[i]);
-    #endif
+    PRINTF("\n\nsk: ");
+    for (int i = 0; i < SECRET_KEY_BYTES; ++i) PRINTF("%02x", sk[i]);
+    PRINTF("\n\npk: ");
+    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) PRINTF("%02x", pk[i]);
+#endif
 }
-
 
 
 /**
@@ -89,11 +92,11 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
  * @param[in] theta Seed used to derive randomness required for encryption
  * @param[in] pk String containing the public key
  */
-void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta, const unsigned char *pk) {
+void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk) {
     seedexpander_state seedexpander;
-    uint32_t h[VEC_N_SIZE_32] = {0};
-    uint32_t s[VEC_N_SIZE_32] = {0};
-    uint32_t e[VEC_N_SIZE_32] = {0};
+    DIGIT h[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT s[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT e[VEC_N_SIZE_DIGIT] = {0};
     shares_n_t r1;
     shares_n_t r2;
     shares_n_t tmp1;
@@ -138,19 +141,26 @@ void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta
     shares_n_collapse(tmp1.s0, &tmp1, e);
     vect_resize(v, PARAM_N1N2, tmp1.s0, PARAM_N);
 
-    #ifdef VERBOSE
-        printf("\n\nh: "); vect_print(h, VEC_N_SIZE_BYTES);
-        printf("\n\ns: "); vect_print(s, VEC_N_SIZE_BYTES);
-        printf("\n\nr1: "); vect_print(r1, VEC_N_SIZE_BYTES);
-        printf("\n\nr2: "); vect_print_sparse(r2, PARAM_OMEGA_R);
-        printf("\n\ne: "); vect_print(e, VEC_N_SIZE_BYTES);
-        printf("\n\ntmp2: "); vect_print(tmp2, VEC_N_SIZE_BYTES);
+#ifdef VERBOSE
+    PRINTF("\n\nh: ");
+    vect_print(h, VEC_N_SIZE_BYTES);
+    PRINTF("\n\ns: ");
+    vect_print(s, VEC_N_SIZE_BYTES);
+    PRINTF("\n\nr1: ");
+    vect_print(r1, VEC_N_SIZE_BYTES);
+    PRINTF("\n\nr2: ");
+    vect_print_sparse(r2, PARAM_OMEGA_R);
+    PRINTF("\n\ne: ");
+    vect_print(e, VEC_N_SIZE_BYTES);
+    PRINTF("\n\ntmp2: ");
+    vect_print(tmp2, VEC_N_SIZE_BYTES);
 
-        printf("\n\nu: "); vect_print(u, VEC_N_SIZE_BYTES);
-        printf("\n\nv: "); vect_print(v, VEC_N1N2_SIZE_BYTES);
-    #endif
+    PRINTF("\n\nu: ");
+    vect_print(u, VEC_N_SIZE_BYTES);
+    PRINTF("\n\nv: ");
+    vect_print(v, VEC_N1N2_SIZE_BYTES);
+#endif
 }
-
 
 
 /**
@@ -161,11 +171,11 @@ void hqc_pke_encrypt(uint32_t *u, uint32_t *v, uint32_t *m, unsigned char *theta
  * @param[in] v Vector v (second part of the ciphertext)
  * @param[in] sk String containing the secret key
  */
-void hqc_pke_decrypt(uint32_t *m, const uint32_t *u, const uint32_t *v, const unsigned char *sk) {
-    uint32_t x[VEC_N_SIZE_32] = {0};
+void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
+    DIGIT x[VEC_N_SIZE_DIGIT] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
     shares_n_t y;
-    uint32_t _v[VEC_N_SIZE_32] = {0};
+    DIGIT _v[VEC_N_SIZE_DIGIT] = {0};
     shares_k_t _m;
     shares_n1n2_t c;
     shares_n_t tmp1;
