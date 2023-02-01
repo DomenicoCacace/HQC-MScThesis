@@ -1,8 +1,13 @@
 # IDE config files
 .code
+.idea
 .vscode
 *.code-workspace
 
 # Build folders
+cmake-build-debug/
 .pio/
 build/
+
+# Docs
+docs/

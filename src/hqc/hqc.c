@@ -3,18 +3,14 @@
  * @brief Implementation of hqc.h
  */
 
-#include "hqc.h"
-#include "../common/parameters.h"
-#include "../common/parsing.h"
-#include "../lib/shake_prng.h"
-#include "../fields/gf2x.h"
-#include "../codes/code.h"
-#include "../common/vector.h"
 #include <stdint.h>
-#include <string.h>
-#ifdef VERBOSE
-#include <stdio.h>
-#endif
+
+#include "architecture_detect.h"
+#include "code.h"
+#include "gf2x.h"
+#include "hqc.h"
+#include "parsing.h"
+#include "vector.h"
 
 
 /**
@@ -28,7 +24,7 @@
  * @param[out] pk String containing the public key
  * @param[out] sk String containing the secret key
  */
-void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
+void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     seedexpander_state sk_seedexpander;
     seedexpander_state pk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
@@ -51,10 +47,10 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
 
 
     // Create seed_expanders for public key and secret key
-    shake_prng(sk_seed, SEED_BYTES);
+    randombytes(sk_seed, SEED_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
-    shake_prng(pk_seed, SEED_BYTES);
+    randombytes(pk_seed, SEED_BYTES);
     seedexpander_init(&pk_seedexpander, pk_seed, SEED_BYTES);
 
     // Compute secret key
@@ -79,11 +75,12 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
         printf("\n\nh: "); vect_print((uint64_t *) h_256, VEC_N_SIZE_BYTES);
         printf("\n\ns: "); vect_print(s, VEC_N_SIZE_BYTES);
 
-        printf("\n\nsk: "); for(int i = 0 ; i < SECRET_KEY_BYTES ; ++i) printf("%02x", sk[i]);
-        printf("\n\npk: "); for(int i = 0 ; i < PUBLIC_KEY_BYTES ; ++i) printf("%02x", pk[i]);
-    #endif
+    PRINTF("\n\nsk: ");
+    for (int i = 0; i < SECRET_KEY_BYTES; ++i) PRINTF("%02x", sk[i]);
+    PRINTF("\n\npk: ");
+    for (int i = 0; i < PUBLIC_KEY_BYTES; ++i) PRINTF("%02x", pk[i]);
+#endif
 }
-
 
 
 /**
@@ -97,7 +94,7 @@ void hqc_pke_keygen(unsigned char* pk, unsigned char* sk) {
  * @param[in] theta Seed used to derive randomness required for encryption
  * @param[in] pk String containing the public key
  */
-void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta, const unsigned char *pk) {
+void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk) {
     seedexpander_state seedexpander;
     static __m256i h_256[VEC_N_256_SIZE_64 >> 2];
     static __m256i s_256[VEC_N_256_SIZE_64 >> 2];
@@ -158,11 +155,12 @@ void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta
         printf("\n\ne: "); vect_print((uint64_t *) e_256, VEC_N_SIZE_BYTES);
         printf("\n\ntmp3_256: "); vect_print((uint64_t *) tmp3_256, VEC_N_SIZE_BYTES);
 
-        printf("\n\nu: "); vect_print(u, VEC_N_SIZE_BYTES);
-        printf("\n\nv: "); vect_print(v, VEC_N1N2_SIZE_BYTES);
-    #endif
+    PRINTF("\n\nu: ");
+    vect_print(u, VEC_N_SIZE_BYTES);
+    PRINTF("\n\nv: ");
+    vect_print(v, VEC_N1N2_SIZE_BYTES);
+#endif
 }
-
 
 
 /**

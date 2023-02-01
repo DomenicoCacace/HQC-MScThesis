@@ -1,4 +1,3 @@
-
 /**
  * @file shake_ds.c
  * @brief Implementation SHAKE-256 with incremental API and domain separation
@@ -32,5 +31,5 @@ void shake256_512_ds(shake256incctx *state, uint8_t *output, const uint8_t *inpu
     shake256_inc_finalize(state);
 
     /* Squeeze output */
-    shake256_inc_squeeze(output, 512/8, state);
+    shake256_inc_squeeze(output, 512 / 8, state);
 }

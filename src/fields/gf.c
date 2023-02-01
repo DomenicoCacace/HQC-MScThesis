@@ -9,7 +9,6 @@
 
 static uint16_t gf_reduce(uint64_t x, size_t deg_x);
 
-
 /**
  * @brief Generates exp and log lookup tables of GF(2^m).
  *
@@ -95,7 +94,6 @@ uint16_t gf_mul(uint16_t a, uint16_t b) {
 }
 
 
-
 /**
  *  Compute 16 products in GF(2^GF_M).
  *  @returns the product (a0b0,a1b1,...,a15b15) , ai,bi in GF(2^GF_M)
@@ -163,7 +161,6 @@ uint16_t gf_square(uint16_t a) {
 }
 
 
-
 /**
  * Computes the inverse of an element of GF(2^8),
  * using the addition chain 1 2 3 4 7 11 15 30 60 120 127 254
@@ -187,7 +184,6 @@ uint16_t gf_inverse(uint16_t a) {
     inv = gf_square(inv); /* a^254 */
     return inv;
 }
-
 
 
 /**

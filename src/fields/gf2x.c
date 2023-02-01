@@ -170,7 +170,6 @@ static inline void karat_mult_2(__m256i *C, __m256i *A, __m256i *B) {
 }
 
 
-
 /**
  * @brief Compute C(x) = A(x)*B(x)
  *
