@@ -54,9 +54,9 @@ void welford_print(const welford_t state) {
     char mean[13], variance[13];
     gcvt(state.mean, 13, mean);
     gcvt(sqrtl(state.M2 / (long double) (state.count - 1)), 13, variance);
-    PRINTF("%s \t %s\r\n", mean, variance);
+    PRINTF("%s,%s\r\n", mean, variance);
     #else
-    PRINTF("%Lf \t %Lf\r\n", state.mean, sqrtl(state.M2 / (long double) (state.count - 1)));
+    PRINTF("%Lf,%Lf\r\n", state.mean, sqrtl(state.M2 / (long double) (state.count - 1)));
     #endif
 }
 

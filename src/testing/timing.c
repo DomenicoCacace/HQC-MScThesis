@@ -49,6 +49,7 @@ int run(int BATCH_SIZE) {
     }
     TRIGGER_RESET
     welford_print(timer);
+    PRINTF("DONE\n");
     return 0;
 }
 

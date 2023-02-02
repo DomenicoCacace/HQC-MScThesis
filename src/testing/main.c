@@ -8,7 +8,7 @@
 #include "board_utils.h"
 #endif
 
-#define BATCH_SIZE 500
+#define BATCH_SIZE 1000
 
 int main(void) {
 #ifdef CORTEX_M4

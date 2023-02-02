@@ -89,13 +89,13 @@ if mode == 2 or mode == 1:   # PLAIN/TIMING
     elif alg == 2:
         env.Append(CPPDEFINES=[("ALG", "MULT")])
     elif alg == 3:
-        env.Append(CPPDEFINES=[("ALG", "ENCRYPT")])
+        env.Append(CPPDEFINES=[("ALG", "ENC")])
     elif alg == 4:
-        env.Append(CPPDEFINES=[("ALG", "DECRYPT")])
+        env.Append(CPPDEFINES=[("ALG", "DEC")])
     elif alg == 5:
         env.Append(CPPDEFINES=[("ALG", "ENCAPS")])
     elif alg == 6:
         env.Append(CPPDEFINES=[("ALG", "DECAPS")])
     elif alg == 7:
         env.Append(CPPDEFINES=[("ALG", "KEYGEN")])
-        
+   
