@@ -1,0 +1,13 @@
+
+    We are however free to choose the points at which we sample the polynomials, which can drastically reduce the amount of operations needed.
+    Instead of sampling at $2n$ random points, we can choose the points to be the $N$-th roots of unity, \textit{i.e.} we calculate the Discrete
+    Fourier Transform of the input polynomials:
+    \begin{equation}
+        \mathcal{F}(x) = \sum_{n=0}^{N} x_n e^{-\frac{i2\pi}{N}kn}
+    \end{equation}\label{DFT}
+    At this point we can perform the pointwise product in the \textit{transformed} domain and, since $\mathcal{F}$ is invertible, apply the inverse transform:
+    \begin{equation}
+        \mathcal{F}^{-1}(X) = \frac{1}{N}\sum_{n=0}^{N} X_n e^{i\frac{2\pi}{N}kn}
+    \end{equation}
+    The algorithms that compute the discrete Fourier Transform of a sequence (or its inverse) are called fast Fourier transforms (FFT), and have an asymptotic complexity
+    of $\mathcal{O}(n\log n)$.

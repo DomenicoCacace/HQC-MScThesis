@@ -6,6 +6,7 @@
 *.fdb_latexmk
 *.fls
 *.log
+*.lof
 *.lot
 *.out
 *.pdfsync
@@ -13,3 +14,5 @@
 *.run.xml
 *.synctex.gz
 *.toc
+
+Images/*.pdf
