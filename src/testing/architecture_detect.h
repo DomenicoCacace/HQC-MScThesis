@@ -9,6 +9,7 @@
 #define FUNCTIONAL 0
 #define TIMING 1
 #define PLAIN 2
+#define TTEST 3
 
 #include <stdint.h>
 

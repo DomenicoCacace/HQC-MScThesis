@@ -21,7 +21,8 @@ set(SOURCES ${BASE_DIR}/codes/code.c
 			${BASE_DIR}/lib/shake_prng.c
 			${BASE_DIR}/testing/functional.c
 			${BASE_DIR}/testing/plain.c
-			${BASE_DIR}/testing/timing.c)
+			${BASE_DIR}/testing/timing.c
+			${BASE_DIR}/testing/ttest.c)
 
 set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/codes/reed_muller.h

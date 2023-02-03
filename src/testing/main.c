@@ -1,5 +1,5 @@
 /**
- * @file main_arm.c
+ * @file main.c
  */
 
 #include "main.h"
