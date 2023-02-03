@@ -2,32 +2,35 @@ import os
 import serial
 import subprocess
 
-branches = ["main", "fastmul", "sparsemul", "masking"]
+branches = ["reference", "reference_noshuffle" "fastmul", "sparsemul", "masking"]
 algs = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps", "keygen"]
+freqs = ["16", "32", "48", "64", "80"]
 
 def main(): 
     for branch in branches:
         print("Checking out {}".format(branch))
         os.system("git checkout {} > /dev/null".format(branch))
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()[0:7]
-        f = open("../docs/timing_ARM.csv", "w")
-        f.write("commit,branch,algorithm,mean,var\n")
-        for i in range(0, len(algs)):
-            #print without newline
-            print("    Running {}...".format(algs[i]), end="\r")
-            build(i)
-            result = getResults()
-            print("    {} done! ({}s, {}s)".format(algs[i], result[0], result[1]))
-            f.write("{},{},{},{},{}\n".format(commit, branch, algs[i], result[0], result[1]))
+        if not os.path.isfile("../docs/timing_ARM.csv"):
+            f = open("../docs/timing_ARM.csv", "w")
+            f.write("commit,branch,algorithm,mean,var,freq,notes\n")
+        else:
+            f = open("../docs/timing_ARM_.csv", "a")
+            f.write("\n")
+        for j in range(0, len(freqs)):
+            for i in range(0, len(algs)):
+                print("    Running {}...".format(algs[i]), end="\r")
+                build(i, j)
+                result = getResults()
+                print("    {} done! ({}, {})".format(algs[i], result[0], result[1]))
+                f.write("{},{},{},{},{},{},\n".format(commit, branch, algs[i], result[0], result[1], freqs[j]))
         f.close()
         os.system("git add ../docs/timing_ARM.csv")
         os.system("git commit -m \"Add ARM timing results\"".format(branch))
         print()
     
 
-
-
-def build(alg):
+def build(alg, freq):
     p = subprocess.Popen(["platformio", "run", "-t", "upload", "-c", "../platformio.ini", "-d", "../"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
     while True:
@@ -37,6 +40,9 @@ def build(alg):
             p.stdin.flush()
         elif "Enable debug messages [Y/n]: \n" in line:
             p.stdin.write("Y\n")
+            p.stdin.flush()
+        elif "Select clock frequency:" in line:
+            p.stdin.write("{}\n".format(freq))
             p.stdin.flush()
         elif "Select operating mode:" in line:
             p.stdin.write("1\n")
@@ -58,9 +64,6 @@ def getResults():
             break
         lines[1] = line
     return lines[0].strip().split(",")
-
-
-
 
 
 if __name__ == "__main__":
