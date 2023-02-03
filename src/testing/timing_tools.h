@@ -70,16 +70,20 @@ double welch_t_statistic(const welford_t state1,
     num = state1.mean - state2.mean;
     den = sqrtl(var1/(long double) state1.count + var2/(long double) state2.count );
 
+    if(den == 0.0) {
+        if(num != 0)
+            return INFINITY;
+        return 0;
+    }
     return num/den;
 }
 
 static inline
-double welch_t_print(const welford_t state1,
+void welch_t_print(const welford_t state1,
                      const welford_t state2) {
     double t = welch_t_statistic(state1, state2);
-    char t_str[13];
+    char t_str[13] = {0};
     gcvt(t, 13, t_str);
     PRINTF("%s\r\n", t_str);
-    return t;
 }
 #endif
