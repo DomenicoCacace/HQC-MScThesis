@@ -67,9 +67,9 @@ const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
             .voltage_scale = PWR_SCALE1,
             .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
                             FLASH_ACR_LATENCY_2WS,
-            .ahb_frequency  = 32000000,
-            .apb1_frequency = 16000000,
-            .apb2_frequency = 32000000,
+            .ahb_frequency  = 48000000,
+            .apb1_frequency = 24000000,
+            .apb2_frequency = 48000000,
         },
         {   /* 32 MHz*/
             .pllm = 2,
