@@ -45,21 +45,28 @@ else:
     env.Append(CPPDEFINES=[("DEBUG")])
     print("Debug enabled")
 
+# Select the clock frequency
+print("Clock frequency\n[0] 16 MHz (Default)\n[1] 32 MHz\n[2] 48 MHz\n[3] 64 MHz\n[4] 80 MHz\n")
+try:
+    clock = int(input("Select clock frequency: \n"))
+except ValueError:
+    clock = 0
+if clock > 4:
+    clock = 0
+clks = ["RCC_CLOCK_L476RG_16MHz", "RCC_CLOCK_L476RG_32MHz", "RCC_CLOCK_L476RG_48MHz", "RCC_CLOCK_L476RG_64MHz", "RCC_CLOCK_L476RG_80MHz"]
+env.Append(CPPDEFINES=[("CLOCK_SETTINGS", clks[clock])])
+
 
 # Select the operating mode
-print("Operating mode\n[0] Functional (Default)\n[1] Timing\n[2] Plain\n")
+print("Operating mode\n[0] Functional (Default)\n[1] Timing\n[2] Plain\n[3] T-Test\n")
 try:
     mode = int(input("Select operating mode: \n"))
 except ValueError:
     mode = 0
-if mode == 0:
-    env.Append(CPPDEFINES=[("MODE", "0")])
-elif mode == 1:
-    env.Append(CPPDEFINES=[("MODE", "1")])
-elif mode == 2:
-    env.Append(CPPDEFINES=[("MODE", "2")])
+env.Append(CPPDEFINES=[("MODE", str(mode))])
 
 
+algs = ["FULL_PKE", "FULL_KEM", "MULT", "ENC", "DEC", "ENCAPS", "DECAPS", "KEYGEN"]
 # Select what algorithm(s) to run
 if mode == 0:
     print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Multiplication\n")
@@ -67,35 +74,15 @@ if mode == 0:
         alg = int(input("Select algorithm: \n"))
     except ValueError:
         alg = 0
-
-    if alg == 0:
-        env.Append(CPPDEFINES=[("ALG", "FULL_PKE")])
-    elif alg == 1:
-        env.Append(CPPDEFINES=[("ALG", "FULL_KEM")]) 
-    elif alg == 2:
-        env.Append(CPPDEFINES=[("ALG", "MULT")])
-        
-if mode == 2 or mode == 1:   # PLAIN/TIMING
+    if alg > 2:
+        alg = 0
+else:   # PLAIN/TIMING/TTEST
     print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Multiplication\n[3] Encrypt\n[4] Decrypt\n[5] Encaps\n[6] Decaps\n[7] Keygen\n")
     try:
         alg = int(input("Select algorithm: \n"))
     except ValueError:
         alg = 0
-
-    if alg == 0:
-        env.Append(CPPDEFINES=[("ALG", "FULL_PKE")])
-    elif alg == 1:
-        env.Append(CPPDEFINES=[("ALG", "FULL_KEM")])
-    elif alg == 2:
-        env.Append(CPPDEFINES=[("ALG", "MULT")])
-    elif alg == 3:
-        env.Append(CPPDEFINES=[("ALG", "ENCRYPT")])
-    elif alg == 4:
-        env.Append(CPPDEFINES=[("ALG", "DECRYPT")])
-    elif alg == 5:
-        env.Append(CPPDEFINES=[("ALG", "ENCAPS")])
-    elif alg == 6:
-        env.Append(CPPDEFINES=[("ALG", "DECAPS")])
-    elif alg == 7:
-        env.Append(CPPDEFINES=[("ALG", "KEYGEN")])
-        
+    if alg > 7:
+        alg = 0
+print("Algorithm selected: " + algs[alg])
+env.Append(CPPDEFINES=[("ALG", algs[alg])])
