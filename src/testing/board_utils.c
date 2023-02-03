@@ -32,14 +32,65 @@ const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
             .ppre2 = RCC_CFGR_PPRE2_NODIV,
             .voltage_scale = PWR_SCALE1,
             .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
-                            FLASH_ACR_LATENCY_3WS,
+                            FLASH_ACR_LATENCY_4WS,
             .ahb_frequency  = 80000000,
             .apb1_frequency = 40000000,
             .apb2_frequency = 80000000,
         },
-        {   /* 20 MHz*/
+        {   /* 64 MHz*/
             .pllm = 2,
-            .plln = 20,
+            .plln = 32,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV4,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_3WS,
+            .ahb_frequency  = 64000000,
+            .apb1_frequency = 32000000,
+            .apb2_frequency = 64000000,
+        },
+        {   /* 48 MHz*/
+            .pllm = 2,
+            .plln = 48,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV8,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_2WS,
+            .ahb_frequency  = 32000000,
+            .apb1_frequency = 16000000,
+            .apb2_frequency = 32000000,
+        },
+        {   /* 32 MHz*/
+            .pllm = 2,
+            .plln = 32,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV8,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_1WS,
+            .ahb_frequency  = 32000000,
+            .apb1_frequency = 16000000,
+            .apb2_frequency = 32000000,
+        },
+        {   /* 16 MHz*/
+            .pllm = 2,
+            .plln = 16,
             .pllp = RCC_PLLCFGR_PLLP_DIV7,
             .pllq = RCC_PLLCFGR_PLLQ_DIV8,
             .pllr = RCC_PLLCFGR_PLLR_DIV8,
@@ -50,15 +101,15 @@ const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
             .voltage_scale = PWR_SCALE1,
             .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
                             FLASH_ACR_LATENCY_0WS,
-            .ahb_frequency  = 20000000,
-            .apb1_frequency = 10000000,
-            .apb2_frequency = 20000000,
+            .ahb_frequency  = 16000000,
+            .apb1_frequency = 8000000,
+            .apb2_frequency = 16000000,
         }
 };
 
 
 void setup_board(void) {
-    #define CLK_CFG &rcc_l476rg[RCC_CLOCK_L476RG_20MHz]
+    #define CLK_CFG &rcc_l476rg[CLOCK_SETTINGS]
     setup_clock(CLK_CFG);
     setup_gpio();
     setup_usart();
