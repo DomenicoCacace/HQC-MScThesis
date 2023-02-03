@@ -15,6 +15,7 @@ static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
 
 static void reduce(uint64_t *o, const uint64_t *a);
 static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
+static void fast_convolution_mult_noshuffle(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight);
 
 /**
  * @brief swap two elements in a table
@@ -137,6 +138,60 @@ static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_
 }
 
 
+/**
+ * @brief computes product of the polynomial a1(x) with the sparse polynomial a2
+ *
+ *  o(x) = a1(x)a2(x)
+ *
+ * @param[out] o Pointer to the result
+ * @param[in] a1 Pointer to the sparse polynomial a2 (list of degrees of the monomials which appear in a2)
+ * @param[in] a2 Pointer to the polynomial a1(x)
+ * @param[in] weight Hamming wifht of the sparse polynomial a2
+ * @param[in] ctx Pointer to a seed expander used to randomize the multiplication process
+ */
+static void fast_convolution_mult_noshuffle(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight){
+    uint64_t carry;
+    int32_t dec, s;
+    uint64_t table[TABLE * (VEC_N_SIZE_64 + 1)];
+
+    for (size_t i = 0 ; i < VEC_N_SIZE_64 ; i++) {
+        table[i] = a2[i];
+    }
+
+    table[VEC_N_SIZE_64] = 0x0UL;
+
+    for (size_t i = 1; i < TABLE; i++) {
+        carry = 0x0UL;
+        int32_t idx = i * (VEC_N_SIZE_64 + 1);
+        uint64_t *pt = table + idx;
+
+        for (size_t j = 0; j < VEC_N_SIZE_64; j++) {
+            pt[j] = (a2[j] << i) ^ carry;
+            carry = (a2[j] >> ((WORD - i)));
+        }
+
+        pt[VEC_N_SIZE_64] = carry;
+    }
+
+    for (size_t i = 0; i < weight; i++) {
+        carry = 0x0UL;
+        dec = a1[i] & 0xf;
+        s = a1[i] >> 4;
+
+        uint16_t *res_16 = (uint16_t *) o;
+        res_16 += s;
+        uint64_t *pt = table + (dec * (VEC_N_SIZE_64 + 1));
+
+        for (size_t j = 0; j < VEC_N_SIZE_64 + 1; j++) {
+            uint64_t tmp = (uint64_t) res_16[0] | ((uint64_t) (res_16[1])) << 16 |
+                           (uint64_t) (res_16[2]) << 32 | ((uint64_t) (res_16[3])) << 48;
+            tmp ^= pt[j];
+            memcpy(res_16, &tmp, 8);
+            res_16 += 4;
+        }
+    }
+}
+
 
 /**
  * @brief Multiply two polynomials modulo \f$ X^n - 1\f$.
@@ -154,5 +209,25 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
     uint64_t tmp[(VEC_N_SIZE_64 << 1) + 1] = {0};
 
     fast_convolution_mult(tmp, a1, a2, weight, ctx);
+    reduce(o, tmp);
+}
+
+
+/**
+ * @brief Multiply two polynomials modulo \f$ X^n - 1\f$.
+ *
+ * This functions multiplies a sparse polynomial <b>a1</b> (of Hamming weight equal to <b>weight</b>)
+ * and a dense polynomial <b>a2</b>. The multiplication is done modulo \f$ X^n - 1\f$.
+ *
+ * @param[out] o Pointer to the result
+ * @param[in] a1 Pointer to the sparse polynomial
+ * @param[in] a2 Pointer to the dense polynomial
+ * @param[in] weight Integer that is the weigt of the sparse polynomial
+ * @param[in] ctx Pointer to the randomness context
+ */
+void vect_mul_noshuffle(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight) {
+    uint64_t tmp[(VEC_N_SIZE_64 << 1) + 1] = {0};
+
+    fast_convolution_mult_noshuffle(tmp, a1, a2, weight);
     reduce(o, tmp);
 }

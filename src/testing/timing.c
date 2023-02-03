@@ -87,7 +87,7 @@ void FULL_PKE(void) {
 }
 
 void MULT(void) {
-    #define MUL vect_mul
+    #define MUL vect_mul_noshuffle
 
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     uint32_t y[PARAM_OMEGA] = {0};

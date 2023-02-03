@@ -47,7 +47,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
 
     // Compute public key
     vect_set_random(&pk_seedexpander, h);
-    vect_mul(s, y, h, PARAM_OMEGA, &sk_seedexpander);
+    vect_mul_noshuffle(s, y, h, PARAM_OMEGA);
     vect_add(s, x, s, VEC_N_SIZE_DIGIT);
 
     // Parse keys to string
@@ -110,7 +110,7 @@ void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const u
     vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
 
     // Compute u = r1 + r2.h
-    vect_mul(u, r2, h, PARAM_OMEGA_R, &seedexpander);
+    vect_mul_noshuffle(u, r2, h, PARAM_OMEGA_R);
     vect_add(u, r1, u, VEC_N_SIZE_DIGIT);
 
     // Compute v = m.G by encoding the message
@@ -118,7 +118,7 @@ void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const u
     vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
 
     // Compute v = m.G + s.r2 + e
-    vect_mul(tmp2, r2, s, PARAM_OMEGA_R, &seedexpander);
+    vect_mul_noshuffle(tmp2, r2, s, PARAM_OMEGA_R);
     vect_add(tmp2, e, tmp2, VEC_N_SIZE_DIGIT);
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
     vect_resize(v, PARAM_N1N2, tmp2, PARAM_N);
@@ -159,18 +159,13 @@ void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned ch
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
     DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
     DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
-    seedexpander_state perm_seedexpander;
-    uint8_t perm_seed[SEED_BYTES] = {0};
 
     // Retrieve x, y, pk from secret key
     hqc_secret_key_from_string(x, y, pk, sk);
 
-    randombytes(perm_seed, SEED_BYTES);
-    seedexpander_init(&perm_seedexpander, perm_seed, SEED_BYTES);
-
     // Compute v - u.y
     vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
-    vect_mul(tmp2, y, u, PARAM_OMEGA, &perm_seedexpander);
+    vect_mul_noshuffle(tmp2, y, u, PARAM_OMEGA);
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
 
 #ifdef VERBOSE
