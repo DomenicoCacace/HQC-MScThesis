@@ -24,7 +24,8 @@ set(SOURCES ${BASE_DIR}/codes/code.c
 			${BASE_DIR}/lib/shake_prng.c
 			${BASE_DIR}/testing/functional.c
 			${BASE_DIR}/testing/plain.c
-			${BASE_DIR}/testing/timing.c)
+			${BASE_DIR}/testing/timing.c
+			${BASE_DIR}/testing/ttest.c)
 
 set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/codes/reed_muller.h
@@ -56,5 +57,5 @@ include_directories(${BASE_DIR}/sparsemul)
 include_directories(${BASE_DIR}/testing)
 
 add_executable(hqc-${SECURITY_LEVEL} ${HEADERS} ${SOURCES} ${BASE_DIR}/testing/main.c)
-set_property(TARGET hqc-${SECURITY_LEVEL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECURITY_LEVEL} -DMODE=${MODE} -DALG=${ALG}")
+set_property(TARGET hqc-${SECURITY_LEVEL} APPEND PROPERTY COMPILE_FLAGS "-DSECURITY_LEVEL=${SECURITY_LEVEL} -DMODE=${MODE} -DALG=${ALG} -DBATCH_SIZE=${BATCH_SIZE}")
 target_link_libraries(hqc-${SECURITY_LEVEL} m)
