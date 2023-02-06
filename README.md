@@ -10,6 +10,7 @@ When building, it is possible to select various options to customize the executa
 - the verbosity level of the program
 - the mode of operation of the program 
 - the algorithm to run
+- the amount of iterations
 
 Not all algorithms can be run in all modes of operation. The following table shows the possible combinations:
 
@@ -38,3 +39,4 @@ To customize the executable, the following options can be set:
 - `VERBOSE`: the verbosity level of the program (0, 1 or 2)
 - `MODE`: the mode of operation of the program (0 for `FUNCTIONAL`, 1 for `TIMING`, 2 for `PLAIN`, 3 for `TTEST`)
 - `ALG`: the algorithm to run (`FULL_PKE`, `FULL_KEM`, `MULT`,`ENCRYPT`, `DECRYPT`, `ENCAPS`, `DECAPS`, `KEYGEN`)
+- `BATCH_SIZE`: the number of iterations to run

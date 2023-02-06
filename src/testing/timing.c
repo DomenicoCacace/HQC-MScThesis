@@ -38,12 +38,12 @@ void KEYGEN(void);
 
 uint32_t start, end;
 
-int run(int BATCH_SIZE) {    
+int run(int reps) {    
     welford_t timer;
     welford_init(&timer);
 
     TRIGGER_SET
-    for(int i = 0; i < BATCH_SIZE; i++) {
+    for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
     }

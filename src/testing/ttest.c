@@ -52,7 +52,7 @@ seedexpander_state seedexpander_const;
 
 
 
-int run(int BATCH_SIZE) {    
+int run(int reps) {    
     welford_t timer, timer_const;
     welford_init(&timer);
     welford_init(&timer_const);
@@ -70,7 +70,7 @@ int run(int BATCH_SIZE) {
     crypto_kem_enc_const(ct_const, key1, pk_const);
 
     TRIGGER_SET
-    for(int i = 0; i < BATCH_SIZE; i++) {
+    for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
         welford_update(&timer_const, (long double)(end_c-start_c));
