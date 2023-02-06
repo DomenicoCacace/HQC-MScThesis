@@ -82,6 +82,10 @@ static inline
 void welch_t_print(const welford_t state1,
                      const welford_t state2) {
     double t = welch_t_statistic(state1, state2);
+    if (t == INFINITY) {
+        PRINTF("Infinity\r\n");
+        return;
+    }
     char t_str[13] = {0};
     gcvt(t, 13, t_str);
     PRINTF("%s\r\n", t_str);
