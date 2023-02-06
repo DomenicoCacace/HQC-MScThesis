@@ -43,6 +43,10 @@ void trigger_set(void);
 
 void trigger_reset(void);
 
+void delay_cycles(uint32_t cycles);
+
+void delay_us(uint32_t cycles);
+
 void debug(const char *str, ...);
 
 struct rcc_clock_scale {
@@ -64,7 +68,10 @@ struct rcc_clock_scale {
 
 enum rcc_clock_l476rg {
         RCC_CLOCK_L476RG_80MHz,
-        RCC_CLOCK_L476RG_20MHz,
+        RCC_CLOCK_L476RG_64MHz,
+        RCC_CLOCK_L476RG_48MHz,
+        RCC_CLOCK_L476RG_32MHz,
+        RCC_CLOCK_L476RG_16MHz,
         RCC_CLOCK_L476RG_END
 };
  

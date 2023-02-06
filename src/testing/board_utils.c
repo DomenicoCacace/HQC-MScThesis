@@ -3,6 +3,10 @@
  * @brief Tools to set up and operate the board
  */
 
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "board_utils.h"
 
 void setup_clock(const struct rcc_clock_scale *clock);
@@ -19,6 +23,8 @@ void usart_send_str(char *str, int bytes);
 
 void usart_recv_str(char *str, int bytes);
 
+void double_to_string(double in, char *out);
+
 const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
         { /* 80MHz */
             .pllm = 2,
@@ -32,14 +38,65 @@ const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
             .ppre2 = RCC_CFGR_PPRE2_NODIV,
             .voltage_scale = PWR_SCALE1,
             .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
-                            FLASH_ACR_LATENCY_3WS,
+                            FLASH_ACR_LATENCY_4WS,
             .ahb_frequency  = 80000000,
             .apb1_frequency = 40000000,
             .apb2_frequency = 80000000,
         },
-        {   /* 20 MHz*/
+        {   /* 64 MHz*/
             .pllm = 2,
-            .plln = 20,
+            .plln = 32,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV4,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_3WS,
+            .ahb_frequency  = 64000000,
+            .apb1_frequency = 32000000,
+            .apb2_frequency = 64000000,
+        },
+        {   /* 48 MHz*/
+            .pllm = 2,
+            .plln = 48,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV8,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_2WS,
+            .ahb_frequency  = 48000000,
+            .apb1_frequency = 24000000,
+            .apb2_frequency = 48000000,
+        },
+        {   /* 32 MHz*/
+            .pllm = 2,
+            .plln = 32,
+            .pllp = RCC_PLLCFGR_PLLP_DIV7,
+            .pllq = RCC_PLLCFGR_PLLQ_DIV8,
+            .pllr = RCC_PLLCFGR_PLLR_DIV8,
+            .pll_source = RCC_PLLCFGR_PLLSRC_HSI16,
+            .hpre = RCC_CFGR_HPRE_NODIV,
+            .ppre1 = RCC_CFGR_PPRE1_DIV2,
+            .ppre2 = RCC_CFGR_PPRE2_NODIV,
+            .voltage_scale = PWR_SCALE1,
+            .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
+                            FLASH_ACR_LATENCY_1WS,
+            .ahb_frequency  = 32000000,
+            .apb1_frequency = 16000000,
+            .apb2_frequency = 32000000,
+        },
+        {   /* 16 MHz*/
+            .pllm = 2,
+            .plln = 16,
             .pllp = RCC_PLLCFGR_PLLP_DIV7,
             .pllq = RCC_PLLCFGR_PLLQ_DIV8,
             .pllr = RCC_PLLCFGR_PLLR_DIV8,
@@ -50,15 +107,15 @@ const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
             .voltage_scale = PWR_SCALE1,
             .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
                             FLASH_ACR_LATENCY_0WS,
-            .ahb_frequency  = 20000000,
-            .apb1_frequency = 10000000,
-            .apb2_frequency = 20000000,
+            .ahb_frequency  = 16000000,
+            .apb1_frequency = 8000000,
+            .apb2_frequency = 16000000,
         }
 };
 
 
 void setup_board(void) {
-    #define CLK_CFG &rcc_l476rg[RCC_CLOCK_L476RG_20MHz]
+    #define CLK_CFG &rcc_l476rg[CLOCK_SETTINGS]
     setup_clock(CLK_CFG);
     setup_gpio();
     setup_usart();
@@ -214,17 +271,98 @@ void trigger_reset(void) {
     gpio_clear(GPIOA, GPIO5);
 }
 
+void delay_cycles(uint32_t cycles) {
+    uint32_t start = dwt_read_cycle_counter();
+    while (dwt_read_cycle_counter() - start < cycles);
+}
+
+void delay_us(uint32_t us) {
+    uint32_t start = dwt_read_cycle_counter();
+    uint32_t cycles = us * (rcc_ahb_frequency / 1000000);
+    while (dwt_read_cycle_counter() - start < cycles);
+}
+
 void debug(const char *str, ...) {
 #ifdef DEBUG
-    char buffer[256];
+    char buf[512] = {0};
     va_list arg;
 
     va_start (arg, str);
-    vsprintf (buffer, str, arg);
+
+    while (*str) {
+        if(*str == '%') {
+            str++;
+            if(*str == 'f') {
+                char num[20];
+                double d = va_arg(arg, double);
+                double_to_string(d, num);
+                strcat(buf, num);
+                str++;
+            }
+            else if(*str == 'd') {
+                char num[20];
+                int d = va_arg(arg, int);
+                sprintf(num, "%d", d);
+                strcat(buf, num);
+                str++;
+            }
+            else if(*str == 's') {
+                char *s = va_arg(arg, char *);
+                strcat(buf, s);
+                str++;
+            }
+            else if(*str == 'L') {
+                char num[20];
+                uint64_t d = va_arg(arg, uint64_t);
+                sprintf(num, "%Ld", d);
+                strcat(buf, num);
+                str++;
+            }
+            else if(*str == 'x') {
+                char num[20];
+                uint32_t d = va_arg(arg, uint32_t);
+                sprintf(num, "%x", d);
+                strcat(buf, num);
+                str++;
+            }
+        }
+        else {
+            strncat(buf, str, 1);
+            str++;
+        }   
+    }
     va_end (arg);
 
-    usart_send_str(buffer, strlen(buffer));
+    usart_send_str(buf, strlen(buf));
 #endif
+}
+
+void double_to_string(double in, char *out) {
+    int precision = 6;
+    if (in < 0) {
+        in = -in;
+        out[0] = '-';
+        out++;
+    }
+    uint64_t integer = (uint64_t)(in * pow(10, precision));
+    uint64_t decimal = integer % (uint64_t)pow(10, precision);
+    sprintf(out, "%Ld", integer / (uint64_t)pow(10, precision));
+    if(decimal != 0) {
+        int offset = strlen(out);
+        out[offset] = '.';
+        int zeros = precision - (int)log10(decimal);
+        if (zeros > 0) 
+            sprintf(out+offset+1, "%0*d", zeros-1, 0);
+        sprintf(out + offset + zeros, "%Ld", decimal);
+
+        int len = strlen(out);
+        for (int i = len-1; i >= 0; i--) {
+            if (out[i] == '0')
+                out[i] = '\0';
+            else
+                break;
+        }
+    }
 }
 
 
