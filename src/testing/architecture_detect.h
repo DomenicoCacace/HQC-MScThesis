@@ -11,6 +11,9 @@
 #define PLAIN 2
 #define TTEST 3
 
+#define CAT(a, b) a ## b
+#define CONST(a) CAT(a, _CONST)
+
 #include <stdint.h>
 
 /**
