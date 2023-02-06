@@ -88,17 +88,17 @@ void FULL_KEM(void) {
     unsigned char key1[SHARED_SECRET_BYTES];
     unsigned char key2[SHARED_SECRET_BYTES];
 
+    start_c = get_systick();
+    crypto_kem_enc_const(ct, key1, pk_const);
+    crypto_kem_dec(key2, ct, sk_const);
+    end_c = get_systick();
+
     crypto_kem_keypair(pk, sk);
 
     start = get_systick();
     crypto_kem_enc(ct, key1, pk);
     crypto_kem_dec(key2, ct, sk);
     end = get_systick();
-
-    start_c = get_systick();
-    crypto_kem_enc_const(ct, key1, pk_const);
-    crypto_kem_dec(key2, ct, sk_const);
-    end_c = get_systick();
 }
 
 void FULL_PKE(void) {
@@ -111,6 +111,11 @@ void FULL_PKE(void) {
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
 
+    start_c = get_systick();
+    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
+    hqc_pke_decrypt(m_out, u, v, sk_const);
+    end_c = get_systick();
+
     vect_set_random_from_prng(m_in);
     shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
 
@@ -120,11 +125,6 @@ void FULL_PKE(void) {
     hqc_pke_encrypt(u, v, m_in, theta, pk);
     hqc_pke_decrypt(m_out, u, v, sk);
     end = get_systick();
-
-    start_c = get_systick();
-    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
-    hqc_pke_decrypt(m_out, u, v, sk_const);
-    end_c = get_systick();
 }
 
 void MULT(void) {
@@ -136,6 +136,10 @@ void MULT(void) {
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
+    start_c = get_systick();
+    MUL(res, y_const, u_const, PARAM_OMEGA, &seedexpander_const);
+    end_c = get_systick();
+
     randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
     vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
@@ -144,10 +148,6 @@ void MULT(void) {
     start = get_systick();
     MUL(res, y, u, PARAM_OMEGA, &seedexpander);
     end = get_systick();
-
-    start_c = get_systick();
-    MUL(res, y_const, u_const, PARAM_OMEGA, &seedexpander_const);
-    end_c = get_systick();
 }
 
 void ENC(void) {
@@ -159,6 +159,10 @@ void ENC(void) {
     unsigned char sk[SECRET_KEY_BYTES];
     shake256incctx shake256state;
 
+    start_c = get_systick();
+    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
+    end_c = get_systick();
+
     vect_set_random_from_prng(m);
     shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
     hqc_pke_keygen(pk, sk);
@@ -166,10 +170,6 @@ void ENC(void) {
     start = get_systick();
     hqc_pke_encrypt(u, v, m, theta, pk);
     end = get_systick();
-
-    start_c = get_systick();
-    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
-    end_c = get_systick();
 }
 
 void DEC(void) {
@@ -180,7 +180,10 @@ void DEC(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
     shake256incctx shake256state;
-    
+
+    start = get_systick();
+    hqc_pke_decrypt(m, u_const, v_const, sk_const);
+    end = get_systick();    
 
     hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m);
@@ -190,10 +193,6 @@ void DEC(void) {
     start = get_systick();
     hqc_pke_decrypt(m, u, v, sk);
     end = get_systick();
-
-    start = get_systick();
-    hqc_pke_decrypt(m, u_const, v_const, sk_const);
-    end = get_systick();
 }
 
 void ENCAPS(void) {
@@ -202,15 +201,15 @@ void ENCAPS(void) {
     unsigned char ct[CIPHERTEXT_BYTES];
     unsigned char key[SHARED_SECRET_BYTES];
 
+    start_c = get_systick();
+    crypto_kem_enc_const(ct, key, pk_const);
+    end_c = get_systick();
+
     crypto_kem_keypair(pk, sk);
 
     start = get_systick();
     crypto_kem_enc(ct, key, pk);
     end = get_systick();
-
-    start_c = get_systick();
-    crypto_kem_enc_const(ct, key, pk_const);
-    end_c = get_systick();
 }
 
 void DECAPS(void) {
@@ -219,16 +218,16 @@ void DECAPS(void) {
     unsigned char ct[CIPHERTEXT_BYTES];
     unsigned char key[SHARED_SECRET_BYTES];
 
+    start_c = get_systick();
+    crypto_kem_dec(key, ct_const, sk_const);
+    end_c = get_systick();
+
     crypto_kem_keypair(pk, sk);
     crypto_kem_enc(ct, key, pk);
 
     start = get_systick();
     crypto_kem_dec(key, ct, sk);
     end = get_systick();
-
-    start_c = get_systick();
-    crypto_kem_dec(key, ct_const, sk_const);
-    end_c = get_systick();
 }
 
 

@@ -71,9 +71,9 @@ double welch_t_statistic(const welford_t state1,
     den = sqrtl(var1/(long double) state1.count + var2/(long double) state2.count );
 
     if(den == 0.0) {
-        if(num != 0)
+        if(num != 0.0)
             return INFINITY;
-        return 0;
+        return 0.0;
     }
     return num/den;
 }
