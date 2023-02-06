@@ -102,7 +102,7 @@ void MULT(void) {
     vect_generate_random_for_mult(u);
 
     start = get_systick();
-    MUL(res, y, u, PARAM_OMEGA, &seedexpander);
+    MUL(res, y, u, PARAM_OMEGA);
     end = get_systick();
 }
 
