@@ -54,10 +54,41 @@ void welford_print(const welford_t state) {
     char mean[13], variance[13];
     gcvt(state.mean, 13, mean);
     gcvt(sqrtl(state.M2 / (long double) (state.count - 1)), 13, variance);
-    PRINTF("%s \t %s\r\n", mean, variance);
+    PRINTF("%s,%s\r\n", mean, variance);
     #else
-    PRINTF("%Lf \t %Lf\r\n", state.mean, sqrtl(state.M2 / (long double) (state.count - 1)));
+    PRINTF("%Lf,%Lf\r\n", state.mean, sqrtl(state.M2 / (long double) (state.count - 1)));
     #endif
 }
 
+static inline
+double welch_t_statistic(const welford_t state1,
+                         const welford_t state2) {
+    long double num, den, var1, var2;
+    var1 = state1.M2/(long double)(state1.count-1);
+    var2 = state2.M2/(long double)(state2.count-1);
+
+    num = state1.mean - state2.mean;
+    den = sqrtl(var1/(long double) state1.count + var2/(long double) state2.count );
+
+    if(den == 0) {
+        if(state1.mean != state2.mean)
+            return INFINITY;
+        return 0.0;
+    }
+    return num/den;
+}
+
+static inline
+void welch_t_print(const welford_t state1,
+                     const welford_t state2) {
+    char str[13] = {0};
+    double t = welch_t_statistic(state1, state2);
+    if (t == INFINITY) {
+        uint32_t num = (uint32_t)state1.mean - (uint32_t)state2.mean;
+        PRINTF("inf,num=%d\r\n", num);
+        return;
+    }
+    gcvt(t, 13, str);
+    PRINTF("%s\r\n", str);
+}
 #endif
