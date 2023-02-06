@@ -1,12 +1,20 @@
 import os
 import serial
 import subprocess
+import sys
 
 branches = ["reference", "reference_noshuffle" "fastmul", "sparsemul", "masking"]
 algs = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps", "keygen"]
 freqs = ["16", "32", "48", "64", "80"]
+batch_size = 1000
 
 def main(): 
+    if len(sys.argv) > 1:
+        try:
+            batch_size = int(sys.argv[1])
+        except ValueError:
+            pass
+            
     for branch in branches:
         print("Checking out {}".format(branch))
         os.system("git checkout {} > /dev/null".format(branch))
@@ -50,6 +58,9 @@ def build(alg, freq):
         elif "Select algorithm:" in line:
             p.stdin.write("{}\n".format(alg))
             p.stdin.flush()
+        elif "Number of iterations: " in line:
+            p.stdin.write("{}\n".format(batch_size))   
+            p.stdin.flush() 
             break
     # wait for the subprocess to terminate
     p.wait()

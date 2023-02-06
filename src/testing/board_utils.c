@@ -67,9 +67,9 @@ const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
             .voltage_scale = PWR_SCALE1,
             .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN |
                             FLASH_ACR_LATENCY_2WS,
-            .ahb_frequency  = 32000000,
-            .apb1_frequency = 16000000,
-            .apb2_frequency = 32000000,
+            .ahb_frequency  = 48000000,
+            .apb1_frequency = 24000000,
+            .apb2_frequency = 48000000,
         },
         {   /* 32 MHz*/
             .pllm = 2,
@@ -263,6 +263,17 @@ void trigger_set(void) {
 void trigger_reset(void) {
     gpio_clear(GPIOB, GPIO9);
     gpio_clear(GPIOA, GPIO5);
+}
+
+void delay_cycles(uint32_t cycles) {
+    uint32_t start = dwt_read_cycle_counter();
+    while (dwt_read_cycle_counter() - start < cycles);
+}
+
+void delay_us(uint32_t us) {
+    uint32_t start = dwt_read_cycle_counter();
+    uint32_t cycles = us * (rcc_ahb_frequency / 1000000);
+    while (dwt_read_cycle_counter() - start < cycles);
 }
 
 void debug(const char *str, ...) {
