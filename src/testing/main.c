@@ -1,5 +1,5 @@
 /**
- * @file main.h
+ * @file main.c
  */
 
 #include "main.h"
@@ -8,7 +8,9 @@
 #include "board_utils.h"
 #endif
 
-#define BATCH_SIZE 500
+#ifndef BATCH_SIZE
+#define BATCH_SIZE 1000
+#endif
 
 int main(void) {
 #ifdef CORTEX_M4
