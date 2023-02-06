@@ -50,19 +50,12 @@ void welford_update(welford_t *state, long double sample) {
 
 static inline
 void welford_print(const welford_t state) {
-    #ifdef CORTEX_M4
-    char mean[13], variance[13];
-    gcvt(state.mean, 13, mean);
-    gcvt(sqrtl(state.M2 / (long double) (state.count - 1)), 13, variance);
-    PRINTF("%s,%s\r\n", mean, variance);
-    #else
-    PRINTF("%Lf,%Lf\r\n", state.mean, sqrtl(state.M2 / (long double) (state.count - 1)));
-    #endif
+    double variance = state.M2 / (long double) (state.count - 1);
+    PRINTF("%f,%f\r\n", state.mean, sqrtl(variance));
 }
 
 static inline
-double welch_t_statistic(const welford_t state1,
-                         const welford_t state2) {
+double welch_t_statistic(const welford_t state1, const welford_t state2) {
     long double num, den, var1, var2;
     var1 = state1.M2/(long double)(state1.count-1);
     var2 = state2.M2/(long double)(state2.count-1);
@@ -79,16 +72,14 @@ double welch_t_statistic(const welford_t state1,
 }
 
 static inline
-void welch_t_print(const welford_t state1,
-                     const welford_t state2) {
-    char str[13] = {0};
+void welch_t_print(const welford_t state1, const welford_t state2) {
     double t = welch_t_statistic(state1, state2);
     if (t == INFINITY) {
-        uint32_t num = (uint32_t)state1.mean - (uint32_t)state2.mean;
-        PRINTF("inf,num=%d\r\n", num);
-        return;
+        double num = state1.mean - state2.mean;
+        PRINTF("inf,num=%f\r\n", num);
     }
-    gcvt(t, 13, str);
-    PRINTF("%s\r\n", str);
+    else {
+        PRINTF("%f\r\n", t);
+    }
 }
 #endif
