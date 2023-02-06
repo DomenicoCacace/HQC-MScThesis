@@ -87,3 +87,9 @@ else:   # PLAIN/TIMING/TTEST
         alg = 0
 print("Algorithm selected: " + algs[alg])
 env.Append(CPPDEFINES=[("ALG", algs[alg])])
+
+try:
+    reps = int(input("Number of iterations: \n"))
+except ValueError:
+    reps = 10
+env.Append(CPPDEFINES=[("BATCH_SIZE", str(reps))])

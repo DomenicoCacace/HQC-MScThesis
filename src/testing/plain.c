@@ -34,8 +34,8 @@ void DECAPS(void);
 
 void KEYGEN(void);
 
-int run(int BATCH_SIZE) {    
-    for(int i = 0; i < BATCH_SIZE; i++) {
+int run(int reps) {    
+    for(int i = 0; i < reps; i++) {
         ALG();
     }
     return 0;

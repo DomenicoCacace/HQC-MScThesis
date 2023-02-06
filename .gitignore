@@ -12,4 +12,4 @@ cmake-build*/
 __pycache__/
 
 # Docs
-docs/
+docs/notes
