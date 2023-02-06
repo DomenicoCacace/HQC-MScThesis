@@ -28,6 +28,8 @@ static void randombytes(uint8_t *x, uint16_t xlen);
 
     #define TRIGGER_SET trigger_set();
     #define TRIGGER_RESET trigger_reset();
+    #define DELAY_CYCLES(x) delay_cycles(x);
+    #define DELAY_US(x) delay_us(x);
 
     static void randombytes(uint8_t *x, uint16_t xlen) {
         uint8_t rand[4];
@@ -49,6 +51,8 @@ static void randombytes(uint8_t *x, uint16_t xlen);
 
 #define TRIGGER_SET
 #define TRIGGER_RESET
+#define DELAY_CYCLES(x)
+#define DELAY_US(x)
 
 static void randombytes(uint8_t *x, uint16_t xlen) {
     shake_prng(x, xlen);
