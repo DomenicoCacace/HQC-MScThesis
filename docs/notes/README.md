@@ -1,43 +1,63 @@
 # Thesis structure
 
-## Introduction
+# Introduction
+* Goals
+* State of the art
+* Our contributions
+* Structure of the thesis
 
-## From classical to quantum
-* Quantum Computing
-    * What is Quantum Computing?
-    * Quantum Computing and Cryptography
-    * Post Quantum Cryptography
-        * NIST PQC standardization process
-        * Approaches to PQC
+# Fundamentals
+* Quantum computing
+    * Threats to classical cryptography
+    * Post-Quantum Cryptography
+* Code-based cryptography
+    * Linear codes
+    * Quasi-cyclic codes
+    * Syndrome decoding problem
 
-## Hamming Quasi-Cyclic
-* Mathematical background
-* Difficult problems for cryptography
-* Description of the scheme
-    * Public Key Encryption
-    * Key Encapsulation Mechanism
-        * Fujisaki-Okamoto Transformation
+# Side-channel attacks
+* Timing attacks
+* Power analysis attacks
+    * Simple Power Analysis
+    * Differential Power Analysis
+    * Correlation Power Analysis
+* Countermeasures
+    * Constant-time execution
+    * Masking
+
+# Hamming Quasi-Cyclic
+* Public Key Encryption 
+* Key encapsulation mechanism
+    * Fujisaki-Okamoto transformation
 * Known attacks
 
-## Multiplication algorithms
-* Multiplication 101
+# Multiplication algorithms
+* Basics
     * Schoolbook multiplication
-    * Integers as polynomials
-    * Coefficient and value representation
-    * Faster multiplication
-        * Karatsuba
-        * Toom-Cook
+    * Integer and polynomial multiplication
+        * Value and coefficients representation
+        * Convolutions
 * FFT-based multiplication
-    * Convolutions
     * Fourier Transform
-    * Fast Fourier Transform
-        * Cooley-Tukey algorithm
-            * Schönhage-Strassen algorithm
-        * Gao-Mateer additive FFT
-        * Frobenius additive FFT
- 
-## Side-Channel attacks
+    * Cooley-Tukey algorithm
+    * Additive FFT
+        * Gao-Mateer algorithm
+        * Frobenius maps
 
-## Implementation
-* Reference implementation
-    * 
+# Empirical evaluations
+* Implementation details
+    * Data representation
+    * Multiplication 
+    * Optimizations
+* Performance evaluation
+    * Execution time on ARM
+    * Execution time on x86
+    * Memory usage
+    * Comparison with other implementations
+* Side channel resistance
+    * Timing attacks
+    * Power analysis attacks
+
+# Conclusion
+
+    
