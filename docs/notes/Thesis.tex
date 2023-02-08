@@ -21,7 +21,7 @@
 \usepackage{multicol} % To write in multiple columns (executive summary)
 \setlength\columnsep{15pt} % Column separation in executive summary
 \setlength\parindent{0pt} % Indentation
-\raggedbottom  
+\raggedbottom
 
 % PACKAGES FOR TITLES
 \usepackage{titlesec}
@@ -58,6 +58,7 @@
 \usepackage{bm}
 \usepackage[overload]{empheq} % For braced-style systems of equations.
 \usepackage{fix-cm} % To override original LaTeX restrictions on sizes
+\usepackage{dsfont} % For double-struck letters
 
 % PACKAGES FOR TABLES
 \usepackage{tabularx}
@@ -87,11 +88,6 @@
 %	NEW COMMANDS DEFINED
 %----------------------------------------------------------------------------
 
-% EXAMPLES OF NEW COMMANDS
-\newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
-\newcommand{\eea}{\end{eqnarray}}
-\newcommand{\e}[1]{\times 10^{#1}}  % Powers of 10 notation
-
 %----------------------------------------------------------------------------
 %	ADD YOUR PACKAGES (be careful of package interaction)
 %----------------------------------------------------------------------------
@@ -99,7 +95,10 @@
 %----------------------------------------------------------------------------
 %	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
 %----------------------------------------------------------------------------
-
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
 %----------------------------------------------------------------------------
 %	BEGIN OF YOUR DOCUMENT
 %----------------------------------------------------------------------------
@@ -178,8 +177,20 @@ Abstract IT
 % --------------------------------------------------------------------------
 % NUMBERED CHAPTERS % Regular chapters following
 % --------------------------------------------------------------------------
+\chapter{Introduction}
+\input{intro/intro.tex}
+\chapter{Fundamentals}
+\input{fundamentals/fundamentals.tex}
+\chapter{Side Channel Attacks}
+\input{sidechannel/sidechannel.tex}
+\chapter{Hamming Quasi-Cyclic}
+\input{hqc/hqc.tex}
 \chapter{Multiplication Algorithms}
 \input{mult/mult.tex}
+\chapter{Empirical Evaluations}
+\input{empirical/empirical.tex}
+\chapter{Conclusions}
+\input{conclusions/conclusions.tex}
 
 %-------------------------------------------------------------------------
 %	BIBLIOGRAPHY\

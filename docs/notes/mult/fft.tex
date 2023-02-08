@@ -59,11 +59,11 @@ Suppose we are multiplying two binary polynomials $f(x)$ and $g(x) \in \mathds{F
     In some cases, especially with high degree polynomials, it can be useful to split the polynomials into smaller segments, which can be easier to handle. 
     The standard \textit{Kronecker segmentation} for multiplying binary polynomials is performed as follows
     \begin{enumerate}
-        \item Split the polynomials into $n = \lceil d/w \rceil$ $w$-bit blocks
-        \begin{align*}
-            a(x) &= a_0 + a_1x + \cdots + a_{d-1}x^{d-1} \\
-            &= (a_0 + \cdots + a_{w-1}x^{w-1}) + \cdots + (a_{d-w} + \cdots + a_{d-1}x^{w-1})x^{w(n-1)}
-        \end{align*}
+        \item Split the polynomials into $n = \lceil d/w \rceil$ $w$-bit blocks:
+            \begin{align*}
+                a(x) &= a_0 + a_1x + \cdots + a_{d-1}x^{d-1} \\
+                &= (a_0 + \cdots + a_{w-1}x^{w-1}) + \cdots + (a_{d-w} + \cdots + a_{d-1}x^{w-1})x^{w(n-1)}
+            \end{align*}
 
         \item Define the field $\mathds{F}_{2^{2w}}:=\mathds{F}_2[z]/g(z)$, with $g(z)$ irreducible polynomial of degree $2w$.
         \item Define the map $\psi: \mathds{F}_2[x] \rightarrow \mathds{F}_{2^{2w}[y]}$ such that:

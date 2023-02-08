@@ -1,0 +1,46 @@
+\documentclass[a4paper,10pt]{book}
+\usepackage[utf8]{inputenc}
+
+\usepackage{algorithm2e}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{tikz}
+\usepackage{upgreek}
+
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\bibliographystyle{alpha}
+\title{Your Title}
+\author{Domenico Cacace}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\chapter{Introduction}
+\input{intro/intro.tex}
+\chapter{Fundamentals}
+\input{fundamentals/fundamentals.tex}
+\chapter{Side Channel Attacks}
+\input{sidechannel/sidechannel.tex}
+\chapter{Hamming Quasi-Cyclic}
+\input{hqc/hqc.tex}
+\chapter{Multiplication Algorithms}
+\input{mult/mult.tex}
+\chapter{Empirical Evaluations}
+\input{empirical/empirical.tex}
+\chapter{Conclusions}
+\input{conclusions/conclusions.tex}
+
+
+
+\chapter*{References}
+\bibliography{refs}
+
+\end{document}

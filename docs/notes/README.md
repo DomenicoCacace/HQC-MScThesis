@@ -11,6 +11,7 @@
     * Threats to classical cryptography
     * Post-Quantum Cryptography
 * Code-based cryptography
+    * General definitions
     * Linear codes
     * Quasi-cyclic codes
     * Syndrome decoding problem

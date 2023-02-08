@@ -1,0 +1,108 @@
+In this section we give the basic concepts and definitions of coding theory (\cite{macwilliams1977theory}), required to formally define
+the problems on which HQC and similar cryptosystems are based.
+
+\subsection{General definitions}
+We denote with $\mathds{F}_2$ the binary finite field and with $\mathds{Z}$ the integer ring.\\
+We define $\mathcal{V} = \mathds{F}_2^n$ the vector space of dimension $n$ over $\mathds{F}_2$ 
+and $\mathcal{R}=\mathds{F}_2[X]/(X^n-1)$ the ring of binary polynomials of degree less than $n$ for some $n \in \mathds{N}$.\\
+Additionally, we denote by $\texttt{wt}(\cdot)$ the Hamming weight of a vector \textit{i.e.} the number of its non-zero coordinates.
+
+\begin{definition}[Circulant matrix]
+    Let $\mathbf{v} = (v_0, \cdots, v_{n-1}) \in \mathcal{V}$. The circulant matrix induced by $\mathbf{v}$ is defined as
+    a matrix whose $i$-th row is the vector $\mathbf{v}$ shifted by $i$ positions to the right:
+    \begin{equation*}
+        \mathbf{circ(v)} = \begin{pmatrix}
+            v_0 & v_1 & \cdots & v_{n-1} \\
+            v_{n-1} & v_0 & \cdots & v_{n-2} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            v_1 & v_2 & \cdots & v_0
+            \end{pmatrix} \in \mathds{F}_2^{n\times n}
+    \end{equation*}
+\end{definition}
+The algebra of $n\times n$ circulant matrices over $\mathds{F}_2$ is isomorphic to the algebra of polynomials
+in the ring $\mathcal{R}$:
+\begin{align*}
+    \mathbf{circ(v)} \simeq v_0 + v_1x + v_2x^2 + \cdots + x_{n-1}x^{n-1} \\
+\end{align*}
+
+\begin{definition}[Linear code]
+    A linear code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathcal{V}$ 
+    of dimension $k$; the elements of $\mathcal{C}$ are called \textit{codewords}.
+\end{definition}
+
+\begin{definition}[Generator Matrix]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The matrix $\mathbf{G} \in \mathds{F}_2^{k\times n}$ is called the generator 
+    matrix of $\mathcal{C}$ if
+    \begin{equation*}
+        \mathcal{C} = \{\mathbf{mG}, \text{ for } \mathbf{m}\in \mathds{F}_2^k\}
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Parity-Check Matrix]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The matrix $\mathbf{H} \in \mathds{F}_2^{(n-k)\times n}$ is called the 
+    parity-check matrix of $\mathcal{C}$ if
+    \begin{equation*}
+        \mathcal{C} = \{\mathbf{v} \in \mathds{F}_2^n \text{ such that } \mathbf{Hv}^\top = 0\}
+    \end{equation*}
+    In other words, $\mathbf{H}$ is the generator matrix of the dual code $\mathcal{C}^\perp$.
+\end{definition}
+
+
+\begin{definition}[Syndrome]
+    Let $\mathcal{C} = [n,k]$ be a code, $\mathbf{H}$ its parity matrix and $\mathbf{v} \in \mathds{F}_2^n$ a word. 
+    The syndrome of $\mathbf{v}$ is defined as
+    \begin{equation*}
+        \sigma(\mathbf{v}) = \mathbf{Hv}^\top
+    \end{equation*}
+    From this definition, we can say that a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
+\end{definition}
+
+\begin{definition}[Minimum distance]
+    Let $\mathcal{C} = [n,k]$ be a code and $\omega$ a norm on $\mathcal{V}$. The minimum distance of $\mathcal{C}$ is defined as
+    \begin{equation*}
+        d = \min_{\mathbf{v}, \mathbf{w} \in \mathcal{C}, \mathbf{v}\neq \mathbf{w}} \omega(\mathbf{v} - \mathbf{w})
+    \end{equation*}
+    A code with minimum distance $d$ ($\mathcal{C} = [n,k,d]$) can decode arbitrary codewords with at most
+    $\delta = \lfloor \frac{d-1}{2}\rfloor$ errors.
+\end{definition}
+
+\begin{definition}[Quasi-cyclic Codes]
+    Let $\mathbf{c} = (\mathbf{c}_0, \cdots, \mathbf{c}_{s-1}) \in \mathds{F}_2^{sn}$ be a vector, where we consider 
+    each $\mathbf{c}_i$ as a vector in $\mathds{F}_2^n$.
+    A linear code $\mathcal{C} = [sn,k,d]$ is Quasi-Cyclic of index $s$ if, for any $\mathbf{c} \in \mathcal{C}$, 
+    the vector obtained by applying a circular shift to every block $\mathbf{c}_i$ simultaneously is also a codeword.
+\end{definition}
+
+
+\subsection{Difficult problems for cryptography}
+The problems we are interested in are all variants of the \textit{decoding problem}, which requires to find 
+the closest codeword to a given word with respect to a certain metric (the Hamming weight in our case).\\
+In the case of linear codes we have shown that the decoding problem stays the same whether one is given 
+the syndrome of the received vector or the vector itself; for this reason, we will only consider 
+the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
+
+\begin{definition}[\textsf{SD} Distribution]
+    Given $n,k,w \in \mathds{N}$, the distribution $\textsf{SD}(n, k, w)$ randomly samples a parity-check matrix 
+    $\mathbf{H} \xleftarrow{\mathdollar} \mathds{F}_2^{(n-k)\times n}$, a vector 
+    $\mathbf{x} \xleftarrow{\mathdollar} \mathds{F}_2^n$ such that $\texttt{wt}(\mathbf{x}) = w$ 
+    and returns ($\mathbf{H}, \sigma(\mathbf{x})$).
+\end{definition}
+
+\begin{definition}[\textsf{SD} Problem]
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times mathds{F}_2^{(n-k)}$ from the $\textsf{SD}(n, k, w)$ 
+    distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
+    $\sigma(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
+\end{definition}
+This problem has been proven to be NP-complete in~\cite{berlekamp1978inherent}.
+
+\begin{definition}[Decisional \textsf{SD} Problem]
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times mathds{F}_2^{(n-k)}$, the \textsf{DSD} problem 
+    requires to determine whether $(\mathbf{H}, \mathbf{y}^\top)$ comes from the \textsf{SD} distribution or from the random
+    distribution over $\mathds{F}_2^{(n-k)\times n} \times mathds{F}_2^{(n-k)}$.
+\end{definition}
+
+
+ 
+
+
+
