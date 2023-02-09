@@ -1,0 +1,45 @@
+Many cryptographic algorithms are considered unbreakable, regardless of the amount of computing power available.
+These secure cryptosystems however do not run in a vacuum with spherical cows, and have to be implemented, either in
+hardware or in software.\\
+Regardless of the means of the implementation, the electronic devices that run these cryptosystems often
+\textit{leak} information about the internal state of the device, potentially exposing secrets.
+But how does a device leak information?
+
+A \textit{side channel} is some observable aspect of a cryptosystem that reveals information held within that system~\cite{standaert2010introduction};
+example of side channels can be the execution time of an algorithm, the power consumption of a device or the electromagnetic
+radiation emitted while running some operations.\\
+In this chapter we will describe the most common side channel attacks, how they can be used to retrieve secret information and
+how to mitigate them.
+
+\section{Timing attacks}
+In a timing attack, the attacker tries to infer information about a secret by measuring the time it takes to execute some operation.
+
+To better explain how timing attacks work, let us consider the following code snippet:
+\begin{lstlisting}[language=C]
+int check_pin(int *pin) {
+    int correct_pin[4] = {3, 1, 4, 2};
+
+    for (int i = 0; i < 4; i++) {
+        if (pin[i] != correct_pin[i]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+\end{lstlisting}
+We can think this function as a part of a bigger system, where the user enters a PIN and the system checks if it is correct.
+The function simply checks if the PIN entered by the user is equal to the correct PIN, and returns 1 if it is correct and 0 otherwise.
+Being the PIN composed of decimal digits, the total amount of combinations is $10^4$, so on average we would need 5000 guesses to find
+the correct PIN; however, we can reduce the number of guesses needed to find the correct PIN by using a timing attack.
+
+We can observe that the function returns as soon as a digit of the PIN is incorrect: under the reasonable assumption that we can measure 
+the execution time of the function, we can guess the correct PIN one digit at a time.
+Starting from 0000, we cycle through all the possibilities for the first digit $(0000, 1000, \cdots, 9000)$ and measure the execution time:
+out of the 10 measurements, the one with the highest execution time corresponds to the correct digit; we can then repeat the same process
+for the remaining digits, so that after at most 40 guesses we find the correct pin.
+
+Even though this attack strategy may seem trivial and easy to mitigate, it can still wreck havoc: real-life examples of timing attacks include, 
+for example, Spectre~\cite{Kocher2018spectre} and Meltdown~\cite{Lipp2018meltdown}, which affected almost all modern processors and allowed
+an attacker to read the memory of any process running on the same machine.
+
+\section{Power attacks}
