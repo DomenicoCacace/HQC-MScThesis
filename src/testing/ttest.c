@@ -229,17 +229,15 @@ void DEC_CONST(void) {
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shares_k_t m;
     uint8_t theta[SHAKE256_512_BYTES] = {0};   
-    unsigned char pk[PUBLIC_KEY_BYTES];
-    unsigned char sk[SECRET_KEY_BYTES];
     shake256incctx shake256state;
 
     shares_k_init(&m);
     shares_init_from_msg(&m, m_const);
     shake256_512_ds(&shake256state, theta, (uint8_t*) m.s0, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    hqc_pke_encrypt(u, v, &m, theta, sk);
+    hqc_pke_encrypt(u, v, &m, theta, pk_const);
 
     start = get_systick();
-    hqc_pke_decrypt(m.s0, u, v, sk);
+    hqc_pke_decrypt(m.s0, u, v, sk_const);
     end = get_systick();
 }
 
