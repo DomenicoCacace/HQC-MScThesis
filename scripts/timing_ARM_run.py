@@ -13,6 +13,8 @@ def main():
             batch_size = int(sys.argv[1])
         except ValueError:
             batch_size = 1000
+    else:
+        batch_size = 1000
 
     if len(sys.argv) > 2:
         port = sys.argv[2]
