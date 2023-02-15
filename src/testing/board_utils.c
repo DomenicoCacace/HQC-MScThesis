@@ -25,6 +25,8 @@ void usart_recv_str(char *str, int bytes);
 
 void double_to_string(double in, char *out);
 
+void ldouble_to_string(long double in, char *out);
+
 const struct rcc_clock_scale rcc_l476rg[RCC_CLOCK_L476RG_END] = {
         { /* 80MHz */
             .pllm = 2,
@@ -312,11 +314,28 @@ void debug(const char *str, ...) {
                 str++;
             }
             else if(*str == 'L') {
-                char num[20];
-                uint64_t d = va_arg(arg, uint64_t);
-                sprintf(num, "%Ld", d);
-                strcat(buf, num);
                 str++;
+                if(*str == 'f') {
+                    char num[20];
+                    double d = va_arg(arg, double);
+                    ldouble_to_string(d, num);
+                    strcat(buf, num);
+                    str++;
+                }
+                else if(*str == 'd') {
+                    char num[20];
+                    int64_t d = va_arg(arg, int64_t);
+                    sprintf(num, "%Ld", d);
+                    strcat(buf, num);
+                    str++;
+                }
+                else if(*str == 'x') {
+                    char num[20];
+                    uint64_t d = va_arg(arg, uint64_t);
+                    sprintf(num, "%Lx", d);
+                    strcat(buf, num);
+                    str++;
+                }
             }
             else if(*str == 'x') {
                 char num[20];
@@ -338,31 +357,76 @@ void debug(const char *str, ...) {
 }
 
 void double_to_string(double in, char *out) {
-    int precision = 6;
+    int precision = 12;
     if (in < 0) {
         in = -in;
         out[0] = '-';
         out++;
     }
-    uint64_t integer = (uint64_t)(in * pow(10, precision));
-    uint64_t decimal = integer % (uint64_t)pow(10, precision);
-    sprintf(out, "%Ld", integer / (uint64_t)pow(10, precision));
-    if(decimal != 0) {
+    uint64_t integer = (uint64_t)(in);
+    sprintf(out, "%Lu", integer);
+    double decimal = in - integer;
+
+    char decimal_str[precision+1];
+    int i;
+    for(i = 0; i < precision && decimal != 0; i++) {
+        decimal *= 10;
+        integer = (uint64_t)(decimal);
+        sprintf(decimal_str+i, "%Lu", integer);
+        decimal -= integer;
+    }
+    decimal_str[i] = '\0';
+    // Remove trailing zeros
+    int len = strlen(decimal_str);
+    while (len > 0 && decimal_str[len-1] == '0') {
+        decimal_str[len-1] = '\0';
+        len--;
+    }
+
+    if (strlen(decimal_str) > 0) {
         int offset = strlen(out);
         out[offset] = '.';
-        int zeros = precision - (int)log10(decimal);
-        if (zeros > 0) 
-            sprintf(out+offset+1, "%0*d", zeros-1, 0);
-        sprintf(out + offset + zeros, "%Ld", decimal);
-
-        int len = strlen(out);
-        for (int i = len-1; i >= 0; i--) {
-            if (out[i] == '0')
-                out[i] = '\0';
-            else
-                break;
-        }
+        strcpy(out+offset+1, decimal_str);
+    }
+    else {
+        out[strlen(out)] = '\0';
     }
 }
 
+void ldouble_to_string(long double in, char *out) {
+    int precision = 12;
+    if (in < 0) {
+        in = -in;
+        out[0] = '-';
+        out++;
+    }
+    uint64_t integer = (uint64_t)(in);
+    sprintf(out, "%Lu", integer);
+    long double decimal = in - integer;
+
+    char decimal_str[precision+1];
+    int i;
+    for(i = 0; i < precision && decimal != 0; i++) {
+        decimal *= 10;
+        integer = (uint64_t)(decimal);
+        sprintf(decimal_str+i, "%Lu", integer);
+        decimal -= integer;
+    }
+    decimal_str[i] = '\0';
+    // Remove trailing zeros
+    int len = strlen(decimal_str);
+    while (len > 0 && decimal_str[len-1] == '0') {
+        decimal_str[len-1] = '\0';
+        len--;
+    }
+
+    if (strlen(decimal_str) > 0) {
+        int offset = strlen(out);
+        out[offset] = '.';
+        strcpy(out+offset+1, decimal_str);
+    }
+    else {
+        out[strlen(out)] = '\0';
+    }
+}
 
