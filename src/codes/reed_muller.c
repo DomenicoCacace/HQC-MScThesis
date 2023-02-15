@@ -4,7 +4,7 @@
  */
 
 #include "reed_muller.h"
-#include "../common/parameters.h"
+#include "parameters.h"
 #include <stdint.h>
 #include <string.h>
 #include <x86intrin.h>
@@ -34,11 +34,10 @@ typedef union {
 #define BIT0MASK(x) (int64_t)(-((x) & 1))
 
 void encode(codeword *word, int32_t message);
-
 void expand_and_sum(expandedCodeword *dst, codeword src[]);
-
 void hadamard(expandedCodeword *src, expandedCodeword *dst);
 int32_t find_peaks(expandedCodeword *transform);
+
 
 
 /**
@@ -75,6 +74,7 @@ inline void encode(codeword *word, int32_t message) {
     word->u32[2] = first_word;
     return;
 }
+
 
 
 /**
@@ -136,6 +136,7 @@ inline void hadamard(expandedCodeword *src, expandedCodeword *dst) {
         p2 = p3;
     }
 }
+
 
 
 /**
@@ -250,16 +251,17 @@ inline int32_t find_peaks(expandedCodeword *transform) {
 }
 
 
+
 /**
  * @brief Encodes the received word
  *
  * The message consists of N1 bytes each byte is encoded into PARAM_N2 bits,
  * or MULTIPLICITY repeats of 128 bits
  *
- * @param[out] cdw Array of size VEC_N1N2_SIZE_DIGIT receiving the encoded message
- * @param[in] msg Array of size VEC_N1_SIZE_DIGIT storing the message
+ * @param[out] cdw Array of size VEC_N1N2_SIZE_64 receiving the encoded message
+ * @param[in] msg Array of size VEC_N1_SIZE_64 storing the message
  */
-void reed_muller_encode(DIGIT *cdw, const DIGIT *msg) {
+void reed_muller_encode(uint64_t *cdw, const uint64_t *msg) {
     uint8_t *message_array = (uint8_t *) msg;
     codeword *codeArray = (codeword *) cdw;
     for (size_t i = 0; i < VEC_N1_SIZE_BYTES; i++) {
@@ -276,16 +278,17 @@ void reed_muller_encode(DIGIT *cdw, const DIGIT *msg) {
 }
 
 
+
 /**
  * @brief Decodes the received word
  *
  * Decoding uses fast hadamard transform, for a more complete picture on Reed-Muller decoding, see MacWilliams, Florence Jessie, and Neil James Alexander Sloane.
  * The theory of error-correcting codes codes @cite macwilliams1977theory
  *
- * @param[out] msg Array of size VEC_N1_SIZE_DIGIT receiving the decoded message
- * @param[in] cdw Array of size VEC_N1N2_SIZE_DIGIT storing the received word
+ * @param[out] msg Array of size VEC_N1_SIZE_64 receiving the decoded message
+ * @param[in] cdw Array of size VEC_N1N2_SIZE_64 storing the received word
  */
-void reed_muller_decode(DIGIT *msg, const DIGIT *cdw) {
+void reed_muller_decode(uint64_t *msg, const uint64_t *cdw) {
     uint8_t *message_array = (uint8_t *) msg;
     codeword *codeArray = (codeword *) cdw;
     expandedCodeword expanded;

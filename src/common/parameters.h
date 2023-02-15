@@ -93,21 +93,16 @@
 
 #define UTILS_REJECTION_THRESHOLD               16767881
 #define PARAM_N_MULT                        	18048
-#define VEC_N_256_SIZE_64                     	(CEIL_DIVIDE(PARAM_N_MULT, 256) << 2)
-#define VEC_N1N2_256_SIZE_64                	(CEIL_DIVIDE(PARAM_N1N2, 256) << 2)
 
 #define PARAM_DELTA                             15
 #define PARAM_M                             	8
 #define PARAM_GF_POLY                       	0x11D
-#define PARAM_GF_POLY_WT                     	5
-#define PARAM_GF_POLY_M2                        4
 #define PARAM_GF_POLY                           0x11D
 #define PARAM_GF_MUL_ORDER                      255
 #define PARAM_K                                 16
 #define PARAM_G                                 31
 #define PARAM_FFT                               4
 #define RS_POLY_COEFFS                          89,69,153,116,176,117,111,75,73,233,242,233,65,210,21,139,103,173,67,118,105,210,174,110,74,69,228,82,255,181,1
-#define SYND_SIZE_256							(CEIL_DIVIDE(2*PARAM_DELTA, 16))
 
 #elif SECURITY_LEVEL == 192
 
@@ -120,6 +115,7 @@
 #define PARAM_OMEGA_R                       	114
 
 #define UTILS_REJECTION_THRESHOLD               16742417
+#define PARAM_N_MULT                            36480
 
 #define PARAM_DELTA                         	16
 #define PARAM_M                            	    8
@@ -141,6 +137,7 @@
 #define PARAM_OMEGA_R                       	149
 
 #define UTILS_REJECTION_THRESHOLD               16772367
+#define PARAM_N_MULT                            59904
 
 #define PARAM_DELTA                         	29
 #define PARAM_M                            	    8
@@ -168,6 +165,14 @@
 #define VEC_N1_SIZE_DIGIT                       CEIL_DIVIDE(PARAM_N1, DIGIT_SIZE_B)
 #define VEC_N1N2_SIZE_DIGIT                     CEIL_DIVIDE(PARAM_N1N2, DIGIT_SIZE_b)
 #define RED_MASK                                BITMASK(PARAM_N, DIGIT_SIZE_b)
+
+
+#define SYND_SIZE_256							(CEIL_DIVIDE(2*PARAM_DELTA, 16))
+#define PARAM_GF_POLY_WT                        5
+#define PARAM_GF_POLY_M2                        4
+
+#define VEC_N_256_SIZE_64                     	(CEIL_DIVIDE(PARAM_N_MULT, 256) << 2)
+#define VEC_N1N2_256_SIZE_64                	(CEIL_DIVIDE(PARAM_N1N2, 256) << 2)
 
 #endif
 
