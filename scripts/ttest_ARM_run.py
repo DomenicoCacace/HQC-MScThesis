@@ -6,7 +6,8 @@ import sys
 branches = ["reference", "reference_noshuffle", "fastmul", "sparsemul", "masking"]
 algs = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps"]
 freqs = ["16", "32", "48", "64", "80"]
-
+freqs = ["80"]  # also enable again git add and git commit down there
+branches = ["masking"]
 def main(): 
     if len(sys.argv) > 1:
         try:
@@ -61,7 +62,7 @@ def build(alg, freq, batch_size):
             p.stdin.write("Y\n")
             p.stdin.flush()
         elif "Select clock frequency:" in line:
-            p.stdin.write("{}\n".format(freq))
+            p.stdin.write("{}\n".format(4))
             p.stdin.flush()
         elif "Select operating mode:" in line:
             p.stdin.write("3\n")
