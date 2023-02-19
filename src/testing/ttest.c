@@ -81,8 +81,7 @@ int run(int reps) {
     for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
-    }
-    for(int i = 0; i < reps; i++) {
+
         ALG_CONST();
         welford_update(&timer_const, (long double)(end-start));
     }
