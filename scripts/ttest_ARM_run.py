@@ -33,17 +33,20 @@ def main():
         if not os.path.isfile("../docs/ttest_ARM.csv"):
             f = open("../docs/ttest_ARM.csv", "w")
             f.write("commit,branch,freq,algorithm,t,notes\n")
+            f.close()
         else:
             f = open("../docs/ttest_ARM.csv", "a")
             f.write("\n")
+            f.close()
         for j in range(0, len(freqs)):
             for i in range(0, len(algs)):
                 print("    Running {}...".format(algs[i]), end="\r")
                 build(i, j, batch_size)
                 result = getResults(port, rate)
                 print("    {} done! ({})".format(algs[i], result))
+                f = open("../docs/ttest_ARM.csv", "a")
                 f.write("{},{},{},{},{},\n".format(commit, branch, freqs[j], algs[i], result))
-        f.close()
+                f.close()
         os.system("git add ../docs/ttest_ARM.csv")
         os.system("git commit -m \"Add ARM t-test results\"".format(branch))
         print()
