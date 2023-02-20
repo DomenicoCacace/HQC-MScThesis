@@ -90,7 +90,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
  */
 void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk) {
     seedexpander_state seedexpander;
-    uint64_t h[VEC_N_SIZE_64] = {0};
+    DIGIT h[VEC_N_SIZE_DIGIT] = {0};
     DIGIT s[VEC_N_SIZE_DIGIT] = {0};
     DIGIT r1[VEC_N_SIZE_DIGIT] = {0};
     DIGIT r2[VEC_N_SIZE_DIGIT] = {0};
@@ -105,9 +105,9 @@ void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const u
     hqc_public_key_from_string(h, s, pk);
 
     // Generate r1, r2 and e
+    vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
     vect_set_random_fixed_weight(&seedexpander, r1, PARAM_OMEGA_R);
     vect_set_random_fixed_weight(&seedexpander, r2, PARAM_OMEGA_R);
-    vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
 
     // Compute u = r1 + r2.h
     opt_mul(u, r2, h);
