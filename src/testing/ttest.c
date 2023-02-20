@@ -55,7 +55,6 @@ unsigned char ct_const[CIPHERTEXT_BYTES];
 DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
 uint8_t theta_const[SHAKE256_512_BYTES] = {0};
 DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
-DIGIT v_const[VEC_N1N2_SIZE_DIGIT] = {0};
 uint32_t y_const[PARAM_OMEGA] = {0};
 seedexpander_state seedexpander_const;
 
@@ -72,7 +71,7 @@ int run(int reps) {
     crypto_kem_keypair(pk_const, sk_const);
     seedexpander_init(&seedexpander_const, sk_const, SEED_BYTES);
     vect_set_random_from_prng(m_const);
-    vect_set_random_from_prng(u_const);
+    vect_generate_random_for_mult(u_const);
     shake256_512_ds(&shake256state, theta_const, (uint8_t*) m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
     vect_set_random_fixed_weight_by_coordinates(&seedexpander_const, y_const, PARAM_OMEGA);
     crypto_kem_enc_const(ct_const, key1, pk_const);
@@ -236,8 +235,7 @@ void DEC_CONST(void) {
     uint8_t theta[SHAKE256_512_BYTES] = {0};   
     shake256incctx shake256state;
 
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    hqc_pke_encrypt(u, v, m_const, theta, pk_const);
+    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
 
     start = get_systick();
     hqc_pke_decrypt(m, u, v, sk_const);
