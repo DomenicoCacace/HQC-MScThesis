@@ -48,6 +48,8 @@ int run(int reps) {
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
     hqc_pke_keygen(pk_const, sk_const);
     vect_set_random_from_prng(m_const);        
@@ -55,8 +57,15 @@ int run(int reps) {
     for(int i = 0; i < reps; i++) {
         hqc_pke_keygen(pk, sk);
         vect_set_random_from_prng(m);
-        shake256_512_ds(&shake256state, theta, (uint8_t *)m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-        shake256_512_ds(&shake256state, theta_const, (uint8_t *)m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+        memcpy(tmp, m, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+        memcpy(tmp, m_const, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk_const, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta_const, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
         hqc_pke_encrypt_probe(u, v, m, theta, pk);
         hqc_pke_decrypt_probe(m, u, v, sk);
