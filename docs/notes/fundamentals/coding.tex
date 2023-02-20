@@ -25,9 +25,16 @@ in the ring $\mathcal{R}$:
     \mathbf{circ(v)} \simeq v_0 + v_1x + v_2x^2 + \cdots + x_{n-1}x^{n-1} \\
 \end{align*}
 
-\begin{definition}[Linear code]
+\begin{definition}[Linear $q$-ary Codes]
+    A Linear $q$-ary code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathds{F}_q^n$.\\
+    Due to their vast use in cryptography (and in particular in this work), the following definitions and results are relative
+    to binary codes ($q=2$).
+\end{definition}
+
+\begin{definition}[Linear Codes]
     A linear code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathcal{V}$ 
-    of dimension $k$; the elements of $\mathcal{C}$ are called \textit{codewords}.
+    of dimension $k$; the elements of $\mathcal{C}$ are called \textit{codewords}.\\
+    Due to the linearity of $\mathcal{V}$, any linear combination of two codewords is also a codeword.
 \end{definition}
 
 \begin{definition}[Generator Matrix]
@@ -47,6 +54,14 @@ in the ring $\mathcal{R}$:
     In other words, $\mathbf{H}$ is the generator matrix of the dual code $\mathcal{C}^\perp$.
 \end{definition}
 
+\begin{definition}[Rank]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The rank of $\mathcal{C}$ is defined as the dimension of the space spanned
+    by its codewords or, in other words, the rank of its parity-check matrix.
+    \begin{equation*}
+        r(\mathcal{C}) = r(\mathbf{H}) = n-k
+    \end{equation*}
+\end{definition}
+A high rank code can correct more errors with fewer parity-check equations, but it usually is harder to construct and decode.
 
 \begin{definition}[Syndrome]
     Let $\mathcal{C} = [n,k]$ be a code, $\mathbf{H}$ its parity matrix and $\mathbf{v} \in \mathds{F}_2^n$ a word. 
@@ -57,21 +72,54 @@ in the ring $\mathcal{R}$:
     From this definition, we can say that a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
 \end{definition}
 
+\begin{definition}[Rate]
+    Let $\mathcal{C} = [n,k]$ be a code. The rate of $\mathcal{C}$ is defined as $r = \frac{k}{n}$.
+\end{definition}
+The rate of a code is a measure of its efficiency: with a higher rate we can transmit more information with the same amount
+of bits, at the cost of reduced redundancy (and thus reduced error correcting capability).
+
 \begin{definition}[Minimum distance]
     Let $\mathcal{C} = [n,k]$ be a code and $\omega$ a norm on $\mathcal{V}$. The minimum distance of $\mathcal{C}$ is defined as
     \begin{equation*}
         d = \min_{\mathbf{v}, \mathbf{w} \in \mathcal{C}, \mathbf{v}\neq \mathbf{w}} \omega(\mathbf{v} - \mathbf{w})
     \end{equation*}
-    A code with minimum distance $d$ ($\mathcal{C} = [n,k,d]$) can decode arbitrary codewords with at most
-    $\delta = \lfloor \frac{d-1}{2}\rfloor$ errors.
+\end{definition}
+The length, dimension and minimum distance of a linear code $\mathcal{C} = [n,k,d]$ are tied by the Singleton bound~\cite{singleton1964maximum}:
+\begin{equation*}
+    d \leq n-k+1
+\end{equation*}
+If the equality holds, $\mathcal{C}$ is called a maximum distance separable (MDS) code, and it has desirable properties in terms of error correction.
+
+\begin{definition}[Error Correction Capability]
+A linear code $\mathcal{C} = [n,k,d]$ can decode arbitrary codewords with at most $\delta = \lfloor \frac{d-1}{2}\rfloor$ errors.
+If $\mathcal{C}$ is a MDS code, we can rewrite this as $\delta = \lfloor \frac{n-k}{2} \rfloor$.
 \end{definition}
 
-\begin{definition}[Quasi-cyclic Codes]
+\begin{definition}[Gilbert-Varshamov bound]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The Gilbert-Varshamov bound~\cite{gilbert1952comparison,varshamov1957estimate} 
+    states that $\mathcal{C}$ can correct at least $t$ errors if its size satisfies
+    \begin{equation}
+        2^k \geq \sum_{i=0}^t \binom{n}{i} \label{eq:gv_bound}
+    \end{equation}
+\end{definition}
+
+\subsection{Code families}
+
+\begin{definition}[Cyclic Codes]
+    Let $\mathbf{c} = (c_0, \cdots, c_{n-1}) \in \mathcal{V}$ be a vector. A linear code $\mathcal{C} = [n, k]$ is Cyclic
+    if, for any $\mathbf{v} \in \mathcal{C}$, the vector obtained by applying a circular shift to $\mathbf{v}$ is also a codeword.
+    codeword. If we think of $\mathbf{v}$ as a polynomial in $\mathcal{R}$, we can say that $\mathcal{C}$ is cyclic if,
+    for any $\mathbf{v} \in \mathcal{C}$, the polynomial $X \cdot \mathbf{v}$ is also a codeword.
+\end{definition}
+
+\begin{definition}[Quasi-Cyclic Codes]
     Let $\mathbf{c} = (\mathbf{c}_0, \cdots, \mathbf{c}_{s-1}) \in \mathds{F}_2^{sn}$ be a vector, where we consider 
     each $\mathbf{c}_i$ as a vector in $\mathds{F}_2^n$.
     A linear code $\mathcal{C} = [sn,k,d]$ is Quasi-Cyclic of index $s$ if, for any $\mathbf{c} \in \mathcal{C}$, 
     the vector obtained by applying a circular shift to every block $\mathbf{c}_i$ simultaneously is also a codeword.
+    QC codes are a generalization of cyclic codes.
 \end{definition}
+
 
 
 \subsection{Difficult problems for cryptography}
