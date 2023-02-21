@@ -37,6 +37,7 @@ void KEYGEN(void);
 int run(int reps) {    
     for(int i = 0; i < reps; i++) {
         ALG();
+        DELAY(20000);
     }
     return 0;
 }

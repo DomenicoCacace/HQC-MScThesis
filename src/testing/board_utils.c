@@ -3,9 +3,18 @@
  * @brief Tools to set up and operate the board
  */
 
+#include <libopencm3/stm32/flash.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/pwr.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/rng.h>
+#include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/usart.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "board_utils.h"
 
@@ -144,7 +153,6 @@ void setup_clock(const struct rcc_clock_scale *clock) {
     rcc_set_ppre1(clock->ppre1);
     rcc_set_ppre2(clock->ppre2);
 
-    /* Set the flash wait states */
    /* Configure flash settings. */
     if (clock->flash_config & FLASH_ACR_DCEN) {
             flash_dcache_enable();
@@ -207,7 +215,7 @@ void setup_gpio(void) {
 
     // Prepare the LED GPIO
     rcc_periph_clock_enable(RCC_GPIOA);
-    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5);
+    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO5);
 
     // Prepare the UART GPIO
     rcc_periph_clock_enable(RCC_GPIOA);
@@ -217,28 +225,22 @@ void setup_gpio(void) {
 }
 
 void setup_usart(void) {
-// Enable the UART clock
+    // Enable the UART clock
     rcc_periph_clock_enable(RCC_USART);
-// We need a brief delay before we can access UART config registers
+    // We need a brief delay before we can access UART config registers
     __asm__ volatile ("nop;nop;nop;nop;nop;":: : "memory");
-// Disable the UART while we mess with its settings
+    // Disable the UART while we mess with its settings
     usart_disable(USART);
-// Configure the UART clock source as precision internal oscillator
-// usart_clock_from_piosc();
-// Set communication parameters
+    // Set communication parameters
     usart_set_baudrate(USART, 9600);
     usart_set_databits(USART, 8);
     usart_set_parity(USART, USART_PARITY_NONE);
     usart_set_mode(USART, USART_MODE_TX_RX);
     usart_set_stopbits(USART, USART_STOPBITS_1);
-// Disable RTC and CTS lines
+    // Disable RTC and CTS lines
     usart_set_flow_control(USART, USART_FLOWCONTROL_NONE);
-// Now that we're done messing with the settings, enable the UART
+    // Now that we're done messing with the settings, enable the UART
     usart_enable(USART);
-    // usart_disable_error_interrupt(USART1);
-    // usart_disable_idle_interrupt(USART1);
-    // usart_disable_rx_interrupt(USART1);
-    // usart_disable_tx_interrupt(USART1);
 }
 
 void setup_systick(void) {
@@ -271,17 +273,6 @@ void trigger_set(void) {
 void trigger_reset(void) {
     gpio_clear(GPIOB, GPIO9);
     gpio_clear(GPIOA, GPIO5);
-}
-
-void delay_cycles(uint32_t cycles) {
-    uint32_t start = dwt_read_cycle_counter();
-    while (dwt_read_cycle_counter() - start < cycles);
-}
-
-void delay_us(uint32_t us) {
-    uint32_t start = dwt_read_cycle_counter();
-    uint32_t cycles = us * (rcc_ahb_frequency / 1000000);
-    while (dwt_read_cycle_counter() - start < cycles);
 }
 
 void debug(const char *str, ...) {

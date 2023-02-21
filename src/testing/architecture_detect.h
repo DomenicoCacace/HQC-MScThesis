@@ -14,6 +14,8 @@
 #define CAT(a, b) a ## b
 #define CONST(a) CAT(a, _CONST)
 
+#define DELAY(x) for(int _i = 0; _i < x/4; _i++) {asm volatile("nop;");}
+
 #include <stdint.h>
 
 /**
@@ -27,24 +29,22 @@ static void randombytes(uint8_t *x, uint16_t xlen);
 #include "board_utils.h"
 #include "shake_prng.h"
 
-    #define PRINTF(...) debug(__VA_ARGS__)
+#define PRINTF(...) debug(__VA_ARGS__)
 
-    #define TRIGGER_SET trigger_set();
-    #define TRIGGER_RESET trigger_reset();
-    #define DELAY_CYCLES(x) delay_cycles(x);
-    #define DELAY_US(x) delay_us(x);
+#define TRIGGER_SET trigger_set();
+#define TRIGGER_RESET trigger_reset();
 
-    static void randombytes(uint8_t *x, uint16_t xlen) {
-        uint8_t rand[4];
-        for (int i = 0; i < (xlen/4)*4; i+=4) {
-            rng_get_random((uint32_t *)rand);
-            x[i] = *rand;
-        }
+static void randombytes(uint8_t *x, uint16_t xlen) {
+    uint8_t rand[4];
+    for (int i = 0; i < (xlen/4)*4; i+=4) {
         rng_get_random((uint32_t *)rand);
-        for (int i = (xlen/4)*4; i < xlen; i++) {
-            x[i] = rand[i-(xlen/4)*4];
-        }
+        x[i] = *rand;
     }
+    rng_get_random((uint32_t *)rand);
+    for (int i = (xlen/4)*4; i < xlen; i++) {
+        x[i] = rand[i-(xlen/4)*4];
+    }
+}
 
 #else
 #include <stdio.h>
@@ -54,8 +54,6 @@ static void randombytes(uint8_t *x, uint16_t xlen);
 
 #define TRIGGER_SET
 #define TRIGGER_RESET
-#define DELAY_CYCLES(x)
-#define DELAY_US(x)
 
 static void randombytes(uint8_t *x, uint16_t xlen) {
     shake_prng(x, xlen);
