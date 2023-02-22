@@ -11,6 +11,19 @@
 #include "vector.h"
 
 /**
+ * @brief Constant-time comparison of two integers v1 and v2
+ *
+ * Returns 1 if v1 is equal to v2 and 0 otherwise
+ * https://gist.github.cppom/sneves/10845247
+ *
+ * @param[in] v1 
+ * @param[in] v2 
+ */
+static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
+    return 1 ^ (((v1 - v2)|(v2 - v1)) >> 31);
+}
+
+/**
  * @brief Generates a vector of a given Hamming weight
  *
  * This function generates uniformly at random a binary vector of a Hamming weight equal to the parameter <b>weight</b>. The vector
@@ -28,35 +41,23 @@
  * @param[in] ctx Pointer to the context of the seed expander
  */
 void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32_t *v, uint16_t weight) {
-    size_t random_bytes_size = 3 * weight;
-    uint8_t rand_bytes[3 * PARAM_OMEGA_R] = {0}; // weight is expected to be <= PARAM_OMEGA_R
-    uint8_t inc;
-    size_t i, j;
+    uint32_t rand_u32[PARAM_OMEGA_R] = {0};
 
-    i = 0;
-    j = random_bytes_size;
-    while (i < weight) {
-        do {
-            if (j == random_bytes_size) {
-                seedexpander(ctx, rand_bytes, random_bytes_size);
-                j = 0;
-            }
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * PARAM_OMEGA_R);
 
-            v[i] = ((uint32_t) rand_bytes[j++]) << 16;
-            v[i] |= ((uint32_t) rand_bytes[j++]) << 8;
-            v[i] |= rand_bytes[j++];
+    for (size_t i = 0; i < weight; ++i) {
+        v[i] = i + rand_u32[i] % (PARAM_N - i);
+    }
 
-        } while (v[i] >= UTILS_REJECTION_THRESHOLD);
+    for (int32_t i = (weight - 1); i -- > 0;) {
+        uint32_t found = 0;
 
-        v[i] = v[i] % PARAM_N;
-
-        inc = 1;
-        for (size_t k = 0; k < i; k++) {
-            if (v[k] == v[i]) {
-                inc = 0;
-            }
+        for (size_t j = i + 1; j < weight; ++j) {
+            found |= compare_u32(v[j], v[i]);
         }
-        i += inc;
+
+        uint32_t mask = -found;
+        v[i] = (mask & i) ^ (~mask & v[i]);
     }
 }
 
