@@ -6,7 +6,7 @@ import sys
 branches = ["reference", "reference_noshuffle", "fastmul", "sparsemul", "masking"]
 algs = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps", "keygen"]
 freqs = ["16", "32", "48", "64", "80"]
-
+branches = ["masking"]
 def main(): 
     if len(sys.argv) > 1:
         try:
@@ -34,17 +34,20 @@ def main():
         if not os.path.isfile("../docs/timing_ARM.csv"):
             f = open("../docs/timing_ARM.csv", "w")
             f.write("commit,branch,freq,algorithm,mean,var,notes\n")
+            f.close()
         else:
             f = open("../docs/timing_ARM.csv", "a")
             f.write("\n")
+            f.close()
         for j in range(0, len(freqs)):
             for i in range(0, len(algs)):
                 print("    Running {}...".format(algs[i]), end="\r")
                 build(i, j, batch_size)
                 result = getResults(port, rate)
                 print("    {} done! ({}, {})".format(algs[i], result[0], result[1]))
+                f = open("../docs/timing_ARM.csv", "a")
                 f.write("{},{},{},{},{},{},\n".format(commit, branch, freqs[j], algs[i], result[0], result[1]))
-        f.close()
+                f.close()
         os.system("git add ../docs/timing_ARM.csv")
         os.system("git commit -m \"Add ARM timing results\"".format(branch))
         print()

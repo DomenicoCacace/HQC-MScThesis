@@ -6,8 +6,8 @@ import sys
 branches = ["reference", "reference_noshuffle", "fastmul", "sparsemul", "masking"]
 algs = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps"]
 freqs = ["16", "32", "48", "64", "80"]
-freqs = ["80"]  # also enable again git add and git commit down there
 branches = ["masking"]
+
 def main(): 
     if len(sys.argv) > 1:
         try:
@@ -34,17 +34,20 @@ def main():
         if not os.path.isfile("../docs/ttest_ARM.csv"):
             f = open("../docs/ttest_ARM.csv", "w")
             f.write("commit,branch,freq,algorithm,t,notes\n")
+            f.close()
         else:
             f = open("../docs/ttest_ARM.csv", "a")
             f.write("\n")
+            f.close()
         for j in range(0, len(freqs)):
             for i in range(0, len(algs)):
                 print("    Running {}...".format(algs[i]), end="\r")
                 build(i, j, batch_size)
                 result = getResults(port, rate)
                 print("    {} done! ({})".format(algs[i], result))
+                f = open("../docs/ttest_ARM.csv", "a")
                 f.write("{},{},{},{},{},\n".format(commit, branch, freqs[j], algs[i], result))
-        f.close()
+                f.close()
         os.system("git add ../docs/ttest_ARM.csv")
         os.system("git commit -m \"Add ARM t-test results\"".format(branch))
         print()
@@ -62,7 +65,7 @@ def build(alg, freq, batch_size):
             p.stdin.write("Y\n")
             p.stdin.flush()
         elif "Select clock frequency:" in line:
-            p.stdin.write("{}\n".format(4))
+            p.stdin.write("{}\n".format(freq))
             p.stdin.flush()
         elif "Select operating mode:" in line:
             p.stdin.write("3\n")

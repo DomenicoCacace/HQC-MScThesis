@@ -6,7 +6,7 @@ import sys
 branches = ["reference", "reference_noshuffle", "sparsemul", "masking", "fastmul", "avx"]
 algs = ["FULL_PKE", "FULL_KEM", "MULT", "ENC", "DEC", "ENCAPS", "DECAPS"]
 alg_names = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps", "keygen"]
-
+branches = ["masking"]
 def main(): 
     if len(sys.argv) > 1:
         try:
