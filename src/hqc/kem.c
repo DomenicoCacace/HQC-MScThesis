@@ -55,13 +55,19 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     uint8_t d[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
     shake256incctx shake256state;
 
     // Computing m
     vect_set_random_from_prng(m);
 
     // Computing theta
-    shake256_512_ds(&shake256state, theta, (uint8_t *) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
     // Encrypting m
     hqc_pke_encrypt(u, v, m, theta, pk);
@@ -76,7 +82,7 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
 
     // Computing ciphertext
-    hqc_ciphertext_to_string(ct, u, v, d);
+    hqc_ciphertext_to_string(ct, u, v, d, salt);
 
 #ifdef VERBOSE
     PRINTF("\n\npk: ");
@@ -121,10 +127,12 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     DIGIT v2[VEC_N1N2_SIZE_DIGIT] = {0};
     uint8_t d2[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SALT_SIZE_BYTES + SEED_BYTES] = {0};
     shake256incctx shake256state;
 
     // Retrieving u, v and d from ciphertext
-    hqc_ciphertext_from_string(u, v, d, ct);
+    hqc_ciphertext_from_string(u, v, d, salt, ct);
 
     // Retrieving pk from sk
     //memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
@@ -134,7 +142,10 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     hqc_pke_decrypt(m, u, v, sk);
 
     // Computing theta
-    shake256_512_ds(&shake256state, theta, (uint8_t *) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    memcpy(tmp, m, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
     // Encrypting m'
     hqc_pke_encrypt(u2, v2, m, theta, pk);
