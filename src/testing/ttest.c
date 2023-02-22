@@ -54,11 +54,8 @@ unsigned char pk_const[PUBLIC_KEY_BYTES] = {0};
 unsigned char sk_const[SECRET_KEY_BYTES] = {0};
 unsigned char ct_const[CIPHERTEXT_BYTES];
 DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
-uint8_t theta_const[SHAKE256_512_BYTES] = {0};
 DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
-DIGIT v_const[VEC_N1N2_SIZE_DIGIT] = {0};
 shares_n_t y_const;
-seedexpander_state seedexpander_const;
 
 
 int run(int reps) {   
@@ -68,24 +65,21 @@ int run(int reps) {
     
     // initialize constants
     unsigned char key1[SHARED_SECRET_BYTES];    // only used for crypto_kem_enc_const
-    shake256incctx shake256state;
+    seedexpander_state seedexpander_const;
 
     shares_n_init(&y_const);
     crypto_kem_keypair(pk_const, sk_const);
     seedexpander_init(&seedexpander_const, sk_const, SEED_BYTES);
     vect_set_random_from_prng(m_const);
-    shake256_512_ds(&shake256state, theta_const, (uint8_t*) m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    hqc_pke_encrypt(u_const, v_const, m_const, theta_const, pk_const);
+    vect_generate_random_for_mult(u_const);
     vect_set_random_fixed_weight(&seedexpander_const, y_const.s0, PARAM_OMEGA);
     shares_init_from_data(&y_const, y_const.s0);
-    crypto_kem_enc_const(ct_const, key1, pk_const);
 
     TRIGGER_SET
     for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
-    }
-    for(int i = 0; i < reps; i++) {
+
         ALG_CONST();
         welford_update(&timer_const, (long double)(end-start));
     }
@@ -231,11 +225,22 @@ void DEC(void) {
 }
 
 void DEC_CONST(void) {
-    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
+    shares_k_t m;
+    uint8_t theta[SHAKE256_512_BYTES] = {0};   
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    unsigned char sk[SECRET_KEY_BYTES];
+    shake256incctx shake256state;
+
+    shares_k_init(&m);
+    shares_init_from_msg(&m, m_const);
+    shake256_512_ds(&shake256state, theta, (uint8_t*) m.s0, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    hqc_pke_encrypt(u, v, &m, theta, sk);
 
     start = get_systick();
-    hqc_pke_decrypt(m, u_const, v_const, sk_const);
-    end = get_systick();    
+    hqc_pke_decrypt(m.s0, u, v, sk);
+    end = get_systick();
 }
 
 void ENCAPS(void) {
