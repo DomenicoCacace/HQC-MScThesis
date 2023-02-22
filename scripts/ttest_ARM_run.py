@@ -6,7 +6,7 @@ import sys
 branches = ["reference", "reference_noshuffle", "fastmul", "sparsemul", "masking"]
 algs = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps"]
 freqs = ["16", "32", "48", "64", "80"]
-
+branches = ["fastmul_salted"]
 def main(): 
     if len(sys.argv) > 1:
         try:
