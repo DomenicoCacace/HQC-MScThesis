@@ -74,10 +74,13 @@ int run(int reps) {
     shares_init_from_data(&y_const, y_const.s0);
 
     TRIGGER_SET
+    ALG();
     for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
-
+    }
+    ALG_CONST();
+    for(int i = 0; i < reps; i++) {
         ALG_CONST();
         welford_update(&timer_const, (long double)(end-start));
     }
