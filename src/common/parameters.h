@@ -15,6 +15,7 @@
 #define DIGIT                                       uint32_t
 #define DIGIT_SIZE_B                                4
 #define DIGIT_SIZE_b                                32
+#define DIGIT_SIZE_LOG2                             5
 #elif HIGH_PERFORMANCE_X86_64
 #define DIGIT                                       _m256i
 #define DIGIT_SIZE_B                                32
@@ -23,6 +24,7 @@
 #define DIGIT                                       uint64_t
 #define DIGIT_SIZE_B                                8
 #define DIGIT_SIZE_b                                64  
+#define DIGIT_SIZE_LOG2                             6
 #endif
 
 
