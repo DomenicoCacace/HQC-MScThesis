@@ -68,10 +68,13 @@ int run(int reps) {
     vect_set_random_fixed_weight(&seedexpander_const, y_const, PARAM_OMEGA);
 
     TRIGGER_SET
+    ALG();
     for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
-
+    }
+    ALG_CONST();
+    for(int i = 0; i < reps; i++) {
         ALG_CONST();
         welford_update(&timer_const, (long double)(end-start));
     }
@@ -313,7 +316,5 @@ void DECAPS_CONST(void) {
     crypto_kem_dec(key, ct, sk);
     end = get_systick();
 }
-
-#endif
 
 #endif
