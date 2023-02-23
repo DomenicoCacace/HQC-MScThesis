@@ -81,10 +81,45 @@ void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32
  * @param[in] ctx Pointer to the context of the seed expander
  */
 void vect_set_random_fixed_weight(seedexpander_state *ctx, DIGIT *v, uint16_t weight) {
-    uint32_t tmp[PARAM_OMEGA_R] = {0};
+    uint32_t rand_u32[PARAM_OMEGA_R] = {0};
+    uint32_t support[PARAM_OMEGA_R] = {0};
+    uint32_t index_tab [PARAM_OMEGA_R] = {0};
+    DIGIT bit_tab [PARAM_OMEGA_R] = {0};
 
-    vect_set_random_fixed_weight_by_coordinates(ctx, tmp, weight);
-    vect_sparse_to_dense(v, tmp, weight);
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * weight);
+
+    for (size_t i = 0; i < weight; ++i) {
+        support[i] = i + rand_u32[i] % (PARAM_N - i);
+    }
+
+    for (int32_t i = (weight - 1); i -- > 0;) {
+        uint32_t found = 0;
+
+        for (size_t j = i + 1; j < weight; ++j) {
+            found |= compare_u32(support[j], support[i]);
+        }
+
+        uint32_t mask = -found;
+        support[i] = (mask & i) ^ (~mask & support[i]);
+    }
+
+    for (size_t i = 0; i < weight; i++) {
+        index_tab[i] = support[i] >> DIGIT_SIZE_LOG2;
+        int32_t pos = support[i] & 0x3f;
+        bit_tab[i]  = ((DIGIT) 1) << pos;
+    }
+
+    DIGIT val = 0;
+    for (uint32_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        val = 0;
+        for (uint32_t j = 0 ; j < weight ; j++) {
+            uint32_t tmp = i - index_tab[j];
+            int val1 = 1 ^ ((tmp | -tmp) >> 31);
+            DIGIT mask = -val1;
+            val |= (bit_tab[j] & mask);
+        }
+        v[i] |= val;
+    }
 }
 
 /**
