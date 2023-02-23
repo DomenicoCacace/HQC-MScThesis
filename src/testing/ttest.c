@@ -85,7 +85,6 @@ int run(int reps) {
     }
     TRIGGER_RESET
     welch_t_print(timer, timer_const);
-    PRINTF("%Lf %Lf %Lf\n", timer.mean-timer_const.mean, timer.M2, timer_const.M2);
     PRINTF("DONE\n");
     return 0;
 }
