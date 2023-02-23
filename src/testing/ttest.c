@@ -62,7 +62,6 @@ int run(int reps) {
     welford_init(&timer_const);
     
     // initialize constants
-    unsigned char key1[SHARED_SECRET_BYTES];    // only used for crypto_kem_enc_const
     seedexpander_state seedexpander_const;
 
     shares_n_init(&y_const);
@@ -74,10 +73,13 @@ int run(int reps) {
     shares_init_from_data(&y_const, y_const.s0);
 
     TRIGGER_SET
+    ALG();
     for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
-
+    }
+    ALG_CONST();
+    for(int i = 0; i < reps; i++) {
         ALG_CONST();
         welford_update(&timer_const, (long double)(end-start));
     }
@@ -108,7 +110,7 @@ void FULL_KEM_CONST(void) {
     unsigned char key2[SHARED_SECRET_BYTES];
 
     start = get_systick();
-    crypto_kem_enc_const(ct, key1, pk_const);
+    crypto_kem_enc(ct, key1, pk_const);
     crypto_kem_dec(key2, ct, sk_const);
     end = get_systick();
 }
