@@ -352,3 +352,5 @@ int crypto_kem_enc_const(unsigned char *ct, unsigned char *ss, const unsigned ch
 }
 
 #endif
+
+#endif
