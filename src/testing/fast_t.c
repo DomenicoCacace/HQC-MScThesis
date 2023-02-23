@@ -20,7 +20,6 @@
 #include "vector.h"
 
 
-int crypto_kem_enc_const(unsigned char *ct, unsigned char *ss, const unsigned char *pk);
 
 unsigned char pk_const[PUBLIC_KEY_BYTES] = {0};
 unsigned char sk_const[SECRET_KEY_BYTES] = {0};
@@ -136,7 +135,7 @@ int run(int reps) {
 
     for(int i = 0; i < reps; i++) {
         t1 = get_systick();
-        crypto_kem_enc_const(ct, key1, pk_const);
+        crypto_kem_enc(ct, key1, pk_const);
         t2 = get_systick();
         crypto_kem_dec(key2, ct, sk_const);
         t3 = get_systick();
@@ -155,39 +154,6 @@ int run(int reps) {
     PRINTF("DONE\n");
     return 0;
 }
-#endif
-int crypto_kem_enc_const(unsigned char *ct, unsigned char *ss, const unsigned char *pk) {
-    uint8_t theta[SHAKE256_512_BYTES] = {0};
-    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
-    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
-    uint8_t d[SHAKE256_512_BYTES] = {0};
-    uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
-    shake256incctx shake256state;
-
-    // Computing m
-    vect_set_random_from_prng(m);   // unused, but needed to mimick the original function
-
-    // Computing theta
-    shake256_512_ds(&shake256state, theta, (uint8_t *) m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-
-    // Encrypting m
-    hqc_pke_encrypt(u, v, m_const, theta, pk);
-
-    // Computing d
-    shake256_512_ds(&shake256state, d, (uint8_t *) m_const, VEC_K_SIZE_BYTES, H_FCT_DOMAIN);
-
-    // Computing shared secret
-    memcpy(mc, m_const, VEC_K_SIZE_BYTES);
-    memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
-    memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
-    shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
-
-    // Computing ciphertext
-    hqc_ciphertext_to_string(ct, u, v, d);
-    return 0;
-}
-
 #endif
 
 #endif
