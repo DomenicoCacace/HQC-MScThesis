@@ -46,6 +46,9 @@ void welford_update(welford_t *state, long double sample) {
     state->mean += delta / (long double) (state->count);
     delta2 = sample - state->mean;
     state->M2 += delta * delta2;
+    #ifdef CORTEX_M4
+    dwt_enable_cycle_counter();
+    #endif
 }
 
 static inline
