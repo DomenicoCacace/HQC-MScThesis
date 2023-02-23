@@ -126,10 +126,9 @@ void FULL_PKE(void) {
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
 
+    hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m_in);
     shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-
-    hqc_pke_keygen(pk, sk);
 
     start = get_systick();
     hqc_pke_encrypt(u, v, m_in, theta, pk);
@@ -138,13 +137,23 @@ void FULL_PKE(void) {
 }
 
 void FULL_PKE_CONST(void) {
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    unsigned char sk[SECRET_KEY_BYTES];
+    DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
     DIGIT m_out[VEC_K_SIZE_DIGIT] = {0};
+    uint8_t theta[SHAKE256_512_BYTES] = {0};
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
+    shake256incctx shake256state;
+
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
+    memcpy(sk, sk_const, SECRET_KEY_BYTES);
+    memcpy(m_in, m_const, VEC_K_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
 
     start = get_systick();
-    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
-    hqc_pke_decrypt(m_out, u, v, sk_const);
+    hqc_pke_encrypt(u, v, m_in, theta, pk);
+    hqc_pke_decrypt(m_out, u, v, sk);
     end = get_systick();
 }
 
@@ -186,10 +195,10 @@ void ENC(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
     shake256incctx shake256state;
-
+    
+    hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m);
     shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    hqc_pke_keygen(pk, sk);
 
     start = get_systick();
     hqc_pke_encrypt(u, v, m, theta, pk);
@@ -199,9 +208,17 @@ void ENC(void) {
 void ENC_CONST(void) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
+    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
+    uint8_t theta[SHAKE256_512_BYTES] = {0};
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    shake256incctx shake256state;
+
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
+    memcpy(m, m_const, VEC_K_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
 
     start = get_systick();
-    hqc_pke_encrypt(u, v, m_const, theta_const, pk_const);
+    hqc_pke_encrypt(u, v, m, theta, pk);
     end = get_systick();
 }
 
@@ -217,7 +234,7 @@ void DEC(void) {
     hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m);
     shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    hqc_pke_encrypt(u, v, m, theta, sk);
+    hqc_pke_encrypt(u, v, m, theta, pk);
 
     start = get_systick();
     hqc_pke_decrypt(m, u, v, sk);
@@ -227,17 +244,20 @@ void DEC(void) {
 void DEC_CONST(void) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
-    shares_k_t m;
-    uint8_t theta[SHAKE256_512_BYTES] = {0};   
+    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
+    uint8_t theta[SHAKE256_512_BYTES] = {0}; 
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    unsigned char sk[SECRET_KEY_BYTES];  
     shake256incctx shake256state;
 
-    shares_k_init(&m);
-    shares_init_from_msg(&m, m_const);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m.s0, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    hqc_pke_encrypt(u, v, &m, theta, pk_const);
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
+    memcpy(sk, sk_const, SECRET_KEY_BYTES);
+    memcpy(m, m_const, VEC_K_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    hqc_pke_encrypt(u, v, m, theta, pk);
 
     start = get_systick();
-    hqc_pke_decrypt(m.s0, u, v, sk_const);
+    hqc_pke_decrypt(m, u, v, sk);
     end = get_systick();
 }
 
@@ -255,8 +275,11 @@ void ENCAPS(void) {
 }
 
 void ENCAPS_CONST(void) {
+    unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char ct[CIPHERTEXT_BYTES];
     unsigned char key[SHARED_SECRET_BYTES];
+
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
 
     start = get_systick();
     crypto_kem_enc_const(ct, key, pk_const);
@@ -278,10 +301,17 @@ void DECAPS(void) {
 }
 
 void DECAPS_CONST(void) {
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    unsigned char sk[SECRET_KEY_BYTES];
+    unsigned char ct[CIPHERTEXT_BYTES];
     unsigned char key[SHARED_SECRET_BYTES];
 
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
+    memcpy(sk, sk_const, SECRET_KEY_BYTES);
+    crypto_kem_enc(ct, key, pk);
+
     start = get_systick();
-    crypto_kem_dec(key, ct_const, sk_const);
+    crypto_kem_dec(key, ct, sk);
     end = get_systick();
 }
 
