@@ -348,7 +348,7 @@ void debug(const char *str, ...) {
 }
 
 void double_to_string(double in, char *out) {
-    int precision = 12;
+    int precision = 8;
     if (in < 0) {
         in = -in;
         out[0] = '-';
@@ -385,7 +385,7 @@ void double_to_string(double in, char *out) {
 }
 
 void ldouble_to_string(long double in, char *out) {
-    int precision = 12;
+    int precision = 8;
     if (in < 0) {
         in = -in;
         out[0] = '-';
