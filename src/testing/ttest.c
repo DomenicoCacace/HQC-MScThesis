@@ -53,7 +53,7 @@ unsigned char sk_const[SECRET_KEY_BYTES] = {0};
 unsigned char ct_const[CIPHERTEXT_BYTES];
 DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
 DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
-shares_n_t y_const;
+DIGIT y_const[VEC_N_SIZE_DIGIT] = {0};
 
 
 int run(int reps) {   
@@ -64,13 +64,11 @@ int run(int reps) {
     // initialize constants
     seedexpander_state seedexpander_const;
 
-    shares_n_init(&y_const);
     crypto_kem_keypair(pk_const, sk_const);
     seedexpander_init(&seedexpander_const, sk_const, SEED_BYTES);
     vect_set_random_from_prng(m_const);
     vect_generate_random_for_mult(u_const);
-    vect_set_random_fixed_weight(&seedexpander_const, y_const.s0, PARAM_OMEGA);
-    shares_init_from_data(&y_const, y_const.s0);
+    vect_set_random_fixed_weight(&seedexpander_const, y_const, PARAM_OMEGA);
 
     TRIGGER_SET
     ALG();
@@ -192,11 +190,13 @@ void MULT(void) {
 
 void MULT_CONST(void) {
     shares_n_t res;
+    shares_n_t y;
     
     shares_n_init(&res);
+    shares_init_from_data(&y, y_const);
 
     start = get_systick();
-    MUL(&res, &y_const, u_const);
+    MUL(&res, &y, u_const);
     end = get_systick();
 }
 
