@@ -20,20 +20,8 @@
 #include "vector.h"
 
 
-
-unsigned char pk_const[PUBLIC_KEY_BYTES] = {0};
-unsigned char sk_const[SECRET_KEY_BYTES] = {0};
-DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
-
 #ifdef FULL_PKE
 int run(int reps) {   
-    // initialize constants
-    seedexpander_state seedexpander_const;
-
-    crypto_kem_keypair(pk_const, sk_const);
-    seedexpander_init(&seedexpander_const, sk_const, SEED_BYTES);
-    vect_set_random_from_prng(m_const);
-
     uint32_t t1,t2,t3;
     welford_t enc, enc_const;
     welford_init(&enc);
@@ -45,6 +33,9 @@ int run(int reps) {
     welford_init(&pke);
     welford_init(&pke_const);
 
+    DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};    
+    vect_set_random_from_prng(m_const);
+
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
     DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
@@ -53,16 +44,20 @@ int run(int reps) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
+
 
     TRIGGER_SET
     for(int i = 0; i < reps; i++) {
-
-
-        //----------PKE--------------
-
         hqc_pke_keygen(pk, sk);
         vect_set_random_from_prng(m_in);
-        shake256_512_ds(&shake256state, theta, (uint8_t *)m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+        memcpy(tmp, m_in, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+
 
         t1 = get_systick();
         hqc_pke_encrypt(u, v, m_in, theta, pk);
@@ -73,13 +68,20 @@ int run(int reps) {
         welford_update(&dec, t3-t2);
         welford_update(&pke, t3-t1);
     }
+
+    hqc_pke_keygen(pk, sk);
     for(int i = 0; i < reps; i++) {
-        shake256_512_ds(&shake256state, theta, (uint8_t *)m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+        memcpy(tmp, m_const, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+
 
         t1 = get_systick();
-        hqc_pke_encrypt(u, v, m_const, theta, pk_const);
+        hqc_pke_encrypt(u, v, m_const, theta, pk);
         t2 = get_systick();
-        hqc_pke_decrypt(m_out, u, v, sk_const);
+        hqc_pke_decrypt(m_out, u, v, sk);
         t3 = get_systick();
         welford_update(&enc_const, t2-t1);
         welford_update(&dec_const, t3-t2);
@@ -98,9 +100,6 @@ int run(int reps) {
 }
 #else
 int run(int reps) {
-    // initialize constants
-    crypto_kem_keypair(pk_const, sk_const);
-
     uint32_t t1,t2,t3;
     welford_t encaps, encaps_const;
     welford_init(&encaps);
@@ -133,11 +132,12 @@ int run(int reps) {
         welford_update(&kem, t3-t1);
     }
 
+    crypto_kem_keypair(pk, sk);
     for(int i = 0; i < reps; i++) {
         t1 = get_systick();
-        crypto_kem_enc(ct, key1, pk_const);
+        crypto_kem_enc(ct, key1, pk);
         t2 = get_systick();
-        crypto_kem_dec(key2, ct, sk_const);
+        crypto_kem_dec(key2, ct, sk);
         t3 = get_systick();
 
         welford_update(&encaps_const, t2-t1);
