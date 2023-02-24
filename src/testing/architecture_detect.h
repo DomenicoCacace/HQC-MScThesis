@@ -11,6 +11,7 @@
 #define PLAIN 2
 #define TTEST 3
 #define TTEST_FAST 4
+#define TIMING_FAST 5
 
 #define CAT(a, b) a ## b
 #define CONST(a) CAT(a, _CONST)
