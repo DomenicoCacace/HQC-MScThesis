@@ -33,29 +33,28 @@ int run(int reps) {
     welford_init(&pke);
     welford_init(&pke_const);
 
-    DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};    
-    vect_set_random_from_prng(m_const);
+    unsigned char pk_const[PUBLIC_KEY_BYTES];
+    unsigned char sk_const[SECRET_KEY_BYTES];
+    DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
 
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
-    DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
-    DIGIT m_out[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT m[VEC_K_SIZE_DIGIT] = {0};    
     uint8_t theta[SHAKE256_512_BYTES] = {0};
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
 
-
     TRIGGER_SET
     for(int i = 0; i < reps; i++) {
         hqc_pke_keygen(pk, sk);
-        vect_set_random_from_prng(m_in);
-        shake256_512_ds(&shake256state, theta, m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        vect_set_random_from_prng(m);
+        shake256_512_ds(&shake256state, theta, (uint8_t *)m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
 
         t1 = get_systick();
-        hqc_pke_encrypt(u, v, m_in, theta, pk);
+        hqc_pke_encrypt(u, v, m, theta, pk);
         t2 = get_systick();
-        hqc_pke_decrypt(m_out, u, v, sk);
+        hqc_pke_decrypt(m, u, v, sk);
         t3 = get_systick();
         welford_update(&enc, t2-t1);
         welford_update(&dec, t3-t2);
@@ -63,14 +62,16 @@ int run(int reps) {
     }
 
     hqc_pke_keygen(pk, sk);
+    vect_set_random_from_prng(m);
     for(int i = 0; i < reps; i++) {
-        shake256_512_ds(&shake256state, theta, m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-
+        hqc_pke_keygen(pk_const, sk_const);
+        vect_set_random_from_prng(m_const);
+        shake256_512_ds(&shake256state, theta, (uint8_t *)m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
 
         t1 = get_systick();
-        hqc_pke_encrypt(u, v, m_const, theta, pk);
+        hqc_pke_encrypt(u, v, m, theta, pk);
         t2 = get_systick();
-        hqc_pke_decrypt(m_out, u, v, sk);
+        hqc_pke_decrypt(m, u, v, sk);
         t3 = get_systick();
         welford_update(&enc_const, t2-t1);
         welford_update(&dec_const, t3-t2);
@@ -78,16 +79,17 @@ int run(int reps) {
     }
     
     TRIGGER_RESET
+    PRINTF("pke: ");
+    welch_t_print(pke, pke_const);
     PRINTF("enc: ");
     welch_t_print(enc, enc_const);
     PRINTF("dec: ");
     welch_t_print(dec, dec_const);
-    PRINTF("pke: ");
-    welch_t_print(pke, pke_const);
     PRINTF("DONE\n");
     return 0;
 }
-#else
+#endif
+#ifdef FULL_KEM
 int run(int reps) {
     uint32_t t1,t2,t3;
     welford_t encaps, encaps_const;
@@ -134,12 +136,63 @@ int run(int reps) {
         welford_update(&kem_const, t3-t1);
     }
     TRIGGER_RESET
+    PRINTF("kem: ");
+    welch_t_print(kem, kem_const);
     PRINTF("encaps: ");
     welch_t_print(encaps, encaps_const);
     PRINTF("decaps: ");
     welch_t_print(decaps, decaps_const);
-    PRINTF("kem: ");
-    welch_t_print(kem, kem_const);
+    PRINTF("DONE\n");
+    return 0;
+}
+#endif
+#ifdef MULT
+int run(int reps) {
+    uint32_t t1,t2;
+    welford_t mul, mul_const;
+    welford_init(&mul);
+    welford_init(&mul_const);
+
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT y_const[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT res[VEC_N_SIZE_DIGIT] = {0};
+    seedexpander_state seedexpander;
+    uint8_t seed[SEED_BYTES] = {0};
+
+
+    TRIGGER_SET
+    for(int i = 0; i < reps; i++) {
+        randombytes(seed, SEED_BYTES);
+        seedexpander_init(&seedexpander, seed, SEED_BYTES);
+        vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
+        vect_generate_random_for_mult(u);
+
+        t1 = get_systick();
+        opt_mul(res, u, y);
+        t2 = get_systick();
+
+        welford_update(&mul, t2-t1);
+    }
+
+    vect_set_random_fixed_weight(&seedexpander, y_const, PARAM_OMEGA);
+    vect_generate_random_for_mult(u_const);
+    for(int i = 0; i < reps; i++) {
+        //randombytes(seed, SEED_BYTES);
+        //seedexpander_init(&seedexpander, seed, SEED_BYTES);
+        vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
+        vect_generate_random_for_mult(u);
+
+        t1 = get_systick();
+        opt_mul(res, y_const, u_const);
+        t2 = get_systick();
+
+        welford_update(&mul_const, t2-t1);
+    }
+    TRIGGER_RESET
+    PRINTF("mult: ");
+    welch_t_print(mul, mul_const);
     PRINTF("DONE\n");
     return 0;
 }
