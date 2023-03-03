@@ -62,7 +62,6 @@ int run(int reps) {
     welford_init(&timer_const);
     
     // initialize constants
-    unsigned char key1[SHARED_SECRET_BYTES];    // only used for crypto_kem_enc_const
     seedexpander_state seedexpander_const;
 
     crypto_kem_keypair(pk_const, sk_const);
@@ -109,7 +108,7 @@ void FULL_KEM_CONST(void) {
     unsigned char key2[SHARED_SECRET_BYTES];
 
     start = get_systick();
-    crypto_kem_enc_const(ct, key1, pk_const);
+    crypto_kem_enc(ct, key1, pk_const);
     crypto_kem_dec(key2, ct, sk_const);
     end = get_systick();
 }
@@ -124,10 +123,17 @@ void FULL_PKE(void) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
     hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m_in);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    hqc_pke_keygen(pk, sk);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m_in, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
     start = get_systick();
     hqc_pke_encrypt(u, v, m_in, theta, pk);
@@ -144,11 +150,17 @@ void FULL_PKE_CONST(void) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
+    memcpy(m_in, m_const, VEC_K_SIZE_BYTES);
     memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
     memcpy(sk, sk_const, SECRET_KEY_BYTES);
-    memcpy(m_in, m_const, VEC_K_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m_in, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
     start = get_systick();
     hqc_pke_encrypt(u, v, m_in, theta, pk);
@@ -196,10 +208,16 @@ void ENC(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
     shake256incctx shake256state;
-    
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
+
     hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
     start = get_systick();
     hqc_pke_encrypt(u, v, m, theta, pk);
@@ -213,10 +231,16 @@ void ENC_CONST(void) {
     uint8_t theta[SHAKE256_512_BYTES] = {0};
     unsigned char pk[PUBLIC_KEY_BYTES];
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
-    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
     memcpy(m, m_const, VEC_K_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
     start = get_systick();
     hqc_pke_encrypt(u, v, m, theta, pk);
@@ -231,10 +255,16 @@ void DEC(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
     hqc_pke_keygen(pk, sk);
     vect_set_random_from_prng(m);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
     hqc_pke_encrypt(u, v, m, theta, pk);
 
     start = get_systick();
@@ -250,11 +280,17 @@ void DEC_CONST(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char sk[SECRET_KEY_BYTES];  
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
     memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
     memcpy(sk, sk_const, SECRET_KEY_BYTES);
     memcpy(m, m_const, VEC_K_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
     hqc_pke_encrypt(u, v, m, theta, pk);
 
     start = get_systick();

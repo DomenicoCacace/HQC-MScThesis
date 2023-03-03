@@ -17,7 +17,7 @@ def main():
         batch_size = 10000
             
     for branch in branches:
-        if branch == "masking" or branch == "fastmul": # only support 128-bit security level
+        if branch == "masking_salted" or branch == "fastmul": # only support 128-bit security level
             seclevs = ["128"]   
         else:
             seclevs = ["128", "192", "256"]

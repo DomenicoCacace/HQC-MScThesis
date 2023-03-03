@@ -67,9 +67,17 @@ int run(int reps) {
         DIGIT m[VEC_K_SIZE_DIGIT] = {0};
         uint8_t theta[SHAKE256_512_BYTES] = {0};   
         shake256incctx shake256state;
+        DIGIT salt[SALT_SIZE_DIGIT] = {0};
+        uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
+
 
         vect_set_random_from_prng(m);
-        shake256_512_ds(&shake256state, theta, (uint8_t*) m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+        memcpy(tmp, m, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+
 
         t0 = get_systick();
         hqc_pke_keygen(pk, sk);
