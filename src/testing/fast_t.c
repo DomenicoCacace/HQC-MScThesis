@@ -19,10 +19,10 @@
 #include "timing_tools.h"
 #include "vector.h"
 
+uint32_t t0,t1,t2,t3;
 
 #ifdef FULL_PKE
 int run(int reps) {   
-    uint32_t t1,t2,t3,t4,t5;
     welford_t enc, enc_const;
     welford_init(&enc);
     welford_init(&enc_const);
@@ -48,6 +48,8 @@ int run(int reps) {
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
     hqc_pke_keygen(pk_const, sk_const);
     vect_set_random_from_prng(m_const);        
@@ -55,50 +57,114 @@ int run(int reps) {
     for(int i = 0; i < reps; i++) {
         hqc_pke_keygen(pk, sk);
         vect_set_random_from_prng(m);
-        shake256_512_ds(&shake256state, theta_const, m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-        shake256_512_ds(&shake256state, theta, m, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
+        randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+        memcpy(tmp, m, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+        memcpy(tmp, m_const, VEC_K_SIZE_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES, pk_const, SEED_BYTES);
+        memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+        shake256_512_ds(&shake256state, theta_const, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
 
-        t1 = get_systick();
-        hqc_pke_encrypt(u, v, m, theta, pk);
-        t2 = get_systick();
-        hqc_pke_encrypt(u_const, v_const, m_const, theta_const, pk_const);
-        t3 = get_systick();
-        hqc_pke_decrypt(m_const, u_const, v_const, sk_const);
-        t4 = get_systick();
-        hqc_pke_decrypt(m, u, v, sk);
-        t5 = get_systick();
+        hqc_pke_encrypt_probe(u, v, m, theta, pk);
+        hqc_pke_decrypt_probe(m, u, v, sk);
+        welford_update(&pke, t3-t2+t1-t0);
+        welford_update(&enc, t1-t0);
+        welford_update(&dec, t3-t2);
 
-        welford_update(&enc, t2-t1);
-        welford_update(&enc_const, t3-t2);
-        welford_update(&dec, t4-t3);
-        welford_update(&dec_const, t5-t4);
-        welford_update(&pke, t4-t1-(t3-t2));
-        welford_update(&pke_const, t5-t2-(t4-t3));
-
-        memset(m, 0, VEC_K_SIZE_BYTES);
-        memset(theta, 0, SHAKE256_512_BYTES);
-        memset(u, 0, VEC_N_SIZE_BYTES);
-        memset(v, 0, VEC_N1N2_SIZE_BYTES);
-        memset(pk, 0, PUBLIC_KEY_BYTES);
-        memset(sk, 0, SECRET_KEY_BYTES);
-        memset(theta_const, 0, SHAKE256_512_BYTES);
-        memset(u_const, 0, VEC_N_SIZE_BYTES);
-        memset(v_const, 0, VEC_N1N2_SIZE_BYTES);
+        hqc_pke_encrypt_probe(u_const, v_const, m_const, theta_const, pk_const);
+        hqc_pke_decrypt_probe(m_const, u_const, v_const, sk_const);
+        welford_update(&pke_const, t3-t2+t1-t0);
+        welford_update(&enc_const, t1-t0);
+        welford_update(&dec_const, t3-t2);
     }
     
     TRIGGER_RESET
     PRINTF("pke: ");
-    PRINTF("%Lf %Lf %Lf ", pke.mean-pke_const.mean, pke.M2, pke_const.M2);
     welch_t_print(pke, pke_const);
     PRINTF("enc: ");
-    PRINTF("%Lf %Lf %Lf ", enc.mean-enc_const.mean, enc.M2, enc_const.M2);
     welch_t_print(enc, enc_const);
     PRINTF("dec: ");
-    PRINTF("%Lf %Lf %Lf ", dec.mean-dec_const.mean, dec.M2, dec_const.M2);
     welch_t_print(dec, dec_const);
-
     PRINTF("DONE\n");
     return 0;
+}
+
+void hqc_pke_encrypt_probe(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk) {
+    seedexpander_state seedexpander;
+    DIGIT h[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT s[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT r1[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT r2[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT e[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
+
+    uint8_t seed[PUBLIC_KEY_BYTES] = {0};
+
+    randombytes(seed, PUBLIC_KEY_BYTES);
+    seedexpander_init(&seedexpander, seed, PUBLIC_KEY_BYTES);
+    hqc_public_key_from_string(h, s, seed);
+    vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
+    vect_set_random_fixed_weight(&seedexpander, r1, PARAM_OMEGA_R);
+    vect_set_random_fixed_weight(&seedexpander, r2, PARAM_OMEGA_R);
+    code_encode(v, seed);
+    vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
+    vect_add(tmp2, e, tmp1, VEC_N_SIZE_DIGIT);
+
+    t0 = get_systick();
+    // Create seed_expander from theta
+    seedexpander_init(&seedexpander, theta, SEED_BYTES);
+
+    // Retrieve h and s from public key
+    hqc_public_key_from_string(h, s, pk);
+
+    // Generate r1, r2 and e
+    vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
+    vect_set_random_fixed_weight(&seedexpander, r1, PARAM_OMEGA_R);
+    vect_set_random_fixed_weight(&seedexpander, r2, PARAM_OMEGA_R);
+
+    // Compute u = r1 + r2.h
+    opt_mul(u, r2, h);
+    vect_add(u, r1, u, VEC_N_SIZE_DIGIT);
+
+    // Compute v = m.G by encoding the message
+    code_encode(v, m);
+    vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
+
+    // Compute v = m.G + s.r2 + e
+    opt_mul(tmp2, r2, s);
+    vect_add(tmp2, e, tmp2, VEC_N_SIZE_DIGIT);
+    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
+    vect_resize(v, PARAM_N1N2, tmp2, PARAM_N);
+    t1 = get_systick();
+}
+
+void hqc_pke_decrypt_probe(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
+    DIGIT x[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
+    uint8_t pk[PUBLIC_KEY_BYTES] = {0};
+    DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
+    seedexpander_state perm_seedexpander;
+    uint8_t seed[SECRET_KEY_BYTES] = {0};
+    
+    randombytes(seed, SECRET_KEY_BYTES);
+    hqc_secret_key_from_string(x, y, pk, seed);
+
+    t2 = get_systick();
+    // Retrieve x, y, pk from secret key
+    hqc_secret_key_from_string(x, y, pk, sk);
+
+    // Compute v - u.y
+    vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
+    opt_mul(tmp2, y, u);
+    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
+
+    // Compute m by decoding v - u.y
+    code_decode(m, tmp2);
+    t3 = get_systick();
 }
 #endif
 #ifdef FULL_KEM
@@ -165,14 +231,14 @@ int run(int reps) {
     welford_init(&mul);
     welford_init(&mul_const);
 
-    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
     DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
     DIGIT y_const[VEC_N_SIZE_DIGIT] = {0};
+
+    DIGIT u[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
     DIGIT res[VEC_N_SIZE_DIGIT] = {0};
     seedexpander_state seedexpander;
     uint8_t seed[SEED_BYTES] = {0};
-
 
     TRIGGER_SET
     for(int i = 0; i < reps; i++) {
@@ -188,11 +254,13 @@ int run(int reps) {
         welford_update(&mul, t2-t1);
     }
 
+    randombytes(seed, SEED_BYTES);
+    seedexpander_init(&seedexpander, seed, SEED_BYTES);
     vect_set_random_fixed_weight(&seedexpander, y_const, PARAM_OMEGA);
     vect_generate_random_for_mult(u_const);
     for(int i = 0; i < reps; i++) {
-        //randombytes(seed, SEED_BYTES);
-        //seedexpander_init(&seedexpander, seed, SEED_BYTES);
+        randombytes(seed, SEED_BYTES);
+        seedexpander_init(&seedexpander, seed, SEED_BYTES);
         vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
         vect_generate_random_for_mult(u);
 
