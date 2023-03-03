@@ -191,16 +191,16 @@ the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
 \end{definition}
 
 \begin{definition}[\textsf{SD} Problem]
-    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times mathds{F}_2^{(n-k)}$ from the $\textsf{SD}(n, k, w)$ 
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$ from the $\textsf{SD}(n, k, w)$ 
     distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
     $\sigma(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
 \end{definition}
 This problem has been proven to be NP-complete in~\cite{berlekamp1978inherent}.
 
 \begin{definition}[Decisional \textsf{SD} Problem]
-    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times mathds{F}_2^{(n-k)}$, the \textsf{DSD} problem 
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$, the \textsf{DSD} problem 
     requires to determine whether $(\mathbf{H}, \mathbf{y}^\top)$ comes from the \textsf{SD} distribution or from the random
-    distribution over $\mathds{F}_2^{(n-k)\times n} \times mathds{F}_2^{(n-k)}$.
+    distribution over $\mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$.
 \end{definition}
 
 
