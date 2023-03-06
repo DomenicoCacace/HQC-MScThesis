@@ -3,10 +3,10 @@
     Unfortunately, multiplicative FFTs do not work when the underlying field does not admit primitive roots of unity, as it happens for fields
     of characteristic two; for this reason, \textit{additive} FFTs were invented~\cite{wang1988fast,cantor1989arithmetical}.
     Instead of using the $n$-th roots of unity, additive FFTs evaluate the polynomials at the powers of a primitive $(n-1)$-th root of unity,
-    as well as the zero element.\\
-    The Gao-Mateer FFT~\cite{gao2010additive} is an algorithm that computes the additive FFT over finite fields of characteristic two. 
-    The discussion in the following takes into consideration only the case of interest for our application, namely the case
-    $n = 2^m$, where $m$ is a power of 2.
+    as well as the zero element. Some examples of such algorithms that work on binary fields are the Gao-Mateer FFT~\cite{gao2010additive} 
+    and the Lin-Chung-Han FFT~\cite{lin2014novel}.\\
+    We will now focus on the LCH FFT, as it will be the foundation for a faster approach based on the Frobenius map; for this reason, we will
+    consider the case $n=2^m$ where $m$ is a power of 2.
 
 
 \subsection{Cantor basis}
@@ -65,23 +65,55 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     \end{example}
 
 
-\subsection{Divide et Impera: the Butterflies}
-    As with the other FFTs, the result of the Gao-Mateer FFT is a set of evaluation points of a polynomial.
-    Let $f(x) \in \mathds{F}_{2^m}[x]$ be a polynomial of degree $d \leqslant n$ with $n = 2^\ell, \ell \leqslant m$ and
-    $v \in \mathds{F}_{2^m}$. The result of the AFFT is the set of evaluation points:
+\subsubsection{A \textit{novel} polynomial basis}
+    In order to perform the LCH FFT, the input polynomial has to be represented in a different basis. Given the Cantor basis $\mathbf{v} = (v_1, \cdots, v_m)$, we define the 
+    \emph{novelpoly} basis with respect to $\mathbf{v}$ as $(X_1, \cdots, X_{n-1})$, defined as follows:
     \begin{equation}
-        S = \lbrace f(\alpha) | \alpha \in v + W_\ell \rbrace
+        X_k(x) = \prod(s_i(x))^{b_i} \qquad \text{ where } k = \sum_{i=0}^{\log_2 n} b_i 2^i
     \end{equation}
-    For $\ell \geqslant 0$, the first step of the AFFT performs a \textit{radix conversion}, transforming the input polynomial $f(x)$ into:
-    \begin{equation}
-        f(x) = f^{(0)}(s_1(x)) + x\cdot f^{(1)}(s_1(x))
-    \end{equation}
-    where $f^{(0)}$ and $f^{(1)}$ are polynomials of degree at most $2^{\ell-1}$ and can be calculated by using only field additions.\\
-    At this point, if we have $S^{(j)} = \lbrace f^{(j)}(s_1(\alpha)) | \alpha \in v + W_\ell \rbrace$ for $j \in \lbrace0,1\rbrace$,
-    then we can compute each $f(\alpha)$ as $f^{(0)}(\alpha) + \alpha \cdot f^{(1)}(\alpha)$.
-    Because of the linearity of the vanishing polynomial, we can also observe that $s_1(v + W_\ell) = s_1(v) + W_{\ell-1}$, and thus
-    compute $S^{(0)}$ and $S^{(1)}$ recursively, reducing a problem of size $n$ to two problems of size $n/2$.
-    
+    In other words, $X_k(x)$ is the product of all the $i$-th vanishing polynomials, where the $i$s are the set bits of $k$ in its binary representation.
+
+\subsection{Divide et impera: the Butterflies}
+    The general idea of the LCH FFT to evaluate $f(x)$ at all points of $W_k$ is to split it into $W_{k-1}$ and $W_k\setminus W_{k-1} = \{x + v_k | x \in W_{k-1}\}$:
+    because of the linearity of the vanishing polynomials, the evaluation of at $W_k\setminus W_{k-1}$ can be efficiently computed by reusing the evaluation at $W_{k-1}$
+    with a \emph{butterfly}.
+
+    \begin{figure}
+    \begin{tikzcd}
+        {p_0(X)} &&& \oplus &&& {h_0(X)} \\
+        \\
+        {p_1(X)} && \bullet && \oplus && {h_1(X)}
+        \arrow[from=1-1, to=1-4]
+        \arrow[from=1-4, to=1-7]
+        \arrow[from=3-1, to=3-3]
+        \arrow["s_k(\alpha)", from=3-3, to=1-4]
+        \arrow[from=3-3, to=3-5]
+        \arrow[from=1-4, to=3-5]
+        \arrow[from=3-5, to=3-7]
+    \end{tikzcd}
+    \caption{A single butterfly unit}
+\end{figure}
+
+    Similarly to other FFT algorithms, the LCH FFT is a divide and conquer algorithm: the idea is to split $f(x)$, of degree $n-1$, into two polynomials of degree $n/2-1$,
+    on which we can recursively apply the same algorithm; note that the multiplication by $s_k(v_k)$ on line \ref{line:skvk} can be skipped, as it is always equal to 1.
+
+\begin{algorithm2e}[H]
+    \caption{LCH FFT}
+    \KwIn{$f(x) = g(X) = g_0 + g_1X_1(x) + \cdots + g_{n-1}X_{n-1}(x)$,\newline
+            $\alpha \in \mathds{F}_{2^m}$}
+    \KwOut{$S = \{f(x) | x \in W_m\}$}
+    \If{$\deg(f(x))$}{
+        \KwRet{$[g_0]$}\;
+    }
+    $k \gets \max i \text{ s.t. } 2^i \leqslant \deg(f(x))$\;
+    $g(X) \gets p_0(X) + X_{2^k}\cdot p_1(X)$\;
+    $h_0(X) \gets p_0(X) + s_k(\alpha)\cdot p_1(X)$\;
+    $h_1(X) \gets h_0(X) + s_k(v_k)\cdot p_1(X)$\;\label{line:skvk}
+    \KwRet{$[FFT(h_0(X), \alpha), FFT(h_1(X), v_{k}+\alpha)]$}\;
+\end{algorithm2e}
+
+
+
 
 \subsubsection{Segmentation of large polynomials}
 Suppose we are multiplying two binary polynomials $f(x)$ and $g(x) \in \mathds{F}_2[x]$, represented as sequences of $d$ bits:
