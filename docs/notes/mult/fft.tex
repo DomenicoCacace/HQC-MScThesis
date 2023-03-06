@@ -1,47 +1,24 @@
-
-
-
-\subsubsection{Cooley-Tukey FFT}
-    The Cooley-Tukey FFT~\cite{cooley1965algorithm} is the most common FFT algorithm. It is a \textit{divide et impera} algorithm, which recursively expresses a DFT of
-    size $N = N_1 N_2$ into $N_1$ smaller DFTs of size $N_2$ each. The simplest form of the Cooley-Tukey algorithm is the radix-2 decimation-in-time FFT, which computes the DFTs of
-    the even and odd indexed inputs separately and then combines the results. Assuming that N is a power of 2, we can rewrite the DFT as:
-    \begin{align*}
-        X_k & = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N}nk} \\
-            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N}(2m)k} + \sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N}(2m+1)k} \\
-            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} + e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
-            & = E_k + e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
-    \end{align*}
-    where we split the DFT into two smaller DFTs, on the even and odd indexes respectively. Because of the periodicity of the complex exponential, we can also write:
-    \begin{align*}
-        X_{k+N/2} & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}m(k+N/2)} + e^{-\frac{2\pi i}{N}(k+N/2)}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}m(k+N/2)} \\
-            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} + e^{-\frac{2\pi i}{N}k}e^{-\pi i}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} \\
-            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} - e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
-            & = E_k - e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
-    \end{align*}
-    This means that we can express a DFT of size $N$ as two DFTs of size $N/2$, where we can re-use intermediate results to calculate multiple outputs. 
-    Since the base case of the recursion has complexity $\mathcal{O}(n)$ we get the recurrence relation $T(n) = 2T(n/2) + \mathcal{O}(n)$;
-    following the Master theorem~\cite{bentley1980general}, the computational complexity of the Cooley-Tukey FFT is $\mathcal{O}(n\log n)$.
-
-\subsubsection{Gao-Mateer FFT}
     The Cooley-Tukey FFT works when the $n$ points to sample are $n$-th roots of unity, and hence form a cyclic multiplicative group;
     this and similar algorithms are also referred to as \textit{multiplicative} FFTs, as they are based on the factorization of $x^n-1$.\\
     Unfortunately, multiplicative FFTs do not work when the underlying field does not admit primitive roots of unity, as it happens for fields
     of characteristic two; for this reason, \textit{additive} FFTs were invented~\cite{wang1988fast,cantor1989arithmetical}.
     Instead of using the $n$-th roots of unity, additive FFTs evaluate the polynomials at the powers of a primitive $(n-1)$-th root of unity,
     as well as the zero element.\\
-    The Gao-Mateer FFT~\cite{gao2010additive} is an algorithm that computes the additive FFT over finite fields of characteristic two.
+    The Gao-Mateer FFT~\cite{gao2010additive} is an algorithm that computes the additive FFT over finite fields of characteristic two. 
+    The discussion in the following takes into consideration only the case of interest for our application, namely the case
+    $n = 2^m$, where $m$ is a power of 2.
 
 
-\paragraph{Cantor basis}
+\subsection{Cantor basis}
 In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in which it is possible to compute the FFT efficiently
     for any $m = p^n$, with $p$ a prime number; later in~\cite{gao2010additive} Gao and Mateer used a simpler construction for the special case
-    $p=2$, where the Cantor basis $\mathbf{v} = (v_0, \cdots, v_{m-1})$ follows the structure:
+    $p=2$, where the Cantor basis $\mathbf{v} = (v_1, \cdots, v_{m})$ of $\mathds{F}_2^m$ follows the structure:
     \begin{equation}
-        v_0 = 1, \quad v_i^2+v_i = v_{i-1} \text{ for } i \geq 1
+        v_1 = 1, \quad v_i^2+v_i = v_{i-1} \text{ for } i > 1
     \end{equation}
     With respect to the Cantor basis $\mathbf{v}$, we define its sequence of subspaces as:
     \begin{equation}
-        W_0 := \{0\}, \quad W_i := span\{v_0, \cdots, v_{i-1}\} \text{ for } i \geq 1
+        W_0 := \{0\}, \quad W_i := span\{v_0, \cdots, v_{i-1}\} \text{ for } i \geqslant 1
     \end{equation}
 
     By construction, we have that $W_0 \subset W_1 \subset \cdots \subset W_{m-1} = \mathds{F}_{2^m}$ 
@@ -56,10 +33,39 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     Such polynomials, as shown in~\cite{cantor1989arithmetical,gao2010additive}, satisfy the following useful properties:
     \begin{itemize}
         \item linearity: $s_i(x+y) = s_i(x) + s_i(y)$
-        \item recursivity: $s_{i+j}(x) = s_i(s_j(x))$
+        \item recursivity: $s_{i+j}(x) = s_i(s_j(x))$ or, equivalently, $s_{i+1}(x) = s_i(x)^2+s_i(x)$
+        \item $s_i(v_i) = 1$, for $v_i$ in the Cantor basis
+        \item the roots of $s_i(x)$ are the elements of $W_i$
     \end{itemize}
+    Note that the $W_i$s are also fields whenever $i$ is a power of two; in that case, the vanishing polynomial has the form $s_i(x) = x^{2^i}+x$.
 
-\paragraph{Divide et Impera}
+    \begin{example}[Cantor basis in $\mathds{F}_{16}$]
+        Recalling that $GF(16) = GF(2)[X]/\langle X^4+X+1 \rangle$ and that $v_1 = 1$, we can compute $v_i = \beta(1) + \gamma(x) + \delta(x^2) + \epsilon(x^3)$,
+        where the coefficients can be found by solving:
+        \begin{equation*}
+            \beta(1+1^2)+\gamma(x+x^2) + \delta(x^2+(x^2)^2) + \epsilon(x^3+(x^3)^2) = v_{i-1}
+        \end{equation*}
+        The resulting Cantor basis is $\mathbf{v} = (1, \alpha+\alpha^2, \alpha, \alpha+\alpha^3)$. As a consequence, the subspaces $W_i$ are:
+        \begin{itemize}
+            \item $W_0 = \{0\}$
+            \item $W_1 = \{0, 1\}$
+            \item $W_2 = \{0, 1, \alpha+\alpha^2, 1+\alpha+\alpha^2\}$
+            \item $W_3 = \{0, 1, \alpha+\alpha^2, 1+\alpha+\alpha^2, \alpha, 1+\alpha, \alpha^2, 1+\alpha^2\}$
+            \item $W_4 = \{0, 1, \alpha+\alpha^2, 1+\alpha+\alpha^2, \alpha, 1+\alpha, \alpha^2, 1+\alpha^2, \alpha+\alpha^3, 1+\alpha+\alpha^3, \alpha^2+\alpha^3, 1+\alpha^2+\alpha^3, \alpha^3, 1+\alpha^3, \alpha+\alpha^2+\alpha^3, 1+\alpha+\alpha^2+\alpha^3\} = \mathds{F}_{16}$
+        \end{itemize}
+    Consequently, the vanishing polynomials are:
+    \begin{itemize}
+        \item $s_0(x) = x$
+        \item $s_1(x) = x+x^2$
+        \item $s_2(x) = x^4+x$
+        \item $s_3(x) = x^8+x^4+x^2+x$
+        \item $s_4(x) = x^{16}+x$
+    \end{itemize}
+    
+    \end{example}
+
+
+\subsection{Divide et Impera: the Butterflies}
     As with the other FFTs, the result of the Gao-Mateer FFT is a set of evaluation points of a polynomial.
     Let $f(x) \in \mathds{F}_{2^m}[x]$ be a polynomial of degree $d \leqslant n$ with $n = 2^\ell, \ell \leqslant m$ and
     $v \in \mathds{F}_{2^m}$. The result of the AFFT is the set of evaluation points:

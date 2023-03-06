@@ -10,3 +10,25 @@ We are however free to choose the points at which we sample the polynomials, whi
     \end{equation}
     The algorithms that compute the discrete Fourier Transform of a sequence (or its inverse) are called fast Fourier transforms (FFT), and have an asymptotic complexity
     of $\mathcal{O}(n\log n)$.
+
+    \begin{example}[Cooley-Tukey FFT]
+    The Cooley-Tukey FFT~\cite{cooley1965algorithm} is the most common FFT algorithm. It is a \textit{divide et impera} algorithm, which recursively expresses a DFT of
+    size $N = N_1 N_2$ into $N_1$ smaller DFTs of size $N_2$ each. The simplest form of the Cooley-Tukey algorithm is the radix-2 decimation-in-time FFT, which computes the DFTs of
+    the even and odd indexed inputs separately and then combines the results. Assuming that N is a power of 2, we can rewrite the DFT as:
+    \begin{align*}
+        X_k & = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N}nk} \\
+            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N}(2m)k} + \sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N}(2m+1)k} \\
+            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} + e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
+            & = E_k + e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
+    \end{align*}
+    where we split the DFT into two smaller DFTs, on the even and odd indexes respectively. Because of the periodicity of the complex exponential, we can also write:
+    \begin{align*}
+        X_{k+N/2} & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}m(k+N/2)} + e^{-\frac{2\pi i}{N}(k+N/2)}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}m(k+N/2)} \\
+            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} + e^{-\frac{2\pi i}{N}k}e^{-\pi i}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} \\
+            & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} - e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
+            & = E_k - e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
+    \end{align*}
+    This means that we can express a DFT of size $N$ as two DFTs of size $N/2$, where we can re-use intermediate results to calculate multiple outputs. 
+    Since the base case of the recursion has complexity $\mathcal{O}(n)$ we get the recurrence relation $T(n) = 2T(n/2) + \mathcal{O}(n)$;
+    following the Master theorem~\cite{bentley1980general}, the computational complexity of the Cooley-Tukey FFT is $\mathcal{O}(n\log n)$.
+    \end{example}
