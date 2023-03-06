@@ -37,6 +37,12 @@ Galois fields can be constructed in two ways:
         is a field of order $p^n$ and characteristic $p$.
 \end{itemize}
 
+\begin{definition}[Primitive element]
+    Let $GF(q)$ be a Galois field. An element $a \in GF(q)$ is a \emph{primitive element} if every nonzero element of $GF(q)$ is a power of $a$;
+    in other words, $a$ is a generator of the multiplicative group of $GF(q)$. Since the multiplicative group of $GF(q)$ has order $q-1$,
+    primitive elements are also called $(q-1)$-th roots of unity.
+\end{definition}
+
 \begin{definition}[Field extension]
     Let $K$ and $L$ be fields. If $K \subseteq L$, then we say that $K$ is a \emph{subfield} of $L$; conversely, 
     we say that $L$ is a \emph{field extension} of $K$.
