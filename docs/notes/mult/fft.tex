@@ -64,7 +64,6 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     
     \end{example}
 
-
 \subsubsection{A \textit{novel} polynomial basis}
     In order to perform the LCH FFT, the input polynomial has to be represented in a different basis. Given the Cantor basis $\mathbf{v} = (v_1, \cdots, v_m)$, we define the 
     \emph{novelpoly} basis with respect to $\mathbf{v}$ as $(X_1, \cdots, X_{n-1})$, defined as follows:
@@ -73,12 +72,51 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     \end{equation}
     In other words, $X_k(x)$ is the product of all the $i$-th vanishing polynomials, where the $i$s are the set bits of $k$ in its binary representation.
 
-\subsection{Divide et impera: the Butterflies}
-    The general idea of the LCH FFT to evaluate $f(x)$ at all points of $W_k$ is to split it into $W_{k-1}$ and $W_k\setminus W_{k-1} = \{x + v_k | x \in W_{k-1}\}$:
-    because of the linearity of the vanishing polynomials, the evaluation of at $W_k\setminus W_{k-1}$ can be efficiently computed by reusing the evaluation at $W_{k-1}$
-    with a \emph{butterfly}.
+    To convert a polynomial $f(x) \in \mathds{F}_2[x]_{<n}$ from the monomial to the \emph{novelpoly} basis we can recursively divide $f$ by $s_i$, with $i=2^k$;
+    since the coefficients of $s_i$ are always 1 in Cantor basis, the resulting algorithm requires only field additions and no division.
 
-    \begin{figure}
+    \begin{algorithm2e}
+        \caption{Basis conversion from monomial to \emph{novelpoly}}
+        \label{alg:basiscvt}
+        \KwIn{$f(x) = f_0 + f_1x+f_2x^2+\cdots + f_{n-1}x^{n-1}  \in \mathds{F}_2[x]_{<n}$}
+        \KwOut{$g(X) = g_0 + g_1X_1(x) + g_2X_2(x) + \cdots + g_{n-1}X_{n-1}(x) \in \mathds{F}_2[x]_{<n}$}
+        \If{$\deg f(x) \leqslant 1$} {
+            \KwRet{$g(X) \gets f_0 + f_1X_1$}\;
+        }
+        $i \gets \max(2^k)$ s.t. $\deg(s_i(x)) \leqslant \deg(f(x))$\;
+        $h(x,y) = \hat{h}(y) \gets h_0(x) + h_1(x)y + \cdots + h_{m-1}(x)y^{m-1}$\tcp*{$h_i(x) \in \mathds{F}_2[x]$}
+        $h^{\prime}(Y) = q_0(x) + \cdots + q_{m-1}X_{(m-1)2^k} \gets \text{\textsf{BasisCvt}}(\hat{h}(y))$\;
+        \For{$j=0$ to $m-1$} {
+            $g_j(X) \gets \text{\textsf{BasisCvt}}(q_j(x))$\;
+        }
+        \KwRet{$g(X) = g_0 + g_1(X)X_{2^k} + \cdots + g_{n-1}(X)X_{(m-1)2^k}$}\;
+    \end{algorithm2e}
+
+\subsection{Divide et impera: the Butterflies}
+    The general idea of the LCH FFT to evaluate $f(x)$ at all points of $W_k$ is to split $f$ into two half sized polynomials, as well
+    as splitting the set of points to be evaluated into $W_{k-1}$ and $W_k\setminus W_{k-1} = \{x + v_k | x \in W_{k-1}\}$; the full algorithm
+    is detailed in Algorithm~\ref{alg:lchfft}.
+
+\begin{algorithm2e}[H]
+    \caption{Lin-Chung-Han FFT}
+    \label{alg:lchfft}
+    \KwIn{$f(x) = g(X) = g_0 + g_1X_1(x) + \cdots + g_{n-1}X_{n-1}(x) \in \mathds{F}_{2^m}[x]_{<n}$,\newline
+            $\alpha \in \mathds{F}_{2^m}$}
+    \KwOut{$S = \{f(x) | x \in W_m\}$}
+    \If{$\deg(f(x))$}{
+        \KwRet{$[g_0]$}\;
+    }
+    $k \gets \max(i) \text{ s.t. } 2^i \leqslant \deg(f(x))$\;
+    $g(X) \gets p_0(X) + X_{2^k}\cdot p_1(X)$\;
+    $h_0(X) \gets p_0(X) + s_k(\alpha)\cdot p_1(X)$\;\label{line:h0}
+    $h_1(X) \gets h_0(X) + s_k(v_k)\cdot p_1(X)$\;\label{line:h1}
+    \KwRet{$[FFT(h_0(X), \alpha), FFT(h_1(X), v_{k}+\alpha)]$}\;
+\end{algorithm2e}
+    The \textit{actual} computation, performed at lines~\ref{line:h0} and~\ref{line:h1}, is commonly called \emph{butterfly} and
+    is schematized in Figure~\ref{fig:butterfly}. Notice that the butterfly performs two field additions but only one field multiplication,
+    since $s_k(v_k) = 1$ in Cantor basis.
+
+\begin{figure}
     \begin{tikzcd}
         {p_0(X)} &&& \oplus &&& {h_0(X)} \\
         \\
@@ -91,52 +129,88 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
         \arrow[from=1-4, to=3-5]
         \arrow[from=3-5, to=3-7]
     \end{tikzcd}
-    \caption{A single butterfly unit}
+    \caption{Butterfly unit}
+    \label{fig:butterfly}
 \end{figure}
 
-    Similarly to other FFT algorithms, the LCH FFT is a divide and conquer algorithm: the idea is to split $f(x)$, of degree $n-1$, into two polynomials of degree $n/2-1$,
-    on which we can recursively apply the same algorithm; note that the multiplication by $s_k(v_k)$ on line \ref{line:skvk} can be skipped, as it is always equal to 1.
+\subsection{Frobenius Additive FFT}
+    In~\cite{van2017frobenius} the authors showed that, by using the Frobenius map, it is possible
+    to derive more values of polynomials from less evaluation points: given $f(x) \in \mathds{F}_2[x]_{<n}$,
+    it is possible to prove that
+    \begin{equation}
+        f(\phi_2(a)) = \phi_2(f(a))
+    \end{equation}
+    meaning that we can derive the value of $f$ at $\phi_2(a)$ by applying the Frobenius map to $f(a)$.
+    Our goal now is, given a polynomial $f(x) \in \mathds{F}_2[x]_{<n}$, to design a set $\Sigma \subset \mathds{F}_{2^m}$
+    for $m$ a power of 2 such that we can derive $n$ values of $f$ from $\Sigma$.\
+    \subsubsection{Frobenius partition}
+        Consider the Frobenius map in $\mathds{F}_{2^m}$; with respect to the Cantor basis, it has been shown in~\cite{li2018frobenius}
+        that the order of the Frobenius map is
+        \begin{equation}
+            Ord_{\phi_2}(v_i) = 2^{\lfloor \log_2 i \rfloor+1} 
+        \end{equation}
+        meaning that the maximum order for $v_i \in \{v_{m/2}, \cdots, v_{m-1}\}$ is $m$. 
+        If we define $l_m = \log_2 m$, $l_n = \log_2 n$ and $l = l_n-l_m$, we can design a set with maximum order as:
+        \begin{equation}
+            \Sigma := v_{l+m/2}+W_l = \{v_{l+m/2} + x \mid x \in W_l\}
+        \end{equation}
+        with size $n^\prime = |\Sigma| = |W_l| = 2^l = n/m$ and order $m$. By applying the Frobenius map to $\Sigma$ repeatedly, it is possible to prove that
+        \begin{equation}
+            \Omega = \Sigma \cup \phi_2(\Sigma) \cup \cdots \cup \phi_2^{m-1}(\Sigma)
+        \end{equation}
+        with $|\Omega| = n$ and $\Sigma$ is a Frobenius partition of $\Omega$~\cite{li2018frobenius}.
 
-\begin{algorithm2e}[H]
-    \caption{LCH FFT}
-    \KwIn{$f(x) = g(X) = g_0 + g_1X_1(x) + \cdots + g_{n-1}X_{n-1}(x)$,\newline
-            $\alpha \in \mathds{F}_{2^m}$}
-    \KwOut{$S = \{f(x) | x \in W_m\}$}
-    \If{$\deg(f(x))$}{
-        \KwRet{$[g_0]$}\;
-    }
-    $k \gets \max i \text{ s.t. } 2^i \leqslant \deg(f(x))$\;
-    $g(X) \gets p_0(X) + X_{2^k}\cdot p_1(X)$\;
-    $h_0(X) \gets p_0(X) + s_k(\alpha)\cdot p_1(X)$\;
-    $h_1(X) \gets h_0(X) + s_k(v_k)\cdot p_1(X)$\;\label{line:skvk}
-    \KwRet{$[FFT(h_0(X), \alpha), FFT(h_1(X), v_{k}+\alpha)]$}\;
-\end{algorithm2e}
+    \subsubsection{Polynomial evaluation: encoding}
+        Now that we built the Frobenius partition, we have to evaluate $f$ on it: we define the linear map
+        \begin{equation}
+            E_\Sigma : f(x) \mapsto \{f(v_{l+m/2} + w) \mid w \in W_l\}
+        \end{equation}
+        that evaluates $f(x)$ at $n^\prime < n$ points; however, since the points are in $\mathds{F}_{2^m}$, we
+        get $n^\prime \cdot m = n/m\cdot m = n$ values in $\mathds{F}_2$. 
 
+        To perform $E_\Sigma$ we can use the same algorithm used for the LCH FFT, with some modifications:
+        recalling that Algorithm~\ref{alg:basiscvt} depends only on the polynomial and that Algorithm~\ref{alg:lchfft} 
+        performs the actual butterfly computations, we only have to adapt the latter to the new set of evaluation points.
+        In particular, we pretend to evaluate $f$ at $v_{l+m/2} + W_l$, but \emph{truncate} the first $l_m$ layers of
+        the butterflies, as we do not need the whole evaluation. The first $l_m$ layers of the truncated FFT can also be thought 
+        as an \textit{encoding}: by analyzing the multipliers of the various inputs, it is possible to rewrite this step as 
+        a vector-matrix product, as shown in~\cite{chen2018multiplying} and summarized in Algorithm~\ref{alg:encoding}.
 
+    \begin{algorithm2e}[H]
+        \caption{Encode}
+        \label{alg:encoding}
+        \KwIn{$f(X) = f_0 + f_1X_1 + \cdots + f_{n-1}X_{n-1} \in \mathds{F}_2[x]_{<n}$}
+        \KwOut{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1} \in \mathds{F}_{2^m}[x]_{<n^\prime}$}
+        
+        \For{$i \leftarrow 0$ \KwTo $n^\prime-1$}{
+            $r_i \gets \prod_{j=0}^{l_m-1} (v_{m/2 - j - 1})^{j_i}$
+        }
+        \For{$i \leftarrow 0$ \KwTo $n^\prime-1$}{
+            $g_i \gets \sum_{j=0}^{m-1}f_{j\cdot n^\prime+i}\cdot r_i$
+        }
+        \KwRet{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1}$}
+    \end{algorithm2e}
 
+    After this step, we perform the butterfly computations on the encoded polynomial at $\Sigma$.
 
-\subsubsection{Segmentation of large polynomials}
-Suppose we are multiplying two binary polynomials $f(x)$ and $g(x) \in \mathds{F}_2[x]$, represented as sequences of $d$ bits:
-    \begin{equation*}
-        a(x) = a_0 + a_1x + \cdots + a_{d-1}x^{d-1}
-    \end{equation*}
-    In some cases, especially with high degree polynomials, it can be useful to split the polynomials into smaller segments, which can be easier to handle. 
-    The standard \textit{Kronecker segmentation} for multiplying binary polynomials is performed as follows
-    \begin{enumerate}
-        \item Split the polynomials into $n = \lceil d/w \rceil$ $w$-bit blocks:
-            \begin{align*}
-                a(x) &= a_0 + a_1x + \cdots + a_{d-1}x^{d-1} \\
-                &= (a_0 + \cdots + a_{w-1}x^{w-1}) + \cdots + (a_{d-w} + \cdots + a_{d-1}x^{w-1})x^{w(n-1)}
-            \end{align*}
+    We can finally summarize the Fast Additive FFT algorithm in Algorithm~\ref{alg:fafft}.
 
-        \item Define the field $\mathds{F}_{2^{2w}}:=\mathds{F}_2[z]/g(z)$, with $g(z)$ irreducible polynomial of degree $2w$.
-        \item Define the map $\psi: \mathds{F}_2[x] \rightarrow \mathds{F}_{2^{2w}[y]}$ such that:
-        \begin{equation*}
-            a^{\prime}(y) = \psi(a(x)) := a_0^{\prime} + a^{\prime}_1y + \cdots + a^{\prime}_{n-1}y^{n-1}
-        \end{equation*}
-        where $a^{\prime}_i = (a_{iw} + a_{iw + 1}z + \cdots + a_{iw+(w-1)}z^{w-1})$.
-    
-        \item Calculate the product $c^{\prime}(y) = a^{\prime}(y)\cdot b^{\prime}(y) = c_0^{\prime} + c^{\prime}_1y + \cdots \in \mathds{F}_{2^{2w}}[y]$ \label{list:mult}
-        \item Map $z \mapsto x$ and $y \mapsto x^w$, collect terms and coefficients and find the result.
-    \end{enumerate}
-    At step~\eqref{list:mult} we employ the FFT-based method to perform the pointwise multiplication.
+    \begin{algorithm2e}[H]
+        \caption{Fast Additive FFT Multiplication}
+        \label{alg:fafft}
+        \KwIn{$A(x) = a_0 + a_1x + \cdots + a_{n-1}x^{n-1} \in \mathds{F}_2[x]_{<n}$,\newline
+            $B(x) = b_0 + b_1x + \cdots + b_{n-1}x^{n-1} \in \mathds{F}_2[x]_{<n}$}
+        \KwOut{$C(x) = c_0 + c_1x + \cdots + c_{n-1}x^{n-1} = A(x)\cdot B(x) \mod (x^n+1) \in \mathds{F}_2[x]_{<n}$}
+        $\bar{A}(X) \gets \textsc{BasisCvt}(A(x)) \in \mathds{F}_2[x]_{<n}$\;
+        $\bar{B}(X) \gets \textsc{BasisCvt}(B(x)) \in \mathds{F}_2[x]_{<n}$\;
+        $\tilde{A}(X) \gets \textsc{Encode}(\bar{A}(X)) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
+        $\tilde{B}(X) \gets \textsc{Encode}(\bar{B}(X)) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
+        $[\hat{a}_1, \cdots, \hat{a}_{n^\prime}] \gets \textsc{FFT}(\tilde{A}(X), \Sigma) \in \mathds{F}_{2^m}^{n^\prime}$\;
+        $[\hat{b}_1, \cdots, \hat{b}_{n^\prime}] \gets \textsc{FFT}(\tilde{B}(X), \Sigma) \in \mathds{F}_{2^m}^{n^\prime}$\;
+        $\hat{C} = [\hat{c}_1, \cdots, \hat{c}_{n^\prime}] \gets [\hat{a}_1\cdot \hat{b}_1, \cdots, \hat{a}_{n^\prime}\cdot \hat{b}_{n^\prime}]$\;
+        $\tilde{C}(X) \gets \textsc{FFT}^{-1}(\hat{C}, \Sigma) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
+        $\bar{C}(X) \gets \textsc{Decode}(\tilde{C}(X)) \in \mathds{F}_2[x]_{<n}$\;
+        $C(x) \gets \textsc{BasisCvt}^{-1}(\bar{C}(X)) \in \mathds{F}_2[x]_{<n}$\;
+        \KwRet{$C(x)$}
+    \end{algorithm2e}
+

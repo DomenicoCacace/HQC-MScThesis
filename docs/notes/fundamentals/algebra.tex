@@ -1,3 +1,4 @@
+\subsection{Field theory}
 \begin{definition}[Group]
     Let $G$ be a set. The structure $(G, \cdot)$ is a \emph{group} if it satisfies the following axioms:
     \begin{itemize}
@@ -61,6 +62,29 @@ Galois fields can be constructed in two ways:
     By construction, $\mathds{F}_8$ is a field extension of $GF(2)$ of degree $3$; the vector space $\mathds{F}_8$ is thus a vector space over $GF(2)$ of dimension $3$,
     having as basis the elements $\{1, \alpha, \alpha^2\}$.
 \end{example}
+
+\subsubsection{Frobenius automorphism}
+    \begin{definition}[Frobenius map]
+    Let $\mathds{F}_2$ be the binary field. The Frobenius map is the automorphism defined as:
+    \begin{equation}
+        \phi_2 : \mathds{F}_2 \rightarrow \mathds{F}_2, \quad \phi_2(x) = x^2
+    \end{equation}
+    \end{definition}
+    Let $\Sigma$ be a set; with the notation $\phi_2(\Sigma)$ we denote the set built as $\{\phi_2(x) \mid x \in \Sigma\}$;
+    moreover, with the notation $\phi_2^{\circ j}$ we denote the function applying the Frobenius map $j$ times.
+
+    \begin{definition}[Order of $\phi_2$]
+        Let $\Sigma$ be a set. The order of $\phi_2$ on $\Sigma$, denoted as $Ord_{\phi_2}(\Sigma)$ is the smallest positive integer $j$ such that $\phi_2^{\circ j}(\Sigma) = \Sigma$.
+    \end{definition}
+
+    \begin{definition}[Frobenius partition]
+        Given the sets $\Sigma, \Omega$ such that $Ord_{\phi_2}(\Sigma)=j$, we say that $\Sigma$ is a Frobenius partition
+        of $\Omega$ if
+        \begin{equation}
+            \Omega = \Sigma \cup \phi_2(\Sigma) \cup \cdots \cup \phi_2^{\circ (j-1)}(\Sigma)
+        \end{equation}
+        and all the sets $\phi_2^{\circ i}(\Sigma)$ are pairwise disjoint.
+    \end{definition}
 
 \subsection{Notation}
 Throughout this document, we will use the following algebraic notation:
