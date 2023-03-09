@@ -108,7 +108,7 @@ int run(int reps) {
         vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
 
         t0 = get_systick();
-        vect_mul(res, y, u, PARAM_OMEGA);
+        opt_mul(res, y, u, PARAM_OMEGA);
         t1 = get_systick();
 
         welford_update(&mult, t1-t0);
