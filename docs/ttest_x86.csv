@@ -1,0 +1,8 @@
+commit,branch,seclvl,algorithm,mean,var,notes
+e6819bd,sparsemul,128,pke,-3.420066,
+e6819bd,sparsemul,128,kem,0.419098,
+e6819bd,sparsemul,128,mul,-3.609347,
+e6819bd,sparsemul,128,enc,-9.378583,
+e6819bd,sparsemul,128,dec,7.593836,
+e6819bd,sparsemul,128,encaps,6.752609,
+e6819bd,sparsemul,128,decaps,-4.815957,
