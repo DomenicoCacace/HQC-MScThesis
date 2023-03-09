@@ -6,7 +6,7 @@ import sys
 branches = ["reference", "reference_noshuffle", "sparsemul", "masking", "fastmul", "avx"]
 algs = ["FULL_PKE", "FULL_KEM", "MULT", "ENC", "DEC", "ENCAPS", "DECAPS"]
 alg_names = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps", "keygen"]
-
+branches = ["avx"]
 def main(): 
     if len(sys.argv) > 1:
         try:
@@ -24,7 +24,7 @@ def main():
         print("Checking out {}".format(branch))
         os.system("git checkout {} > /dev/null".format(branch))
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()[0:7]
-
+        seclevs = ["128"]
         if not os.path.isfile("../docs/ttest_x86.csv"):
             f = open("../docs/ttest_x86.csv", "w")
             f.write("commit,branch,seclvl,algorithm,mean,var,notes\n")
