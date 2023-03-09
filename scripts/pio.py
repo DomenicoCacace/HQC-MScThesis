@@ -59,7 +59,7 @@ env.Append(CPPDEFINES=[("CLOCK_SETTINGS", clks[clock])])
 
 
 # Select the operating mode
-print("Operating mode\n[0] Functional (Default)\n[1] Timing\n[2] Plain\n[3] T-Test\n")
+print("Operating mode\n[0] Functional (Default)\n[1] Timing\n[2] Plain\n[3] T-Test\n[4] T-Test fast\n[5] Timing fast")
 try:
     mode = int(input("Select operating mode: \n"))
 except ValueError:
@@ -77,6 +77,17 @@ if mode == 0:
         alg = 0
     if alg > 2:
         alg = 0
+    print("Algorithm selected: " + algs[alg])
+    env.Append(CPPDEFINES=[("ALG", algs[alg])])
+elif mode == 4 or mode == 5: #fast ttest/timing
+    print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Mult")
+    try:
+        alg = int(input("Select algorithm: \n"))
+    except ValueError:
+        alg = 0
+    if alg > 2:
+        alg = 0
+    env.Append(CPPDEFINES=[("{}".format(algs[alg]))])
 else:   # PLAIN/TIMING/TTEST
     print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Multiplication\n[3] Encrypt\n[4] Decrypt\n[5] Encaps\n[6] Decaps\n[7] Keygen\n")
     try:
@@ -85,8 +96,8 @@ else:   # PLAIN/TIMING/TTEST
         alg = 0
     if alg > 7:
         alg = 0
-print("Algorithm selected: " + algs[alg])
-env.Append(CPPDEFINES=[("ALG", algs[alg])])
+    print("Algorithm selected: " + algs[alg])
+    env.Append(CPPDEFINES=[("ALG", algs[alg])])
 
 try:
     reps = int(input("Number of iterations: \n"))
