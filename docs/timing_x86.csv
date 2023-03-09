@@ -1,0 +1,9 @@
+commit,branch,seclvl,algorithm,mean,var,notes
+09e3e6e,reference_karatsuba,128,pke,446360.896000,17163.992021,
+09e3e6e,reference_karatsuba,128,kem,737189.385600,22388.821927,
+09e3e6e,reference_karatsuba,128,mul,6382673.449600,25128.979651,
+09e3e6e,reference_karatsuba,128,enc,148035.238800,10490.667441,
+09e3e6e,reference_karatsuba,128,dec,211185.979600,12426.749998,
+09e3e6e,reference_karatsuba,128,encaps,216405.159600,12509.012277,
+09e3e6e,reference_karatsuba,128,decaps,432082.072400,16964.373736,
+09e3e6e,reference_karatsuba,128,keygen,87342.209600,7950.710481,
