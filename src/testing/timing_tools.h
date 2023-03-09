@@ -51,7 +51,7 @@ void welford_update(welford_t *state, long double sample) {
 static inline
 void welford_print(const welford_t state) {
     double variance = state.M2 / (long double) (state.count - 1);
-    PRINTF("%f,%f\r\n", state.mean, sqrtl(variance));
+    PRINTF("%Lf,%Lf\r\n", state.mean, sqrtl(variance));
 }
 
 static inline
