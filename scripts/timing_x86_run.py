@@ -50,7 +50,7 @@ def main():
     
 
 def build(alg, seclvl, batch_size):
-    command = "cmake -S ../ -B ../build -DSECLVL={} -DALG={} -DBATCH_SIZE={} -DMODE=1".format(seclvl, alg, batch_size)
+    command = "cmake -S ../ -B ../build -DSECURITY_LEVEL={} -DALG={} -DBATCH_SIZE={} -DMODE=1".format(seclvl, alg, batch_size)
     p = subprocess.Popen(command.split(' '), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     p.wait()
     command = "cmake --build ../build"
