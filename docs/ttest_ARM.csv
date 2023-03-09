@@ -42,3 +42,11 @@ commit,branch,freq,algorithm,t,notes
 44c5324,sparsemul,80,encaps,14.28255193,
 44c5324,sparsemul,80,decaps,-23.69946271,
 44c5324,sparsemul,80,mul,inf,num=-2,
+
+3dcbac5,sparsemul,80,pke,-1.63765201,
+3dcbac5,sparsemul,80,enc,-0.07304189,
+3dcbac5,sparsemul,80,dec,-1.6376142,
+3dcbac5,sparsemul,80,kem,-0.52197803,
+3dcbac5,sparsemul,80,encaps,-2.17290797,
+3dcbac5,sparsemul,80,decaps,-0.22117626,
+3dcbac5,sparsemul,80,mul,inf,num=-2,
