@@ -1,0 +1,9 @@
+commit,branch,seclvl,algorithm,mean,var,notes
+b8e1fbb,sparsemul,128,pke,1255520.176000,21416.732882,
+b8e1fbb,sparsemul,128,kem,1988728.476800,14555.988048,
+b8e1fbb,sparsemul,128,mul,241179.093200,15097.747141,
+b8e1fbb,sparsemul,128,enc,604026.038000,18709.173704,
+b8e1fbb,sparsemul,128,dec,369604.537600,15795.361906,
+b8e1fbb,sparsemul,128,encaps,667542.439200,21622.772984,
+b8e1fbb,sparsemul,128,decaps,1040791.936800,26750.527199,
+b8e1fbb,sparsemul,128,keygen,283797.614800,14952.098159,
