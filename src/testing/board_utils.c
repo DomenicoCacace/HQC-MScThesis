@@ -219,7 +219,7 @@ void setup_usart(void) {
 // Configure the UART clock source as precision internal oscillator
 // usart_clock_from_piosc();
 // Set communication parameters
-    usart_set_baudrate(USART, 9600);
+    usart_set_baudrate(USART, 115200);
     usart_set_databits(USART, 8);
     usart_set_parity(USART, USART_PARITY_NONE);
     usart_set_mode(USART, USART_MODE_TX_RX);
