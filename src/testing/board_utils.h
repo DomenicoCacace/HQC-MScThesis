@@ -24,6 +24,7 @@
 
 #define USART USART2
 #define RCC_USART RCC_USART2
+#define USART_GPIO GPIO2 | GPIO3
 
 #elif USART2_COMM
 /* Enables USART 2
@@ -33,6 +34,8 @@
 * other column of pins of the same connector */
 #define USART USART1
 #define RCC_USART RCC_USART1
+#define USART_GPIO GPIO9 | GPIO10
+
 #else
 #warning "No communication method defined"
 #endif
@@ -42,10 +45,6 @@ void setup_board(void);
 void trigger_set(void);
 
 void trigger_reset(void);
-
-void delay_cycles(uint32_t cycles);
-
-void delay_us(uint32_t cycles);
 
 void debug(const char *str, ...);
 

@@ -190,30 +190,23 @@ void setup_clock(const struct rcc_clock_scale *clock) {
  * place board with stlink on top, left morpho (male pin-header)
  * inner column of pins, third from top, with GND as fifth from top */
 void setup_gpio(void) {
-    // Prepare the USART1
     rcc_periph_clock_enable(RCC_GPIOA);
-    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO9 | GPIO10);
-    gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
     rcc_periph_clock_enable(RCC_GPIOB);
+
+    // Prepare the USART GPIO
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, USART_GPIO);
+    gpio_set_af(GPIOA, GPIO_AF7, USART_GPIO);
 
     rcc_periph_clock_enable(RCC_GPIOA);
     gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO0 | GPIO1);
     gpio_set_af(GPIOA, GPIO_AF7, GPIO0 | GPIO1);
 
     // Prepare the Trigger GPIO
-    rcc_periph_clock_enable(RCC_GPIOB);
     gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO9);
     gpio_clear(GPIOB, GPIO9);
 
     // Prepare the LED GPIO
-    rcc_periph_clock_enable(RCC_GPIOA);
     gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5);
-
-    // Prepare the UART GPIO
-    rcc_periph_clock_enable(RCC_GPIOA);
-    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2);
-    gpio_set_af(GPIOA, GPIO_AF7, GPIO2);
-
 }
 
 void setup_usart(void) {
