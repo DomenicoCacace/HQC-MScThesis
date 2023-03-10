@@ -68,7 +68,11 @@ static int randombytes(uint8_t *obuf, uint16_t len) {
 #define TRIGGER_RESET
 
 static int randombytes(uint8_t *obuf, uint16_t xlen) {
-    shake_prng(obuf, xlen);
+    // read from urandom
+    FILE *urandom = fopen("/dev/urandom", "r");
+    fread(obuf, xlen, 1, urandom);
+    fclose(urandom);
+    //shake_prng(obuf, xlen);
     return 0;
 }
 
