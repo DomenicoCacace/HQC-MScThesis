@@ -46,6 +46,8 @@ void trigger_set(void);
 
 void trigger_reset(void);
 
+void pulse(void);
+
 void debug(const char *str, ...);
 
 struct rcc_clock_scale {
