@@ -59,7 +59,7 @@ env.Append(CPPDEFINES=[("CLOCK_SETTINGS", clks[clock])])
 
 
 # Select the operating mode
-print("Operating mode\n[0] Functional (Default)\n[1] Timing\n[2] Plain\n[3] T-Test\n[4] T-Test fast\n[5] Timing fast")
+print("Operating mode\n[0] Functional (Default)\n[1] Timing\n[2] Plain\n[3] T-Test\n[4] T-Test fast\n[5] Timing fast\n[6] Power\n")
 try:
     mode = int(input("Select operating mode: \n"))
 except ValueError:
@@ -88,6 +88,18 @@ elif mode == 4 or mode == 5: #fast ttest/timing
     if alg > 2:
         alg = 0
     env.Append(CPPDEFINES=[("{}".format(algs[alg]))])
+elif mode == 6: #power
+    print("Algorithm\n[0] Encrypt (Default)\n[1] Decrypt\n")
+    try:
+        alg = int(input("Select algorithm: \n"))
+    except ValueError:
+        alg = 0
+    if alg > 1:
+        alg = 0
+    algs = ["ENC", "DEC"]
+    print("Algorithm selected: " + algs[alg])
+    env.Append(CPPDEFINES=[("ALG", algs[alg])])
+    env.Append(CPPDEFINES=[("{}RYPT".format(algs[alg]))])
 else:   # PLAIN/TIMING/TTEST
     print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Multiplication\n[3] Encrypt\n[4] Decrypt\n[5] Encaps\n[6] Decaps\n[7] Keygen\n")
     try:
@@ -99,6 +111,13 @@ else:   # PLAIN/TIMING/TTEST
     print("Algorithm selected: " + algs[alg])
     env.Append(CPPDEFINES=[("ALG", algs[alg])])
 
+masks = input("Enable masks [Y/n]: \n")
+if masks == "N" or masks == "n":
+    print("Masks disabled")
+else:
+    env.Append(CPPDEFINES=[("MASK_ENABLE")])
+    print("Masks enabled")
+    
 try:
     reps = int(input("Number of iterations: \n"))
 except ValueError:

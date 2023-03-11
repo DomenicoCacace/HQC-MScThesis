@@ -15,9 +15,12 @@
 #include "vector.h"
 
 
-// TODO: allow the choice of this parameter via CMake/PlatformIO 
 #define SHARES (2)
-#define RANDOM_BYTES randombytes // to be changed when testing with a TRNG
+#ifdef MASK_ENABLE
+#define RANDOM_BYTES(x, xlen) randombytes(x, xlen)
+#else
+#define RANDOM_BYTES(x, xlen) memset(x, 0, xlen)
+#endif
 
 
 #if SHARES == 1
@@ -84,7 +87,7 @@ void shares_init_from_data(shares_n_t *o, const DIGIT *data) {
 
 static inline
 void shares_init_from_msg(shares_k_t *o, const DIGIT *msg) {
-        DIGIT mask[VEC_K_SIZE_DIGIT];
+    DIGIT mask[VEC_K_SIZE_DIGIT];
     RANDOM_BYTES((uint8_t *)mask, VEC_K_SIZE_BYTES);
 
 #if SHARES == 1
@@ -111,7 +114,7 @@ void shares_init_random(shares_n_t *o) {
 static inline
 void shares_init_random_msg(shares_k_t *o) {
 #if SHARES == 1
-    RANDOM_BYTES((uint8_t *)o->s0, VEC_N_SIZE_BYTES);
+    RANDOM_BYTES((uint8_t *)o->s0, VEC_K_SIZE_BYTES);
 #elif SHARES == 2
     RANDOM_BYTES((uint8_t *)o->s0, VEC_K_SIZE_BYTES);
     RANDOM_BYTES((uint8_t *)o->s1, VEC_K_SIZE_BYTES);
@@ -159,7 +162,7 @@ void shares_n_collapse(DIGIT *o, shares_n_t *shares, DIGIT *v) {
 static inline 
 void shares_collapse_msg(DIGIT *o, shares_k_t *shares, DIGIT *v) {
 #if SHARES == 1
-    for(int i = 0; i < VEC_N_SIZE_DIGIT; i++)
+    for(int i = 0; i < VEC_K_SIZE_DIGIT; i++)
         o[i] = v[i] ^ shares->s0[i];
 #elif SHARES == 2
     for(int i = 0; i < VEC_K_SIZE_DIGIT; i++)

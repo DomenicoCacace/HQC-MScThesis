@@ -12,6 +12,7 @@
 #define TTEST 3
 #define TTEST_FAST 4
 #define TIMING_FAST 5
+#define POWER 6
 
 #define CAT(a, b) a ## b
 #define CONST(a) CAT(a, _CONST)
@@ -34,8 +35,6 @@ static int randombytes(uint8_t *obuf, uint16_t xlen);
 
     #define TRIGGER_SET trigger_set();
     #define TRIGGER_RESET trigger_reset();
-    #define DELAY_CYCLES(x) delay_cycles(x);
-    #define DELAY_US(x) delay_us(x);
 
 static int randombytes(uint8_t *obuf, uint16_t len) {
     union {
@@ -67,8 +66,6 @@ static int randombytes(uint8_t *obuf, uint16_t len) {
 
 #define TRIGGER_SET
 #define TRIGGER_RESET
-#define DELAY_CYCLES(x)
-#define DELAY_US(x)
 
 static int randombytes(uint8_t *obuf, uint16_t xlen) {
     shake_prng(obuf, xlen);

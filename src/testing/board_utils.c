@@ -273,17 +273,6 @@ void trigger_reset(void) {
     gpio_clear(GPIOA, GPIO5);
 }
 
-void delay_cycles(uint32_t cycles) {
-    uint32_t start = dwt_read_cycle_counter();
-    while (dwt_read_cycle_counter() - start < cycles);
-}
-
-void delay_us(uint32_t us) {
-    uint32_t start = dwt_read_cycle_counter();
-    uint32_t cycles = us * (rcc_ahb_frequency / 1000000);
-    while (dwt_read_cycle_counter() - start < cycles);
-}
-
 void debug(const char *str, ...) {
 #ifdef DEBUG
     char buf[512] = {0};
