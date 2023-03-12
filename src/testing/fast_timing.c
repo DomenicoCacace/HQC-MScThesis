@@ -105,7 +105,7 @@ int run(int reps) {
         randombytes(sk, SEED_BYTES);
         seedexpander_init(&seedexpander, sk, SEED_BYTES);
         vect_generate_random_for_mult(u);
-        vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
+        vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
 
         t0 = get_systick();
         opt_mul(res, y, u, PARAM_OMEGA);
