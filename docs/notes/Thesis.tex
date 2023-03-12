@@ -42,8 +42,20 @@
 \usepackage{transparent} % Enables transparent images
 \usepackage{eso-pic} % For the background picture on the title page
 \usepackage{subfig} % Numbered and caption subfigures using \subfloat.
-\usepackage{tikz} % A package for high-quality hand-made figures.
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.16}
 \usepackage{quiver}
+
+\usepackage[endianness=big]{bytefield}
+\usepackage{soul}
+\usepackage{stmaryrd}
+\pgfplotsset{every axis/.append style={
+                    label style={font=\normalsize},
+                    tick label style={font=\normalsize}
+                    }}
+                    
 \usetikzlibrary{}
 \graphicspath{{./Images/}} % Directory of the images
 \usepackage{caption} % Coloured captions

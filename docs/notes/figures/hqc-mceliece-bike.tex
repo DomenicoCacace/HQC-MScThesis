@@ -1,0 +1,43 @@
+\pgfplotstableread[col sep=comma]{ % data 
+Label,     Keygen, Encaps, Decaps
+McEliece, 2146932, 582, 2706
+BIKE, 24935, 3253, 49911
+HQC, 4934, 10441, 15546
+HQC (masked), 8228, 17050, 25522
+    }\mydata
+
+\begin{tikzpicture}
+\centering
+\begin{axis}[
+    height=70mm, width=125mm,
+%
+    bar width=0.22,
+    ybar=2pt,
+    enlarge x limits={abs=0.5},
+    ymin=0,
+    ymax=55000,
+    ytick distance=10000,
+    yticklabel style={font=\small},
+    yticklabel=\pgfmathprintnumber{\tick},
+    ylabel={Execution time (kcycles)},
+    %xlabel={Cryptosystem},
+    xtick=data,
+    xticklabels from table={\mydata}{Label},
+%
+    nodes near coords,
+    nodes near coords style={font=\tiny,
+                            /pgf/number format/.cd,
+                                        precision=0,
+                                        zerofill,
+                            },
+    legend style={legend pos=north east,
+                cells={anchor=west},
+                font=\footnotesize,
+                }
+]
+\addplot table [x expr=\coordindex,y=Keygen]{\mydata};
+\addplot table [x expr=\coordindex,y=Encaps]{\mydata};
+\addplot table [x expr=\coordindex,y=Decaps]{\mydata};
+\legend{Keygen, Encaps, Decaps}    
+\end{axis}
+\end{tikzpicture}
