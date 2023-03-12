@@ -10,6 +10,21 @@
 #include "parameters.h"
 #include "vector.h"
 
+
+/**
+ * @brief Constant-time comparison of two integers v1 and v2
+ *
+ * Returns 1 if v1 is equal to v2 and 0 otherwise
+ * https://gist.github.cppom/sneves/10845247
+ *
+ * @param[in] v1 
+ * @param[in] v2 
+ */
+static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
+    return 1 ^ (((v1 - v2)|(v2 - v1)) >> 31);
+}
+
+
 /**
  * @brief Generates a vector of a given Hamming weight
  *
@@ -28,35 +43,23 @@
  * @param[in] ctx Pointer to the context of the seed expander
  */
 void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32_t *v, uint16_t weight) {
-    size_t random_bytes_size = 3 * weight;
-    uint8_t rand_bytes[3 * PARAM_OMEGA_R] = {0}; // weight is expected to be <= PARAM_OMEGA_R
-    uint8_t inc;
-    size_t i, j;
+    uint32_t rand_u32[PARAM_OMEGA_R] = {0};
 
-    i = 0;
-    j = random_bytes_size;
-    while (i < weight) {
-        do {
-            if (j == random_bytes_size) {
-                seedexpander(ctx, rand_bytes, random_bytes_size);
-                j = 0;
-            }
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * weight);
 
-            v[i] = ((uint32_t) rand_bytes[j++]) << 16;
-            v[i] |= ((uint32_t) rand_bytes[j++]) << 8;
-            v[i] |= rand_bytes[j++];
+    for (size_t i = 0; i < weight; ++i) {
+        v[i] = i + rand_u32[i] % (PARAM_N - i);
+    }
 
-        } while (v[i] >= UTILS_REJECTION_THRESHOLD);
+    for (int32_t i = (weight - 1); i -- > 0;) {
+        uint32_t found = 0;
 
-        v[i] = v[i] % PARAM_N;
-
-        inc = 1;
-        for (size_t k = 0; k < i; k++) {
-            if (v[k] == v[i]) {
-                inc = 0;
-            }
+        for (size_t j = i + 1; j < weight; ++j) {
+            found |= compare_u32(v[j], v[i]);
         }
-        i += inc;
+
+        uint32_t mask = -found;
+        v[i] = (mask & i) ^ (~mask & v[i]);
     }
 }
 
@@ -248,10 +251,24 @@ void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
  * @param[in] weight Integer that is the Hamming weight
 */
 void vect_sparse_to_dense(DIGIT *dense, const uint32_t *sparse, const uint16_t weight) {
-    for (size_t i = 0; i < weight; ++i) {
-        int32_t index = sparse[i] / DIGIT_SIZE_b;
-        int32_t pos = sparse[i] % DIGIT_SIZE_b;
-        dense[index] |= ((DIGIT) 1) << pos;
+    uint32_t index_tab [PARAM_OMEGA_R] = {0};
+    DIGIT bit_tab [PARAM_OMEGA_R] = {0};
+
+    for (size_t i = 0; i < weight; i++) {
+        index_tab[i] = sparse[i] / DIGIT_SIZE_b;
+        int32_t pos = sparse[i] & (DIGIT_SIZE_b-1);
+        bit_tab[i]  = ((DIGIT) 1) << pos;
+    }
+    DIGIT val = 0;
+    for (uint32_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        val = 0;
+        for (uint32_t j = 0 ; j < weight ; j++) {
+            uint32_t tmp = i - index_tab[j];
+            size_t val1 = 1 ^ ((tmp | -tmp) >> 31);
+            DIGIT mask = -val1;
+            val |= (bit_tab[j] & mask);
+        }
+        dense[i] |= val;
     }
 }
 
