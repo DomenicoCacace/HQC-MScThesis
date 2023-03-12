@@ -34,3 +34,11 @@ commit,branch,freq,algorithm,t,notes
 27e8060,reference,80,dec,29.634427,
 27e8060,reference,80,encaps,28.549908,
 27e8060,reference,80,decaps,37.399917,
+
+ff84b79,reference_karatsuba,80,pke,-0.44151881,
+ff84b79,reference_karatsuba,80,enc,-1.04038178,
+ff84b79,reference_karatsuba,80,dec,-0.29807677,
+ff84b79,reference_karatsuba,80,kem,-1.48133743,
+ff84b79,reference_karatsuba,80,encaps,-4.01099937,
+ff84b79,reference_karatsuba,80,decaps,-0.25636548,
+ff84b79,reference_karatsuba,80,mul,inf,num=-20
