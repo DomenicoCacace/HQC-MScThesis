@@ -87,7 +87,7 @@ void hqc_pke_encrypt_probe(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, c
     DIGIT h[VEC_N_SIZE_DIGIT] = {0};
     DIGIT s[VEC_N_SIZE_DIGIT] = {0};
     DIGIT r1[VEC_N_SIZE_DIGIT] = {0};
-    uint32_t r2[PARAM_OMEGA_R] = {0};
+    DIGIT r2[VEC_N_SIZE_DIGIT] = {0};
     DIGIT e[VEC_N_SIZE_DIGIT] = {0};
     DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
     DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
@@ -114,10 +114,10 @@ void hqc_pke_encrypt_probe(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, c
     // Generate r1, r2 and e
     vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
     vect_set_random_fixed_weight(&seedexpander, r1, PARAM_OMEGA_R);
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, r2, PARAM_OMEGA_R);
+    vect_set_random_fixed_weight(&seedexpander, r2, PARAM_OMEGA_R);
 
     // Compute u = r1 + r2.h
-    opt_mul(u, r2, h, PARAM_OMEGA_R);
+    kar_mul(u, r2, h);
     vect_add(u, r1, u, VEC_N_SIZE_DIGIT);
 
     // Compute v = m.G by encoding the message
@@ -125,7 +125,7 @@ void hqc_pke_encrypt_probe(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, c
     vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
 
     // Compute v = m.G + s.r2 + e
-    opt_mul(tmp2, r2, s, PARAM_OMEGA_R);
+    kar_mul(tmp2, r2, s);
     vect_add(tmp2, e, tmp2, VEC_N_SIZE_DIGIT);
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
     vect_resize(v, PARAM_N1N2, tmp2, PARAM_N);
@@ -134,7 +134,7 @@ void hqc_pke_encrypt_probe(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, c
 
 void hqc_pke_decrypt_probe(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
     DIGIT x[VEC_N_SIZE_DIGIT] = {0};
-    uint32_t y[PARAM_OMEGA] = {0};
+    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
     DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
     DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
@@ -149,7 +149,7 @@ void hqc_pke_decrypt_probe(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsig
 
     // Compute v - u.y
     vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
-    opt_mul(tmp2, y, u, PARAM_OMEGA);
+    kar_mul(tmp2, y, u);
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
 
     // Compute m by decoding v - u.y
