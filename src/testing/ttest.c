@@ -28,7 +28,7 @@ void FULL_KEM_CONST(void);
 void FULL_PKE(void);
 void FULL_PKE_CONST(void);
 
-#define MUL vect_mul
+#define MUL kar_mul
 void MULT(void);
 void MULT_CONST(void);
 
@@ -56,7 +56,7 @@ DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
 uint8_t theta_const[SHAKE256_512_BYTES] = {0};
 DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
 DIGIT v_const[VEC_N1N2_SIZE_DIGIT] = {0};
-uint32_t y_const[PARAM_OMEGA] = {0};
+DIGIT y_const[VEC_N_SIZE_DIGIT] = {0};
 seedexpander_state seedexpander_const;
 
 
@@ -74,7 +74,7 @@ int run(int reps) {
     vect_set_random_from_prng(m_const);
     shake256_512_ds(&shake256state, theta_const, (uint8_t*) m_const, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
     hqc_pke_encrypt(u_const, v_const, m_const, theta_const, pk_const);
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander_const, y_const, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&seedexpander_const, y_const, PARAM_OMEGA);
     crypto_kem_enc_const(ct_const, key1, pk_const);
 
     TRIGGER_SET
@@ -153,31 +153,26 @@ void FULL_PKE_CONST(void) {
 
 void MULT(void) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
-    uint32_t y[PARAM_OMEGA] = {0};
+    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
     uint64_t res[VEC_N_SIZE_64] = {0};
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
     randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
     vect_generate_random_for_mult(u);
 
     start = get_systick();
-    MUL(res, y, u, PARAM_OMEGA, &seedexpander);
+    MUL(res, y, u);
     end = get_systick();
 }
 
 void MULT_CONST(void) {
     uint64_t res[VEC_N_SIZE_64] = {0};
-    unsigned char sk[SECRET_KEY_BYTES];
-    seedexpander_state seedexpander;
-
-    randombytes(sk, SEED_BYTES);
-    seedexpander_init(&seedexpander, sk, SEED_BYTES);
 
     start = get_systick();
-    MUL(res, y_const, u_const, PARAM_OMEGA, &seedexpander);
+    MUL(res, y_const, u_const);
     end = get_systick();
 }
 

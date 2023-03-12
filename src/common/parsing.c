@@ -47,7 +47,7 @@ void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
     vect_set_random_fixed_weight(&sk_seedexpander, x, PARAM_OMEGA);
-    vect_set_random_fixed_weight_by_coordinates(&sk_seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&sk_seedexpander, y, PARAM_OMEGA);
     memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
 }
 
