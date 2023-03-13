@@ -1,0 +1,60 @@
+\section{Polynomial multiplication}
+From a computational standpoint, the most expensive operations in HQC are by far the polynomial multiplication.
+In this section we will describe the various methods employed to implement polynomial multiplication in HQC.
+
+	% descrivere la moltiplicazione shift & add semplice
+	\subsection{Shift and Add}\label{subsec:shift_add}
+		In the third round reference implementation of HQC, the polynomial multiplication is implemented using a variant of the schoolbook
+		\textit{shift and add} method, recalling that the multiplication in $\mathcal{R}$ of a polynomial by a monomial of degree $i$ 
+		can be implemented as a circular shift to the left (\clshift) 	of $i$ positions. Given $a(x)$ in sparse form and $b(x)$ in dense form, the algorithms multiplies $b(x)$ by $x^w$, 
+		for all $w$s, where $w$ is a non-zero coefficient of $a(x)$, and then adds the results together:
+
+		\begin{algorithm2e}[H]
+			\caption{Sparse polynomial multiplication}
+			\KwIn{$a(x) \in \mathcal{R}_\omega$ in sparse form, $b(x) \in \mathcal{R}$ in dense form}
+			\KwOut{$c(x) = a(x) \cdot b(x) \in \mathcal{R}$ in dense form}
+			\For{$i \gets 0$ \KwTo \texttt{ts}}{
+				$\texttt{table}[i] \gets b(x) \clshift i$\;
+			}
+			\For{$i \gets 0$ \KwTo $\texttt{wt}(a(x))$}{
+				$w \gets a(x)[i]$\;
+				$\texttt{dec} \gets w \mod \texttt{ts}$\;
+				$\texttt{s} \gets \lfloor \frac{w}{\texttt{ts}} \rfloor$\;
+				$\texttt{tmp} \gets x^\texttt{s}\cdot x^\texttt{ts}$\;
+				$c(x) \gets c(x) + \texttt{table}[\texttt{dec}] \cdot \texttt{tmp}$\;
+			}
+			\KwRet $c(x) \mod (x^n+1)$\;
+		\end{algorithm2e}
+		The idea of this variant is to precompute the first \texttt{ts} shifts of $b(x)$ and store them in a table, where \texttt{ts} is set to 16;
+		this allows to slightly improve the performance of the algorithm and to shuffle the memory accesses to \texttt{table}.\\
+		Since $a$ is very sparse, this approach is extremely fast; however, the high speed achieved is counterbalanced by the
+		non-constant time execution of the algorithm, which is a major drawback for the security of the implementation. 
+
+	% descrivere la versione a tempo costante della mul shift & add 
+	\subsection{Constant-time shift and add}\label{subsec:const_shift_add}
+		Due to the high sparsity of one of the operands, we would like to exploit the fact that the algorithm is very fast to implement a constant-time version of it;
+		such an algorithm is implemented in LEDAcrypt~\cite{baldi2020ledacrypt} and is based on \textit{shifts with conditional commitment}.\\
+
+		\begin{algorithm2e}[H]
+			\caption{Constant-time monomial multiplication}
+			\KwIn{$a$ exponent of a monomial $x^a \in \mathds{Z}_2[x]$ with $0 \leqslant a < n$, \newline
+					$b(x) \in \mathcal{R}$ in dense form}
+			\KwOut{$c(x) = x^a \cdot b(x) \in \mathcal{R}$ in dense form}
+			\KwData{$m = \lceil \log_2(a) \rceil$ number of bits needed to encode $a$ in binary, \newline
+					\textit{i.e.} $a = (\beta_{m-1}, \cdots, \beta_0)_{\texttt{bin}}$}
+
+			$c(x) \gets b(x) \clshift (a \mod \texttt{ws})$\;
+			\For{$i \gets \log_2(\texttt{ws})$ \KwTo $(m-1)$} {
+				$\texttt{tmp} \gets b(x) \clshift i$\;
+				$c(x) \gets c(x) + \texttt{tmp}$\;
+				$\texttt{cond} \gets (\beta_{i} == 1)$\;
+				$\texttt{mask} \gets 0 - (\texttt{WORD})(\texttt{cond})$\;
+				$c(x) \gets c(x) + ((c(x) \wedge \texttt{mask}) \vee (\texttt{tmp}(x) \wedge \texttt{mask}))$\;
+			}
+			\KwRet $c(x)$\;
+		\end{algorithm2e}
+		With this algorith we compute the $i$-th shift of $b(x)$ regardless of the value of $\beta_i$, but we sum it to the result only if
+		$\beta_i = 1$ (the mask at line 6 contains either all zeros or all ones, '$\vee$' and '$\wedge$' correspond to the bitwise OR and AND respectively).
+	% descrivere la moltiplicazione con trasformate
+
+\section{Masking}

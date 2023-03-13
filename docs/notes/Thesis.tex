@@ -149,6 +149,13 @@
 \newcounter{example}
 \usepackage{xparse}
 
+\newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
+\newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
+\newcommand{\sample}{\ensuremath{ \stackrel{\$}{\gets} }}
+%\newcommand{\samplewt}[1]{\ensuremath{\stackrel{$}{\leftarrow}_{#1}}}
+\newcommand{\ssplit}[1]{\ensuremath{ \llbracket #1 \rrbracket }}
+\newcommand{\clshift}{\ensuremath{\lll_n}}
+
 \NewDocumentEnvironment{example}{ O{} }
 {
 \colorlet{colexam}{bluepoli!55!black} % Global example color
@@ -269,6 +276,9 @@ Abstract IT
 
 \chapter{Multiplication Algorithms}
 \input{mult/mult.tex}
+
+\chapter{Implementation}
+\input{impl/impl.tex}
 
 \chapter{Empirical Evaluations}
 \input{empirical/empirical.tex}
