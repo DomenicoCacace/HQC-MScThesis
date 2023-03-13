@@ -1,0 +1,8 @@
+commit,branch,seclvl,algorithm,mean,var,notes
+6938bc9,avx,128,pke,8.252817,
+6938bc9,avx,128,kem,16.052558,
+6938bc9,avx,128,mul,-3.644490,
+6938bc9,avx,128,enc,1.272453,
+6938bc9,avx,128,dec,-0.973919,
+6938bc9,avx,128,encaps,3.770973,
+6938bc9,avx,128,decaps,-4.558784,
