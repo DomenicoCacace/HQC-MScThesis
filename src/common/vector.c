@@ -12,63 +12,52 @@
 #include "parameters.h"
 #include "vector.h"
 
+
+/**
+ * @brief Constant-time comparison of two integers v1 and v2
+ *
+ * Returns 1 if v1 is equal to v2 and 0 otherwise
+ * https://gist.github.cppom/sneves/10845247
+ *
+ * @param[in] v1 
+ * @param[in] v2 
+ */
+static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
+    return 1 ^ (((v1 - v2)|(v2 - v1)) >> 31);
+}
+
+
 /**
  * @brief Generates a vector of a given Hamming weight
  *
- * This function generates uniformly at random a binary vector of a Hamming weight equal to the parameter <b>weight</b>.
- * To generate the vector we have to sample uniformly at random values in the interval [0, PARAM_N -1]. Suppose the PARAM_N is equal to \f$ 70853 \f$, to select a position \f$ r\f$ the function works as follow:
- *  1. It makes a call to the seedexpander function to obtain a random number \f$ x\f$ in \f$ [0, 2^{24}[ \f$.
- *  2. Let \f$ t = \lfloor {2^{24} \over 70853} \rfloor \times  70853\f$
- *  3. If \f$ x \geq t\f$, go to 1
- *  4. It return \f$ r = x \mod 70853\f$
+ * Implementation of Algorithm 5 in https://eprint.iacr.org/2021/1631.pdf
  *
- * The parameter \f$ t \f$ is precomputed and it's denoted by UTILS_REJECTION_THRESHOLD (see the file parameters.h).
- *
+ * @param[in] ctx Pointer to the context of the seed expander
  * @param[in] v Pointer to an array
  * @param[in] weight Integer that is the Hamming weight
- * @param[in] ctx Pointer to the context of the seed expander
  */
 void vect_set_random_fixed_weight(seedexpander_state *ctx, __m256i *v256, uint16_t weight) {
-    size_t random_bytes_size = 3 * weight;
-    uint8_t rand_bytes[3 * PARAM_OMEGA_R] = {0};
-    uint32_t random_data = 0;
+    uint32_t rand_u32[PARAM_OMEGA_R] = {0};
     uint32_t tmp[PARAM_OMEGA_R] = {0};
-    uint8_t exist = 0;
-    size_t j = 0;
     __m256i bit256[PARAM_OMEGA_R];
     __m256i bloc256[PARAM_OMEGA_R];
     static __m256i posCmp256 = (__m256i){0UL,1UL,2UL,3UL};
-    #define LOOP_SIZE CEIL_DIVIDE(PARAM_N, 256)
 
-    seedexpander(ctx, rand_bytes, random_bytes_size);
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * weight);
 
-    for (uint32_t i = 0 ; i < weight ; ++i) {
-        exist = 0;
-        do {
-            if (j == random_bytes_size) {
-                seedexpander(ctx, rand_bytes, random_bytes_size);
-                j = 0;
-            }
+    for (size_t i = 0; i < weight; ++i) {
+        tmp[i] = i + rand_u32[i] % (PARAM_N - i);
+    }
 
-            random_data  = ((uint32_t) rand_bytes[j++]) << 16;
-            random_data |= ((uint32_t) rand_bytes[j++]) << 8;
-            random_data |= rand_bytes[j++];
+    for (int32_t i = (weight - 1); i -- > 0;) {
+        uint32_t found = 0;
 
-        } while (random_data >= UTILS_REJECTION_THRESHOLD);
-
-        random_data = random_data % PARAM_N;
-
-        for (uint32_t k = 0 ; k < i ; k++) {
-            if (tmp[k] == random_data) {
-                exist = 1;
-            }
+        for (size_t j = i + 1; j < weight; ++j) {
+            found |= compare_u32(tmp[j], tmp[i]);
         }
 
-        if (exist == 1) {
-            i--;
-        } else {
-            tmp[i] = random_data;
-        }
+        uint32_t mask = -found;
+        tmp[i] = (mask & i) ^ (~mask & tmp[i]);
     }
 
     for (uint32_t i = 0 ; i < weight ; i++) {
@@ -265,10 +254,24 @@ void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
  * @param[in] weight Integer that is the Hamming weight
 */
 void vect_sparse_to_dense(DIGIT *dense, const uint32_t *sparse, const uint16_t weight) {
-    for (size_t i = 0; i < weight; ++i) {
-        int32_t index = sparse[i] / DIGIT_SIZE_b;
-        int32_t pos = sparse[i] % DIGIT_SIZE_b;
-        dense[index] |= ((DIGIT) 1) << pos;
+    uint32_t index_tab [PARAM_OMEGA_R] = {0};
+    DIGIT bit_tab [PARAM_OMEGA_R] = {0};
+
+    for (size_t i = 0; i < weight; i++) {
+        index_tab[i] = sparse[i] / DIGIT_SIZE_b;
+        int32_t pos = sparse[i] & (DIGIT_SIZE_b-1);
+        bit_tab[i]  = ((DIGIT) 1) << pos;
+    }
+    DIGIT val = 0;
+    for (uint32_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        val = 0;
+        for (uint32_t j = 0 ; j < weight ; j++) {
+            uint32_t tmp = i - index_tab[j];
+            size_t val1 = 1 ^ ((tmp | -tmp) >> 31);
+            DIGIT mask = -val1;
+            val |= (bit_tab[j] & mask);
+        }
+        dense[i] |= val;
     }
 }
 
