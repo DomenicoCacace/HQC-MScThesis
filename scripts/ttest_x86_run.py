@@ -24,7 +24,7 @@ def main():
         print("Checking out {}".format(branch))
         os.system("git checkout {} > /dev/null".format(branch))
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()[0:7]
-        iseclevs = ["128"]
+        seclevs = ["128"]
         if not os.path.isfile("../docs/ttest_x86.csv"):
             f = open("../docs/ttest_x86.csv", "w")
             f.write("commit,branch,seclvl,algorithm,mean,var,notes\n")
