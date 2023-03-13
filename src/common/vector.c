@@ -26,6 +26,7 @@ static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
     return 1 ^ (((v1 - v2)|(v2 - v1)) >> 31);
 }
 
+#define LOOP_SIZE CEIL_DIVIDE(PARAM_N, 256)
 
 /**
  * @brief Generates a vector of a given Hamming weight
