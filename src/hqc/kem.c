@@ -132,7 +132,7 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     shake256incctx shake256state;
 
     // Retrieving u, v and d from ciphertext
-    hqc_ciphertext_from_string(u, v, d, salt, ct);
+    hqc_ciphertext_from_string(u_256, v, d, salt, ct);
 
     // Retrieving pk from sk
     pk = sk + SEED_BYTES;
