@@ -78,10 +78,12 @@ int run(int reps) {
     crypto_kem_enc(ct_const, key1, pk_const);
 
     TRIGGER_SET
+    ALG();
     for(int i = 0; i < reps; i++) {
         ALG();
         welford_update(&timer, (long double)(end-start));
     }
+    ALG_CONST();
     for(int i = 0; i < reps; i++) {
         ALG_CONST();
         welford_update(&timer_const, (long double)(end-start));
