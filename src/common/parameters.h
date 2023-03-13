@@ -174,5 +174,8 @@
 #define VEC_N_256_SIZE_64                     	(CEIL_DIVIDE(PARAM_N_MULT, 256) << 2)
 #define VEC_N1N2_256_SIZE_64                	(CEIL_DIVIDE(PARAM_N1N2, 256) << 2)
 
+#define SALT_SIZE_BYTES                         16
+#define SALT_SIZE_DIGIT                         CEIL_DIVIDE(SALT_SIZE_BYTES, DIGIT_SIZE_B)
+
 #endif
 
