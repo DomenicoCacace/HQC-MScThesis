@@ -58,3 +58,79 @@ In this section we will describe the various methods employed to implement polyn
 	% descrivere la moltiplicazione con trasformate
 
 \section{Masking}
+    The basic principle of masking to secure a cryptographic algorithm is to split every sensitive value $x$ into $d+1$ \textit{shares},
+    in such a way that the following relation holds:
+    \begin{equation}
+        x = x_0 \oplus x_1 \oplus \cdots \oplus x_d
+    \end{equation}
+    The shares $x_1, \cdots, x_d$ are called \textit{masks} and are randomly sampled, while the secret $x_0$ is processed in 
+    such a way that the relation above holds. The goal of masking is to make the sensitive value indistinguishable from
+    a random value, so that the observation of a side channel does not reveal any sensitive information.
+
+    Unlike many other cryptosystems, HQC is \textit{linear} in all its operations, making its primitives to be easily masked entirely.
+    In the next algorithms we will use the following notation and conventions:
+    \begin{itemize}
+        \item $d$: the amount of shares
+        \item $\ssplit{a} = (a_0,\ldots,a_{d-1})$: additive share splitting of $a$ in $d$ shares over $\mathcal{R}$
+        \item $\sample$: uniform sampling from the right hand side of the equation
+        \item $(a+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$: masking of $a$ with $d-1$ masks sampled from the same field of $a$
+        \item \textsc{Collapse}(a, \ssplit{b}): sum all shares of $b$, in order, to $a$
+    \end{itemize}
+    In our implementation we will consider only the case $d=2$.
+
+    \subsection{Keygen}
+    The masking of the key generation algorithm is straightforward: after sampling the private key, we mask $y$ and multiply 
+    by $h$: the multiplication between a polynomial and a share-split is performed by multiplying each share by $h$, so the result is
+    itself share-split.\\
+    \begin{algorithm2e}[H]
+        \caption{Keygen}
+        \KwIn{none}
+        \KwOut{$\kpub \in \mathcal{R}\times \mathcal{R}; \kpri \in \mathcal{R} \times \mathcal{R}$}
+        $h \sample \mathcal{R}$\;
+        $(x,y) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
+        $\ssplit{y} \gets (y+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$\;
+        $\ssplit{s} \gets h \ssplit{y}$\;
+        $\ssplit{s} \gets x + \ssplit{s}$\tcp*{sum $x$ only to the first share}
+        \KwRet $\kpri=(x,y)$, $\kpub = (h,\textsc{Collapse}(\ssplit{s}))$\;
+        \end{algorithm2e}
+
+    \subsection{Encrypt}
+    In the encryption it is important to protect, other than the message $m$ and the public key $s$, also the random polynomials
+    $e,r_1$ and $r_2$, as their leakage would allow an attacker to remove the \textit{excess} errors and decode $m$ from the ciphertext.
+    
+    \begin{algorithm2e}[H]
+        \caption{Encrypt($\kpub$, $m$)}
+        \KwData{$\mathbf{G}$: a $\mathds{F}_2^{k \times n}$ matrix generating an efficiently correctable code}
+        \KwIn{$\kpub$, $m\in \{0,1\}^k$}
+        \KwOut{$c = (u, v) \in \mathcal{R} \times \mathcal{R}$}
+        $e \sample \mathcal{R}_{\omega_e}$\;
+        $(r_1,r_2) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
+        $\ssplit{r_1} \gets (r_1+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$\;
+        $\ssplit{r_2} \gets (r_2+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$\;
+        $\ssplit{u} \gets \ssplit{r_1} + h\ssplit{r_2}$\;
+        $\ssplit{m} \gets (m+\sum_{i=0}^{d-2} \mathtt{rnd}_i) $\;
+        $\ssplit{v} \gets \ssplit{m}\mathbf{G} + s \ssplit{r_2} + e $\;
+        \KwRet $(\textsc{Collapse}(\ssplit{u}),\textsc{Collapse}(\ssplit{v}))$\;
+    \end{algorithm2e}
+    When calculating \ssplit{v} it is important to perform the operations reported at line 7 from left to right, to avoid leaking
+    information about $e$; in alternative, we can also mask $e$ and then sum it to \ssplit{v}.
+
+
+    \subsection{Decrypt}
+    In the decryption we exploit the linearity of the correctable code: after masking $y$ and multiplying by $u$, we 
+    generate a random codeword $\ssplit{\bar{m}}$ and encode it into \ssplit{\bar{c}} to protect $v-uy$ during the decoding.
+    After the decoding we can collapse $\ssplit{\bar{m}}$ and the decoded message: since the code is linear, the final result
+    is the original message, as if we had performed the decoding on $v-uy$ directly.
+    \begin{algorithm2e}
+        \caption{Decrypt($\kpri$, $c$)}
+        \KwData{$\mathbf{G}$: a $\mathds{F}_2^{k \times n}$ matrix generating an efficiently correctable code}
+        \KwIn{$\kpri=(x,y) \in \mathcal{R}_\omega \times \mathcal{R}_\omega$, $c = (u,v) \in \mathcal{R} \times \mathcal{R}$}
+        \KwOut{$m\in \{0,1\}^k$}
+        $\ssplit{y} \gets (y+\sum_{i=0}^{n-2} \mathtt{rnd}_i)$\;
+        $\ssplit{uy} \gets u \ssplit{y}$\;
+        $\ssplit{\bar{m}} \sample (\{0,1\}^k)^d$\;
+        $\ssplit{\bar{c}} \gets \ssplit{\bar{m}}\mathbf{G}$\; 
+        $a \gets \text{\sc Collapse}(v ,\ssplit{\bar{c}})$\;
+        $m \gets \text{\sc Decode}(\text{\sc Collapse}(a,\ssplit{uy}))$\;
+        \KwRet $\text{\sc Collapse}(m ,\ssplit{\bar{m}})$\;
+    \end{algorithm2e}
