@@ -1,0 +1,41 @@
+We chose the STM32L476RG Nucleo board as our benchmarking platform, featuring 96KB of RAM, 1MB of Flash memory,
+a 32-bit ARM Cortex M4 which can be clocked up to 80MHz and a true random number generator.
+Due to its large memory footprint and the limited amount of memory available on our target platform,
+we take into consideration only the \texttt{hqc-128} instance.
+
+We use \texttt{libopencm3} (1.0.0) as firmware library and compile the project with\newline \texttt{gcc-arm-none-eabi} (7.2.1)
+using the \texttt{-O3} optimization flag. The board is clocked at a range of frequencies between 16 and 80 MHz, in order to
+evaluate the impact of the memory wait states; the frequencies and corresponding amounts of wait cycles are reported in
+the table below:
+\begin{table}[ht]
+    \centering
+    \label{tab:waitstates}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        Frequency (MHz) & 16 & 32 & 48 & 64 & 80 \\
+        \hline 
+        Wait States & 0 & 1 & 2 & 3 & 4  \\
+        \hline    
+    \end{tabular}
+\end{table}
+
+\subsection{Execution time}
+To measure the execution times we use the Data Watchpoint and Trace Cycle Count Register (\texttt{DWT\_CYCCNT}),
+a 32-bit register that counts the number of clock cycles elapsed since its last reset with a resolution
+of one clock cycle. To avoid overflows, we reset the register after all the measurements of a single round
+are completed; to reduce uncertainty, we average the measurements taken over 1000 rounds.
+
+\subsection{Welch's t-test}
+To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{schneider2015leakage},
+based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
+populations differ; the t-test statistic is computed as follows:
+\begin{equation}
+    t = \frac{\mu_0 - \mu_1}{\sqrt{\frac{s_0^2}{n_0} + \frac{s_1^2}{n_1}}}
+\end{equation}  
+where $\mu, s^2$ and $n$ are the mean, variance and number of samples of the two populations, respectively.
+Small $t$ values give evidence to accept the null hypothesis that the two populations have the same mean; 
+usually, for the sake of simplicity, a threshold of $|t| > 4.5$ is defined to reject the null hypothesis with
+a confidence level of $99,999\%$.\\
+In our case, we take the populations to be the execution times of an algorithm, where in the first we draw
+new inputs randomly each time, while in the second we use the same inputs for all the rounds; each population
+is composed of 1000 samples.\\
