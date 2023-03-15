@@ -1,0 +1,15 @@
+import numpy as np
+
+class FreeSCA_config:
+    default_sample_type=np.double
+    default_stored_sample_type=np.single
+    default_input_byte_type=np.byte
+    
+class Sampling_config:
+    batches_to_capture = 50
+    captures_per_batch = 2
+    threshold_in_mV = 250
+    sampling_frequency = 500e6
+    num_repetitions_to_average = 1
+
+    

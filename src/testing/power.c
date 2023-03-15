@@ -208,8 +208,8 @@ void send_ptx(DIGIT *m) {
     uint8_t *p = (uint8_t *)m;
     char buf[4] = {0};
     for(int i = 0; i < VEC_K_SIZE_BYTES; i++) {
-        sprintf(buf, "%02x ", p[i]);
-        usart_send_str(buf, 3);
+        sprintf(buf, "%02x", p[i]);
+        usart_send_str(buf, 2);
     }
     usart_send_str("\n", 1);
 }
@@ -219,15 +219,15 @@ void send_ctx(DIGIT *u, DIGIT *v) {
     char buf[4] = {0}; 
     p = (uint8_t *)u;
     for(int i = 0; i < VEC_N_SIZE_BYTES; i++) {
-        sprintf(buf, "%02x ", p[i]);
-        usart_send_str(buf, 3);
+        sprintf(buf, "%02x", p[i]);
+        usart_send_str(buf, 2);
     }
     usart_send_str("\n", 1);
 
     p = (uint8_t *)v;
     for(int i = 0; i < VEC_N1N2_SIZE_BYTES; i++) {
-        sprintf(buf, "%02x ", p[i]);
-        usart_send_str(buf, 3);
+        sprintf(buf, "%02x", p[i]);
+        usart_send_str(buf, 2);
     }
     usart_send_str("\n", 1);
 }
