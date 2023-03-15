@@ -7,7 +7,7 @@ class FreeSCA_config:
     
 class Sampling_config:
     batches_to_capture = 50
-    captures_per_batch = 2
+    captures_per_batch = 50
     threshold_in_mV = 250
     sampling_frequency = 500e6
     num_repetitions_to_average = 1

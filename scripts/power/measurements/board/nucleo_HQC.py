@@ -104,7 +104,9 @@ class nucleo_HQC:
                 print(f"Computed m {m_in}")
             else:
                 print("Board-side and Host side results match!")
-                checked_plaintexts[i] = m_out
+                #checked_plaintexts[i] = m_out
+                # TODO: enable?
+
 
             self.recv(5)    # DONE
 

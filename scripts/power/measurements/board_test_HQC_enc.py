@@ -23,7 +23,7 @@ myboard.init_serial(args.serial)
 plaintext_size = 16
 ciphertext_size = [2209, 2208]
 
-for i in range(1):
+for i in range(Sampling_config.num_repetitions_to_average):
    # Prepare room for outputs
    checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,
                                       plaintext_size),
