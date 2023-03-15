@@ -22,10 +22,9 @@ def main():
     ser.flush()
 
     pk, sk = keygen()
-    ser.write(cvt_to_bytes(pk))
-    ser.flush()
-    ser.write(cvt_to_bytes(sk))
-    ser.flush()
+    store_keys(pk, sk)
+    ser.write(bytes.fromhex(pk))
+    ser.write(bytes.fromhex(sk))
 
     if args.algorithm == "enc":
         m = gen_msg()
@@ -34,18 +33,20 @@ def main():
                 m = gen_msg()
 
             print("Round {}... ".format(i))
-            ser.write(cvt_to_bytes(m))
+            ser.write(bytes.fromhex(m))
             ser.flush()
 
             if args.check:
-                u = ser.readline().decode("utf-8").strip().split(' ')
-                v = ser.readline().decode("utf-8").strip().split(' ')
+                u = ser.readline().decode("utf-8").strip()
+                v = ser.readline().decode("utf-8").strip()
                 store_ctx(u, v)
                 m_out = decrypt()
                 if m == m_out:
                     print("OK")
                 else:
                     print("FAIL")
+                    print(m)
+                    print(m_out)
 
 
             ok = ser.readline().decode("utf-8")  # wait DONE
@@ -84,56 +85,30 @@ def main():
 
 
 def gen_msg():
-    m = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
-    _m = []
-    for i in range(0, len(m), 2):
-        _m.append(m[i:i+2])
-    fp = open("m_in", "w")
-    for x in _m:
-        fp.write("{} ".format(x.zfill(2)))
-    fp.write("\n")
-    fp.close()
-    return _m
+    return subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+
+def store_keys(pk, sk):
+    with open("pk", "w") as f:
+        f.write(pk)
+    with open("sk", "w") as f:
+        f.write(sk)
 
 def store_ctx(u, v):
-    fp = open("u", "w")
-    for i in u:
-        fp.write("{}".format(i))
-    fp.write("\n")
-    fp.close()
-    fp = open("v", "w")
-    for i in v:
-        fp.write("{}".format(i))
-    fp.write("\n")
-    fp.close()
-
+    with open("u", "w") as f:
+        f.write(u)
+    with open("v", "w") as f:
+        f.write(v)
 
 def keygen():
-    subprocess.call(["./keygen"])
-    fp = open("pk", "r")
-    pk = fp.readline().strip().split(' ')
-    fp.close()
-    fp = open("sk", "r")
-    sk = fp.readline().strip().split(' ')
-    fp.close()
-    return pk, sk
+    keys = subprocess.run("./keygen", capture_output=True).stdout.strip().decode("utf-8").split('\n')
+    return keys[0], keys[1]
 
 def encrypt():
-    subprocess.call(["./encrypt"])
-    fp = open("u", "r")
-    u = fp.readline().strip().split(' ')
-    fp.close()
-    fp = open("v", "r")
-    v = fp.readline().strip().split(' ')
-    fp.close()
-    return u, v
+    ctx = subprocess.run("./encrypt", capture_output=True).stdout.split("\n").strip().decode("utf-8")
+    return ctx[0], ctx[1]
 
 def decrypt():
-    subprocess.call(["./decrypt"])
-    fp = open("m_out", "r")
-    m = fp.readline().strip().split(' ')
-    fp.close()
-    return m
+    return subprocess.run("./decrypt", capture_output=True).stdout.strip().decode("utf-8")
 
 def cvt_to_bytes(l):
     return b"".join([bytes.fromhex(x) for x in l])
