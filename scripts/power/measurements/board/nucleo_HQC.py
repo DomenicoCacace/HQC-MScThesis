@@ -50,51 +50,63 @@ class nucleo_HQC:
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
     def process_input_and_check_enc(self, checked_plaintexts, ciphertext_size):
-        for i in range(self.batch_size):
-            # generate keypair
-            keys = subprocess.run(self.keygen, capture_output=True).stdout.split('\n')
-            pk = keys[0]
-            sk = keys[1]
-            print("pk: ", pk)
-            print("sk: ", sk)
+        # generate keypair
+        print("Generate keypair...")
+        keys = subprocess.run(self.keygen, capture_output=True).stdout.strip().decode("utf-8").split('\n')
+        pk = keys[0]
+        sk = keys[1]
+        #print("pk: ", pk)
+        #print("sk: ", sk)
+        print("Done!\n")
+            
 
+        # init comm
+        self.send(b"RDY\n")
+        ok = self.recv(3)
+            
+        # send keypair
+        self.send(bytes.fromhex(pk))
+        self.send(bytes.fromhex(sk))
+
+        for i in range(self.batch_size):
+            print(f"Round {i}")
             # generate message
             m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
             print("m: ", m_in)
 
-            # send keypair
-            self.send(bytes.fromhex(pk))
-            self.send(bytes.fromhex(sk))
-
             # send message
             self.send(bytes.fromhex(m_in))
-
+            
             # receive ciphertext
-            u = self.recv(ciphertext_size[0])
-            v = self.recv(ciphertext_size[1])
+            u = self.recv(ciphertext_size[0]*2+1).strip().decode("utf-8")
+            v = self.recv(ciphertext_size[1]*2+1).strip().decode("utf-8")
 
-            print("u: ", u)
-            print("v: ", v)
-
+            #print("u: ", u)
+            #print("v: ", v)
             # decrypt ciphertext
-            with open(self.exec_folder+"u", "w") as f:
-                f.write(u.hex())
-            with open(self.exec_folder+"v", "w") as f:
-                f.write(v.hex())
-            with open(self.exec_folder+"sk", "w") as f:
+            with open("u", "w") as f:
+                f.write(u)
+            with open("v", "w") as f:
+                f.write(v)
+            with open("sk", "w") as f:
                 f.write(sk)
             
-            m_out = subprocess.run(self.decrypt, capture_output=True).stdout.strip()
-
+            m_out = subprocess.run(self.decrypt, capture_output=True).stdout.strip().decode("utf-8")
+        
             # remove files
-            system("rm u v sk")
+            system("rm u")
+            system("rm v")
+            system("rm sk")
             
             if(m_in != m_out):
-                print(f"Getting  m {bytes.hex(m_out)}")
-                print(f"Computed m {bytes.hex(m_in)}")
+                print("Results mismatch:")
+                print(f"Getting  m {m_out}")
+                print(f"Computed m {m_in}")
             else:
                 print("Board-side and Host side results match")
                 checked_plaintexts[i] = m_out
+
+            self.recv(5)    # DONE
 
         return
         
