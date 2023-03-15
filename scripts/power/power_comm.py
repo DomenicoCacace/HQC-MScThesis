@@ -98,12 +98,12 @@ def gen_msg():
 def store_ctx(u, v):
     fp = open("u", "w")
     for i in u:
-        fp.write("{} ".format(i))
+        fp.write("{}".format(i))
     fp.write("\n")
     fp.close()
     fp = open("v", "w")
     for i in v:
-        fp.write("{} ".format(i))
+        fp.write("{}".format(i))
     fp.write("\n")
     fp.close()
 

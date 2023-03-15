@@ -72,16 +72,24 @@ void DEC(void) {
 }
 
 void write_to_file(char *name, uint8_t *data, int len) {
+    for(int i = 0; i < len; i++) {
+        printf("%02x", *data++);
+    }
+    printf("\n");
+
+    return;
+/*
     FILE *fp;
     uint8_t *p;
 
     fp = fopen(name, "w");
     p = data;
     for(int i = 0; i < len; i++) {
-        fprintf(fp, "%02x ", *p++);
+        fprintf(fp, "%02x", *p++);
     }
     fprintf(fp, "\n");
     fclose(fp);
+*/
 }
 
 void read_from_file(char *name, uint8_t *data, int len) {
@@ -91,7 +99,7 @@ void read_from_file(char *name, uint8_t *data, int len) {
     fp = fopen(name, "r");
     p = data;
     for(int i = 0; i < len; i++) {
-        fscanf(fp, "%02x ", p++);
+        fscanf(fp, "%02x", p++);
     }
     fclose(fp);
 }
