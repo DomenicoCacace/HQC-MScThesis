@@ -52,10 +52,12 @@ def main():
             ok = ser.readline().decode("utf-8")  # wait DONE
     else:
         m = gen_msg()
+        store_ptx(m)
         u, v = encrypt()
         for i in range(0, args.batch_size):
             if not args.fixed:
                 m = gen_msg()
+                store_ptx(m)
                 u, v = encrypt()
 
             print("Round {}... ".format(i))
@@ -93,6 +95,10 @@ def store_keys(pk, sk):
     with open("sk", "w") as f:
         f.write(sk)
 
+def store_ptx(m):
+    with open("m_in", "w") as f:
+        f.write(m)
+
 def store_ctx(u, v):
     with open("u", "w") as f:
         f.write(u)
@@ -104,7 +110,7 @@ def keygen():
     return keys[0], keys[1]
 
 def encrypt():
-    ctx = subprocess.run("./encrypt", capture_output=True).stdout.split("\n").strip().decode("utf-8")
+    ctx = subprocess.run("./encrypt", capture_output=True).stdout.strip().decode("utf-8").split('\n')
     return ctx[0], ctx[1]
 
 def decrypt():
