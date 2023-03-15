@@ -12,27 +12,43 @@ def main():
     parser.add_argument("-r", "--rate", type=int, default=115200, help="Baud rate to use")
     parser.add_argument("-a", "--algorithm", type=str, default="enc", help="Algorithm to run (enc, dec)")
     parser.add_argument("-f", "--fixed", action="store_true", help="Use fixed message and key")
+    parser.add_argument("-c", "--check", action="store_true", help="Verify correctness of results")
     args = parser.parse_args()
 
     ser = serial.Serial(args.port, baudrate=args.rate)
+    ser.flush()
     ser.write(b"RDY\n")
-    ser.readline()  # receive OK
+    ok = ser.readline()  # receive OK
+    ser.flush()
 
     pk, sk = keygen()
     ser.write(cvt_to_bytes(pk))
+    ser.flush()
     ser.write(cvt_to_bytes(sk))
+    ser.flush()
 
-
-    m = gen_msg()
     if args.algorithm == "enc":
+        m = gen_msg()
         for i in range(0, args.batch_size):
             if not args.fixed:
                 m = gen_msg()
 
             print("Round {}... ".format(i))
             ser.write(cvt_to_bytes(m))
+            ser.flush()
 
-            ser.readline().decode("utf-8")  # wait DONE
+            if args.check:
+                u = ser.readline().decode("utf-8").strip().split(' ')
+                v = ser.readline().decode("utf-8").strip().split(' ')
+                store_ctx(u, v)
+                m_out = decrypt()
+                if m == m_out:
+                    print("OK")
+                else:
+                    print("FAIL")
+
+
+            ok = ser.readline().decode("utf-8")  # wait DONE
     else:
         m = gen_msg()
         u, v = encrypt()
@@ -43,9 +59,20 @@ def main():
 
             print("Round {}... ".format(i))
             ser.write(cvt_to_bytes(u))
+            ser.flush()
             ser.write(cvt_to_bytes(v))
+            ser.flush()
 
-            ser.readline().decode("utf-8")  # send DONE
+            if args.check:
+                m_out = ser.readline().decode("utf-8").strip().split(' ')
+                if m == m_out:
+                    print("OK")
+                else:
+                    print("FAIL")
+                    print(m)
+                    print(m_out)
+
+            ok = ser.readline().decode("utf-8")  # wait DONE
 
     ser.close()
     #delete files
@@ -61,12 +88,25 @@ def gen_msg():
     _m = []
     for i in range(0, len(m), 2):
         _m.append(m[i:i+2])
-    fp = open("m", "w")
+    fp = open("m_in", "w")
     for x in _m:
         fp.write("{} ".format(x.zfill(2)))
     fp.write("\n")
     fp.close()
     return _m
+
+def store_ctx(u, v):
+    fp = open("u", "w")
+    for i in u:
+        fp.write("{} ".format(i))
+    fp.write("\n")
+    fp.close()
+    fp = open("v", "w")
+    for i in v:
+        fp.write("{} ".format(i))
+    fp.write("\n")
+    fp.close()
+
 
 def keygen():
     subprocess.call(["./keygen"])
@@ -87,6 +127,13 @@ def encrypt():
     v = fp.readline().strip().split(' ')
     fp.close()
     return u, v
+
+def decrypt():
+    subprocess.call(["./decrypt"])
+    fp = open("m_out", "r")
+    m = fp.readline().strip().split(' ')
+    fp.close()
+    return m
 
 def cvt_to_bytes(l):
     return b"".join([bytes.fromhex(x) for x in l])

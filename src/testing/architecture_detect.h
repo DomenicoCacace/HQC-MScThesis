@@ -13,6 +13,7 @@
 #define TTEST_FAST 4
 #define TIMING_FAST 5
 #define POWER 6
+#define GEN 7
 
 #define CAT(a, b) a ## b
 #define CONST(a) CAT(a, _CONST)

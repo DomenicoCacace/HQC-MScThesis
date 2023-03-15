@@ -26,6 +26,7 @@ set(SOURCES ${BASE_DIR}/codes/code.c
 			${BASE_DIR}/lib/shake_ds.c
 			${BASE_DIR}/lib/shake_prng.c
 			${BASE_DIR}/testing/functional.c
+			${BASE_DIR}/testing/gen.c
 			${BASE_DIR}/testing/plain.c
 			${BASE_DIR}/testing/timing.c
 			${BASE_DIR}/testing/ttest.c)

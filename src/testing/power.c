@@ -31,6 +31,10 @@ void recv_ptx(DIGIT *m);
 
 void recv_ctx(DIGIT *u, DIGIT *v);
 
+void send_ptx(DIGIT *m);
+
+void send_ctx(DIGIT *u, DIGIT *v);
+
 void wait_connection();
 
 int run(int reps) {
@@ -58,6 +62,10 @@ int run(int reps) {
         TRIGGER_RESET
         DELAY(20000);   // 250 us
 
+        #ifdef DEBUG
+        send_ctx(u, v);
+        #endif
+
         usart_send_str("DONE\n", 5);
     }
     #endif
@@ -70,6 +78,10 @@ int run(int reps) {
         TRIGGER_SET
 
         decrypt(m, u, v, sk);
+
+        #ifdef DEBUG
+        send_ptx(m);
+        #endif
 
         TRIGGER_RESET
         DELAY(20000);   // 250 us
@@ -134,19 +146,40 @@ void encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned 
 
 void decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
     DIGIT x[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
-    DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
+    shares_n_t y;
+    DIGIT _v[VEC_N_SIZE_DIGIT] = {0};
+    shares_k_t _m;
+    shares_n1n2_t c;
+    shares_n_t tmp1;
 
     // Retrieve x, y, pk from secret key
-    hqc_secret_key_from_string(x, y, pk, sk);
+    shares_n_init(&y);
+    hqc_secret_key_from_string(x, y.s0, pk, sk);
+    shares_init_from_data(&y, y.s0);
+
+    // Generate and encode a random codeword
+    shares_init_random_msg(&_m);
+    shares_n1n2_init(&c);
+    code_encode_shares(&c, &_m);
+
+    // Mask v with the encoded random codeword
+    shares_n_init(&tmp1);
+    vect_resize(_v, PARAM_N, v, PARAM_N1N2);
+    shares_resize_n(&tmp1, &c);
+    shares_n_collapse(_v, &tmp1, _v);
+
+    // Compute u.y
+    shares_n_init(&tmp1);
+    shares_vec_mul(&tmp1, &y, u);
 
     // Compute v - u.y
-    vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
-    opt_mul(tmp2, y, u);
-    vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
-    code_decode(m, tmp2);
+    shares_n_collapse(_v, &tmp1, _v);
+
+    // Decode v - u.y
+    //shares_n_init(&tmp1);
+    code_decode(m, _v);
+    shares_collapse_msg(m, &_m, m);
 }
 
 void recv_key(unsigned char *pk, unsigned char *sk) {
@@ -169,7 +202,34 @@ void recv_ctx(DIGIT *u, DIGIT *v) {
 
     p = (uint8_t *)v;
     usart_recv_str(p, VEC_N1N2_SIZE_BYTES);
+}
 
+void send_ptx(DIGIT *m) {
+    uint8_t *p = (uint8_t *)m;
+    char buf[4] = {0};
+    for(int i = 0; i < VEC_K_SIZE_BYTES; i++) {
+        sprintf(buf, "%02x ", p[i]);
+        usart_send_str(buf, 3);
+    }
+    usart_send_str("\n", 1);
+}
+
+void send_ctx(DIGIT *u, DIGIT *v) {
+    uint8_t *p;
+    char buf[4] = {0}; 
+    p = (uint8_t *)u;
+    for(int i = 0; i < VEC_N_SIZE_BYTES; i++) {
+        sprintf(buf, "%02x ", p[i]);
+        usart_send_str(buf, 3);
+    }
+    usart_send_str("\n", 1);
+
+    p = (uint8_t *)v;
+    for(int i = 0; i < VEC_N1N2_SIZE_BYTES; i++) {
+        sprintf(buf, "%02x ", p[i]);
+        usart_send_str(buf, 3);
+    }
+    usart_send_str("\n", 1);
 }
 
 void wait_connection() {
