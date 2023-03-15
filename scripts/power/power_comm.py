@@ -59,13 +59,13 @@ def main():
                 u, v = encrypt()
 
             print("Round {}... ".format(i))
-            ser.write(cvt_to_bytes(u))
+            ser.write(bytes.fromhex(u))
             ser.flush()
-            ser.write(cvt_to_bytes(v))
+            ser.write(bytes.fromhex(v))
             ser.flush()
 
             if args.check:
-                m_out = ser.readline().decode("utf-8").strip().split(' ')
+                m_out = ser.readline().decode("utf-8").strip()
                 if m == m_out:
                     print("OK")
                 else:
