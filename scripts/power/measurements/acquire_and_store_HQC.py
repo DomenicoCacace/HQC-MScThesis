@@ -17,6 +17,9 @@ parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number o
 parser.add_argument("-a", "--algorithm", type=str, default="enc", help="Algorithm to run (enc, dec)")
 args = parser.parse_args()
 
+# Set batch size
+Sampling_config.captures_per_batch = args.batch_size
+
 def init_oscilloscope():
     scope = PS5422()
     scope.set_sampling_channel("Channel_A","DC","200mV")
