@@ -111,6 +111,69 @@ class nucleo_HQC:
             self.recv(5)    # DONE
 
         return
+    
+    # This method sends the input to the board, waits for the results and checks
+    # it. 
+    # The expected HQC outputs are computed by a standalone binary 
+    # It fills processed_data with the processed inputs
+    def process_input_and_check_dec(self, checked_plaintexts, plaintext_size):
+        # generate keypair
+        print("Generate keypair...")
+        keys = subprocess.run(self.keygen, capture_output=True).stdout.strip().decode("utf-8").split('\n')
+        pk = keys[0]
+        sk = keys[1]
+        #print("pk: ", pk)
+        #print("sk: ", sk)
+        print("Done!\n")
+            
+
+        # init comm
+        self.send(b"RDY\n")
+        ok = self.recv(3)
+            
+        # send keypair
+        self.send(bytes.fromhex(pk))
+        self.send(bytes.fromhex(sk))
+
+        for i in range(self.batch_size):
+            print(f"Round {i}")
+            # generate message
+            m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+            print("m: ", m_in)
+
+            # get ciphertext
+            with open("m_in", "w") as f:
+                f.write(m_in)
+            with open("pk", "w") as f:
+                f.write(pk)
+            ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
+            u = ctx[0]
+            v = ctx[1]
+
+            # send ciphertext
+            self.send(bytes.fromhex(u))
+            self.send(bytes.fromhex(v))
+            
+            # receive decrypted message
+            m_out = self.recv(plaintext_size*2+1).strip().decode("utf-8")
+
+            # remove files
+            system("rm m_in")
+            system("rm pk")
+
+            if(m_in != m_out):
+                print("Results mismatch:")
+                print(f"Getting  m {m_out}")
+                print(f"Computed m {m_in}")
+            else:
+                print("Board-side and Host side results match!")
+                #checked_plaintexts[i] = m_out
+                # TODO: enable?
+
+
+            self.recv(5)    # DONE
+
+        return
         
     def send(self,data):
         written = self.uart.write(data)
