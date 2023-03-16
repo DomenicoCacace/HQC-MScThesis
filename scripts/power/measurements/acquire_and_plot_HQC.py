@@ -11,7 +11,7 @@ from trace_visualization import plot_first_n_traces,plot_avg_stddev_ntraces,plot
 
 parser = argparse.ArgumentParser(description='Test the configuration')
 parser.add_argument("-s", "--serialport", type=str, default="/dev/ttyUSB0", help='serial number of the board')
-#parser.add_argument("-o", "--output", type=str, default="", required=True, help='Path to the output file')
+parser.add_argument("-o", "--output", type=str, default="", required=True, help='Path to the output file')
 parser.add_argument("-f", "--fixed", action="store_true", help="Use fixed inputs")
 parser.add_argument("-e", "--exec-folder", type=str, default="../", help="path to the directory containing the binaries")
 parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number of samples to take for each algorithm")
@@ -35,7 +35,7 @@ def init_oscilloscope():
 
 
 if __name__ == "__main__":
-    serial_port_pathname = args.serial
+    serial_port_pathname = args.serialport
     # Prepare inputs
     plaintext_size = 16
     ciphertext_size = [2209, 2208]
