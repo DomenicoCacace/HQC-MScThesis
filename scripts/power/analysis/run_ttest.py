@@ -4,18 +4,27 @@ import data_formats.dat_tracereader as dat_tracereader
 import data_formats.hdf5_tracereader as hdf5_tracereader
 import numpy as np
 
-import sys
+import argparse
 import trace_visualization
 
 from statistical_tests.t_test import t_test
 import matplotlib.pyplot as plotter
 
+parser = argparse.ArgumentParser(description='Run a t-test on two sets of traces')
+parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number of samples to take for each algorithm")
+parser.add_argument("-t", "--trim-head", type=int, default=0, help="Number of samples to trim from the head of the trace")
+parser.add_argument("-T", "--trim-tail", type=int, default=0, help="Number of samples to trim from the tail of the trace")
+parser.add_argument("-n", "--num-batches", type=int, default=1, help="Number of batches to process")
+parser.add_argument("--in1", type=str, default="", required=True, help='Path to the first input file')
+parser.add_argument("--in2", type=str, default="", required=True, help='Path to the second input file')
+parser.add_argument("-o", "--out", type=str, default="", help='Path to the output file')
+args = parser.parse_args()
 
-trim_head = 0
-trim_tail = 0
+trim_head = args.trim_head
+trim_tail = args.trim_tail
 
-batch_size = 1000
-num_batches = 200 
+batch_size = args.batch_size
+num_batches = args.num_batches
 
 #num_key_bits = 8
 #num_key_hp =  2**num_key_bits
@@ -36,30 +45,23 @@ def remove_mean(traces):
     return
 
 
-if __name__ == "__main__":
-    if (len(sys.argv) < 3):
-        print("Non specific T-test computation")
-        print("Usage: "+sys.argv[0]+" <first trace file> <second trace file> [output_csv_file]")
-        print("Providing an output csv file disables interactive preview of the results.")
-        sys.exit()    
-
-    
-    split_filename = sys.argv[1].split('.') 
+if __name__ == "__main__":    
+    split_filename = args.in1.split('.') 
     if ( (split_filename[-1] == "hdf5") or 
          (split_filename[-1] == "h5")):
         first_tracefile = hdf5_tracereader.hdf5_tracereader()
     else:
         first_tracefile = dat_tracereader.dat_tracereader()  
-    first_tracefile.open(sys.argv[1])
+    first_tracefile.open(args.in1)
     print(first_tracefile)
 
-    split_filename = sys.argv[2].split('.') 
+    split_filename = args.in2.split('.') 
     if ( (split_filename[-1] == "hdf5") or 
          (split_filename[-1] == "h5")):
         second_tracefile = hdf5_tracereader.hdf5_tracereader()
     else:
         second_tracefile = dat_tracereader.dat_tracereader()  
-    second_tracefile.open(sys.argv[2])
+    second_tracefile.open(args.in2)
     print(second_tracefile)    
     
     #trace_visualization.plot_first_n_traces(traces)
@@ -98,7 +100,7 @@ if __name__ == "__main__":
         
     tstatistic= my_ttest.compute_t()
     print("done computing")
-    if (len(sys.argv)==3):  
+    if (args.out == ""):  
         output_csv_name = input("Results pathname?: ")
         my_ttest.output_csv_result(output_csv_name)
         fig,axes = plotter.subplots()
@@ -106,8 +108,8 @@ if __name__ == "__main__":
         axes.plot(x,tstatistic[:], linewidth=1)
         plotter.show()
     else:
-        my_ttest.output_csv_result(sys.argv[3])
+        my_ttest.output_csv_result(args.out)
         fig,axes = plotter.subplots()
         x = [i for i in range(trimmed_trace_len)]
         axes.plot(x,tstatistic[:], linewidth=1)
-        fig.savefig(sys.argv[3]+".png", dpi=300)
+        fig.savefig(args.out+".png", dpi=300)
