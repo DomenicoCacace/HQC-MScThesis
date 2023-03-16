@@ -4,7 +4,6 @@ from scope.PS5422 import PS5422
 from board.nucleo_HQC import nucleo_HQC
 import ctypes
 from config import FreeSCA_config,Sampling_config
-from sys import argv,exit
 import argparse
 
 from trace_visualization import plot_first_n_traces,plot_avg_stddev_ntraces,plot_spectrogram
@@ -81,12 +80,12 @@ if __name__ == "__main__":
         myboard.process_input_and_check(checked_plaintexts,
                                         #FreeSCA_config.default_input_byte_type,
                                         input_size, args.fixed)
+        
         # Fetch the traces from the oscilloscope buffer, into the traces buffer 
         scope.get_traces(traces)
         traces_avg += traces.astype(np.float)
 
     traces_avg /= Sampling_config.num_repetitions_to_average
-    #write the traces to the output file
 
     #dump traces_avg to file
     traces_avg.dump("traces_avg.npy")   # to be removed
