@@ -112,7 +112,7 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, DIGIT *v, uint16_t we
         val = 0;
         for (uint32_t j = 0 ; j < weight ; j++) {
             uint32_t tmp = i - index_tab[j];
-            int val1 = 1 ^ ((tmp | -tmp) >> (DIGIT_SIZE_b-1));
+            int val1 = 1 ^ ((tmp | -tmp) >> 31);
             DIGIT mask = -val1;
             val |= (bit_tab[j] & mask);
         }
