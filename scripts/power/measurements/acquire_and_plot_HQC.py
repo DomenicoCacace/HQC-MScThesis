@@ -88,7 +88,10 @@ if __name__ == "__main__":
     traces_avg /= Sampling_config.num_repetitions_to_average
     #write the traces to the output file
 
+    #dump traces_avg to file
+    traces_avg.dump("traces_avg.npy")   # to be removed
+
     #plot outcome of the captures to check
-    plot_first_n_traces(traces_avg,Fsample=Sampling_config.sampling_frequency)
-    plot_avg_stddev_ntraces(traces_avg,n=3)
-    plot_spectrogram(traces_avg[0],Sampling_config.sampling_frequency)
+    #plot_first_n_traces(traces_avg,Fsample=Sampling_config.sampling_frequency)
+    #plot_avg_stddev_ntraces(traces_avg,n=3)
+    #plot_spectrogram(traces_avg[0],Sampling_config.sampling_frequency)
