@@ -37,11 +37,11 @@ class nucleo_HQC:
     def reset_board(self,board_serial):
         system(f"st-flash --serial {board_serial} reset")
 
-    def process_input_and_check(self, checked_inputs, output_size):
+    def process_input_and_check(self, checked_inputs, output_size, fixed_inputs):
         if self.mode == "enc":
-            self.process_input_and_check_enc(checked_inputs, output_size)
+            self.process_input_and_check_enc(checked_inputs, output_size, fixed_inputs)
         else:
-            self.process_input_and_check_dec(checked_inputs, output_size)
+            self.process_input_and_check_dec(checked_inputs, output_size, fixed_inputs)
 
         return
     
@@ -49,7 +49,7 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_enc(self, checked_plaintexts, ciphertext_size):
+    def process_input_and_check_enc(self, checked_plaintexts, ciphertext_size, fixed_inputs):
         # generate keypair
         print("Generate keypair...")
         keys = subprocess.run(self.keygen, capture_output=True).stdout.strip().decode("utf-8").split('\n')
@@ -67,12 +67,16 @@ class nucleo_HQC:
         # send keypair
         self.send(bytes.fromhex(pk))
         self.send(bytes.fromhex(sk))
+        
+        # generate message - fixed
+        m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
 
         for i in range(self.batch_size):
             print(f"Round {i}")
             # generate message
-            m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
-            print("m: ", m_in)
+            if not fixed_inputs:
+                m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+                #print("m: ", m_in)
 
             # send message
             self.send(bytes.fromhex(m_in))
@@ -107,7 +111,6 @@ class nucleo_HQC:
                 #checked_plaintexts[i] = m_out
                 # TODO: enable?
 
-
             self.recv(5)    # DONE
 
         return
@@ -116,7 +119,7 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_dec(self, checked_plaintexts, plaintext_size):
+    def process_input_and_check_dec(self, checked_plaintexts, plaintext_size, fixed_inputs):
         # generate keypair
         print("Generate keypair...")
         keys = subprocess.run(self.keygen, capture_output=True).stdout.strip().decode("utf-8").split('\n')
@@ -135,20 +138,35 @@ class nucleo_HQC:
         self.send(bytes.fromhex(pk))
         self.send(bytes.fromhex(sk))
 
+        # generate message - fixed
+        m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+        #print("m: ", m_in)
+
+        # get ciphertext
+        with open("m_in", "w") as f:
+            f.write(m_in)
+        with open("pk", "w") as f:
+            f.write(pk)
+        ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
+        u = ctx[0]
+        v = ctx[1]
+
+
         for i in range(self.batch_size):
             print(f"Round {i}")
             # generate message
-            m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
-            print("m: ", m_in)
+            if not fixed_inputs:
+                m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+                #print("m: ", m_in)
 
-            # get ciphertext
-            with open("m_in", "w") as f:
-                f.write(m_in)
-            with open("pk", "w") as f:
-                f.write(pk)
-            ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
-            u = ctx[0]
-            v = ctx[1]
+                # get ciphertext
+                with open("m_in", "w") as f:
+                    f.write(m_in)
+                with open("pk", "w") as f:
+                    f.write(pk)
+                ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
+                u = ctx[0]
+                v = ctx[1]
 
             # send ciphertext
             self.send(bytes.fromhex(u))
