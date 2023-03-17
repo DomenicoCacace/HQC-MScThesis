@@ -37,19 +37,7 @@ class nucleo_HQC:
     def reset_board(self,board_serial):
         system(f"st-flash --serial {board_serial} reset")
 
-    def process_input_and_check(self, checked_inputs, output_size, fixed_inputs):
-        if self.mode == "enc":
-            self.process_input_and_check_enc(checked_inputs, output_size, fixed_inputs)
-        else:
-            self.process_input_and_check_dec(checked_inputs, output_size, fixed_inputs)
-
-        return
-    
-    # This method sends the input to the board, waits for the results and checks
-    # it. 
-    # The expected HQC outputs are computed by a standalone binary 
-    # It fills processed_data with the processed inputs
-    def process_input_and_check_enc(self, checked_plaintexts, ciphertext_size, fixed_inputs):
+    def exchange_keys(self):
         # generate keypair
         print("Generate keypair...")
         keys = subprocess.run(self.keygen, capture_output=True).stdout.strip().decode("utf-8").split('\n')
@@ -58,6 +46,12 @@ class nucleo_HQC:
         #print("pk: ", pk)
         #print("sk: ", sk)
         print("Done!\n")
+
+        # save keys to file
+        with open("pk", "w") as f:
+            f.write(pk)
+        with open("sk", "w") as f:
+            f.write(sk)
             
 
         # init comm
@@ -65,19 +59,52 @@ class nucleo_HQC:
         ok = self.recv(3)
             
         # send keypair
+        print("Sending keys...")
         self.send(bytes.fromhex(pk))
         self.send(bytes.fromhex(sk))
+        print("Keys sent, board waiting for inputs")
+
+    def gen_msg(self):
+        return subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+
+    def gen_ctx(self, m_in):
+        with open("m_in", "w") as f:
+            f.write(m_in)
+        ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
+        return ctx[0], ctx[1]
+    
+    def generate_inputs(self):
+        m = self.gen_msg()
+        if self.mode == "enc":
+            return m
+        else:
+            u, v = self.gen_ctx(m)
+            return [u, v, m]
         
-        # generate message - fixed
-        m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
+    def remove_files(self):
+        system("rm pk sk")
+        if self.mode == "enc":
+            system("rm u v")
+        else:
+            system("rm m_in")
 
-        for i in range(self.batch_size):
-            print(f"Round {i}")
-            # generate message
-            if not fixed_inputs:
-                m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
-                #print("m: ", m_in)
+        return
 
+
+    def process_input_and_check(self, inputs, output_size, checked_plaintexts):
+        if self.mode == "enc":
+            self.process_input_and_check_enc(inputs, output_size, checked_plaintexts)
+        else:
+            self.process_input_and_check_dec(inputs[0], inputs[1], inputs[2], output_size, checked_plaintexts)
+
+        return
+    
+    # This method sends the input to the board, waits for the results and checks
+    # it. 
+    # The expected HQC outputs are computed by a standalone binary 
+    # It fills processed_data with the processed inputs
+    def process_input_and_check_enc(self, m_in, ciphertext_size, checked_plaintexts):   
+        for i in range(0, self.batch_size):     
             # send message
             self.send(bytes.fromhex(m_in))
             
@@ -92,8 +119,6 @@ class nucleo_HQC:
                 f.write(u)
             with open("v", "w") as f:
                 f.write(v)
-            with open("sk", "w") as f:
-                f.write(sk)
             
             m_out = subprocess.run(self.decrypt, capture_output=True).stdout.strip().decode("utf-8")
                     
@@ -104,15 +129,10 @@ class nucleo_HQC:
             else:
                 print("Board-side and Host side results match!")
                 m_out = [m_out[i:i+2] for i in range(0, len(m_out), 2)]
-                for j in range(0, 16):
+                for j in range(16):
                     checked_plaintexts[i][j] = int(m_out[j], 16)
 
             self.recv(5)    # DONE
-
-        # remove files
-        system("rm u")
-        system("rm v")
-        system("rm sk")
 
         return
     
@@ -120,55 +140,8 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_dec(self, checked_plaintexts, plaintext_size, fixed_inputs):
-        # generate keypair
-        print("Generate keypair...")
-        keys = subprocess.run(self.keygen, capture_output=True).stdout.strip().decode("utf-8").split('\n')
-        pk = keys[0]
-        sk = keys[1]
-        #print("pk: ", pk)
-        #print("sk: ", sk)
-        print("Done!\n")
-            
-
-        # init comm
-        self.send(b"RDY\n")
-        ok = self.recv(3)
-            
-        # send keypair
-        self.send(bytes.fromhex(pk))
-        self.send(bytes.fromhex(sk))
-
-        # generate message - fixed
-        m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
-        #print("m: ", m_in)
-
-        # get ciphertext
-        with open("m_in", "w") as f:
-            f.write(m_in)
-        with open("pk", "w") as f:
-            f.write(pk)
-        ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
-        u = ctx[0]
-        v = ctx[1]
-
-
-        for i in range(self.batch_size):
-            print(f"Round {i}")
-            # generate message
-            if not fixed_inputs:
-                m_in = subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
-                #print("m: ", m_in)
-
-                # get ciphertext
-                with open("m_in", "w") as f:
-                    f.write(m_in)
-                with open("pk", "w") as f:
-                    f.write(pk)
-                ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
-                u = ctx[0]
-                v = ctx[1]
-
+    def process_input_and_check_dec(self, u, v, m_in, plaintext_size, checked_plaintexts):
+        for i in range(0, self.batch_size):
             # send ciphertext
             self.send(bytes.fromhex(u))
             self.send(bytes.fromhex(v))
@@ -183,14 +156,11 @@ class nucleo_HQC:
             else:
                 print("Board-side and Host side results match!")
                 m_out = [m_out[i:i+2] for i in range(0, len(m_out), 2)]
-                for j in range(0, 16):
+                for j in range(16):
                     checked_plaintexts[i][j] = int(m_out[j], 16)
 
             self.recv(5)    # DONE
 
-        # remove files
-        system("rm m_in")
-        system("rm pk")
         return
         
     def send(self,data):

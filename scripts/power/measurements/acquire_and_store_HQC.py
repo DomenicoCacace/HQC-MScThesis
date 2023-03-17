@@ -13,12 +13,10 @@ parser.add_argument("-s", "--serialport", type=str, default="/dev/ttyUSB0", help
 parser.add_argument("-o", "--output", type=str, default="", required=True, help='Path to the output file')
 parser.add_argument("-f", "--fixed", action="store_true", help="Use fixed inputs")
 parser.add_argument("-e", "--exec-folder", type=str, default="../", help="path to the directory containing the binaries")
-parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number of samples to take for each algorithm")
+#parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number of samples to take for each algorithm")
 parser.add_argument("-a", "--algorithm", type=str, default="enc", help="Algorithm to run (enc, dec)")
 args = parser.parse_args()
 
-# Set batch size
-Sampling_config.captures_per_batch = args.batch_size
 
 def init_oscilloscope():
     scope = PS5422()
@@ -39,10 +37,9 @@ if __name__ == "__main__":
     plaintext_size = 16
     ciphertext_size = [2209, 2208]
     if args.algorithm == "enc":
-        input_size = ciphertext_size
+        output_size = ciphertext_size
     else:
-        input_size = plaintext_size
-    local_binary_path = args.exec_folder
+        output_size = plaintext_size
 
     output_pathname = args.output
     
@@ -63,12 +60,13 @@ if __name__ == "__main__":
                           dtype=FreeSCA_config.default_input_byte_type )
 
 
-    #prepare board
+    # Initialize board
+    board_serial = "303637324646353335373532383737"
     myboard = nucleo_HQC(Sampling_config.captures_per_batch, args.exec_folder, mode=args.algorithm)
-    board_serial_no = "303637324646353335373532383737"
-    #print(f"Programming board with {bitstream}")
-    myboard.reset_board(board_serial_no)
-    myboard.init_serial(serial_port_pathname)
+    myboard.reset_board(board_serial)
+
+    # Initialize communication
+    myboard.init_serial(args.serialport)
     
     # open file for trace storage
     outfile = dat_tracereader.dat_tracereader()
@@ -76,19 +74,23 @@ if __name__ == "__main__":
         outfile.create(output_pathname, samples_per_capture, 'h', 16)
     else:
         outfile.create(output_pathname, samples_per_capture, 'f', 16)
+
+    myboard.exchange_keys()
+    inputs = myboard.generate_inputs()
         
     # Run the actual capture
-    for i in range(Sampling_config.num_repetitions_to_average):
-        print(f" * Capturing repetition no. {i+1}/{Sampling_config.num_repetitions_to_average}")
-        scope.capture(samples_per_capture)
-        
-        myboard.process_input_and_check(checked_plaintexts,
-                                        #FreeSCA_config.default_input_byte_type,
-                                        input_size, args.fixed)
-        
-        # Fetch the traces from the oscilloscope buffer, into the traces buffer 
-        scope.get_traces(traces)
-        traces_avg += traces.astype(np.float)
+    for batch_id in range(Sampling_config.batches_to_capture):
+        if not args.fixed:
+            inputs = myboard.generate_inputs()
+        for i in range(Sampling_config.num_repetitions_to_average):
+            print(f" * Capturing repetition no. {i+1}/{Sampling_config.num_repetitions_to_average} of batch {batch_id}/{Sampling_config.batches_to_capture}")
+            scope.capture(samples_per_capture)
+            
+            myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
+            
+            # Fetch the traces from the oscilloscope buffer, into the traces buffer 
+            scope.get_traces(traces)
+            traces_avg += traces.astype(np.float)
 
         #write the traces to the output file
         if (Sampling_config.num_repetitions_to_average == 1):
@@ -100,3 +102,5 @@ if __name__ == "__main__":
 
     print(outfile)
     outfile.close()
+    # Remove files
+    myboard.remove_files()

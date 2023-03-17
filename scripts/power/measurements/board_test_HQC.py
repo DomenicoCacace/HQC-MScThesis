@@ -7,15 +7,12 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Test the configuration')
 parser.add_argument("-s", "--serialport", type=str, default="/dev/ttyUSB0", help='serial number of the board')
-#parser.add_argument("-o", "--output", type=str, default="", required=True, help='Path to the output file')
+parser.add_argument("-o", "--output", type=str, default="", required=True, help='Path to the output file')
 parser.add_argument("-f", "--fixed", action="store_true", help="Use fixed inputs")
 parser.add_argument("-e", "--exec-folder", type=str, default="../", help="path to the directory containing the binaries")
-parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number of samples to take for each algorithm")
+#parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Number of samples to take for each algorithm")
 parser.add_argument("-a", "--algorithm", type=str, default="enc", help="Algorithm to run (enc, dec)")
 args = parser.parse_args()
-
-# Set batch size
-Sampling_config.captures_per_batch = args.batch_size
 
 # Initialize board
 board_serial = "303637324646353335373532383737"
@@ -30,17 +27,25 @@ plaintext_size = 16
 ciphertext_size = [2209, 2208]
 
 if args.algorithm == "enc":
-   input_size = ciphertext_size
+   output_size = ciphertext_size
 else:
-   input_size = plaintext_size
+   output_size = plaintext_size
 
-for i in range(Sampling_config.num_repetitions_to_average):
-   # Prepare room for outputs
-   checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,
-                                      plaintext_size),
-                                      dtype=FreeSCA_config.default_input_byte_type )
-   
-   # Process data and fill checked_plaintexts with the plaintext sent
-   myboard.process_input_and_check(checked_plaintexts, input_size, args.fixed)
+myboard.exchange_keys()
+inputs = myboard.generate_inputs()
 
-   plaintext = bytes(checked_plaintexts[-1])
+checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,
+                                 plaintext_size),
+                                 dtype=FreeSCA_config.default_input_byte_type )
+
+# run the tests
+for batch_id in range(Sampling_config.batches_to_capture):
+   if not args.fixed:
+      inputs = myboard.generate_inputs()
+   for i in range(Sampling_config.num_repetitions_to_average):
+      print(f" * Capturing repetition no. {i+1}/{Sampling_config.num_repetitions_to_average} of batch {batch_id}/{Sampling_config.batches_to_capture}")
+      # Process data and fill checked_plaintexts with the plaintext sent
+      myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
+
+# Remove files
+myboard.remove_files()
