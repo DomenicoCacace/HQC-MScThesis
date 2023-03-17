@@ -96,12 +96,7 @@ class nucleo_HQC:
                 f.write(sk)
             
             m_out = subprocess.run(self.decrypt, capture_output=True).stdout.strip().decode("utf-8")
-        
-            # remove files
-            system("rm u")
-            system("rm v")
-            system("rm sk")
-            
+                    
             if(m_in != m_out):
                 print("Results mismatch:")
                 print(f"Getting  m {m_out}")
@@ -113,6 +108,11 @@ class nucleo_HQC:
                     checked_plaintexts[i][j] = int(m_out[j], 16)
 
             self.recv(5)    # DONE
+
+        # remove files
+        system("rm u")
+        system("rm v")
+        system("rm sk")
 
         return
     
@@ -176,10 +176,6 @@ class nucleo_HQC:
             # receive decrypted message
             m_out = self.recv(plaintext_size*2+1).strip().decode("utf-8")
 
-            # remove files
-            system("rm m_in")
-            system("rm pk")
-
             if(m_in != m_out):
                 print("Results mismatch:")
                 print(f"Getting  m {m_out}")
@@ -192,6 +188,9 @@ class nucleo_HQC:
 
             self.recv(5)    # DONE
 
+        # remove files
+        system("rm m_in")
+        system("rm pk")
         return
         
     def send(self,data):
