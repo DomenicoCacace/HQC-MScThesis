@@ -73,13 +73,27 @@ class nucleo_HQC:
         ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
         return ctx[0], ctx[1]
     
-    def generate_inputs(self):
-        m = self.gen_msg()
-        if self.mode == "enc":
-            return m
+    def generate_inputs(self, amount, fixed):
+        out = []
+        if fixed:
+            m = self.gen_msg()
+            if self.mode == "enc":
+                for i in range(amount):
+                    out.append([m])
+            if self.mode == "dec":
+                u, v = self.gen_ctx(m)
+                for i in range(amount):
+                    out.append([u, v, m])
         else:
-            u, v = self.gen_ctx(m)
-            return [u, v, m]
+            for i in range(amount):
+                m = self.gen_msg()
+                if self.mode == "enc":
+                    out.append([m])
+                if self.mode == "dec":
+                    u, v = self.gen_ctx(m)
+                    out.append([u, v, m])
+
+        return out
         
     def remove_files(self):
         system("rm pk sk")
@@ -95,7 +109,7 @@ class nucleo_HQC:
         if self.mode == "enc":
             self.process_input_and_check_enc(inputs, output_size, checked_plaintexts)
         else:
-            self.process_input_and_check_dec(inputs[0], inputs[1], inputs[2], output_size, checked_plaintexts)
+            self.process_input_and_check_dec(inputs, output_size, checked_plaintexts)
 
         return
     
@@ -103,8 +117,9 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_enc(self, m_in, ciphertext_size, checked_plaintexts):   
-        for i in range(0, self.batch_size):     
+    def process_input_and_check_enc(self, inputs, ciphertext_size, checked_plaintexts):   
+        for i in range(0, self.batch_size): 
+            m_in = inputs[i][0]    
             # send message
             self.send(bytes.fromhex(m_in))
             
@@ -140,8 +155,11 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_dec(self, u, v, m_in, plaintext_size, checked_plaintexts):
+    def process_input_and_check_dec(self, inputs, plaintext_size, checked_plaintexts):
         for i in range(0, self.batch_size):
+            u = inputs[i][0]
+            v = inputs[i][1]
+            m_in = inputs[i][2]
             # send ciphertext
             self.send(bytes.fromhex(u))
             self.send(bytes.fromhex(v))

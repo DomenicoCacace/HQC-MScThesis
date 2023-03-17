@@ -69,12 +69,12 @@ if __name__ == "__main__":
     myboard.init_serial(serial_port_pathname)
     
     myboard.exchange_keys()
-    inputs = myboard.generate_inputs()
+    inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
 
     # Run the actual capture
     for batch_id in range(Sampling_config.batches_to_capture):
         if not args.fixed:
-            inputs = myboard.generate_inputs()
+            inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
         for i in range(Sampling_config.num_repetitions_to_average):
             print(f" * Capturing repetition no. {i+1}/{Sampling_config.num_repetitions_to_average} of batch {batch_id}/{Sampling_config.batches_to_capture}")
             scope.capture(samples_per_capture)
