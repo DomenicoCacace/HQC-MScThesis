@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plotter
 
 # Plots first n traces, default 3, in the time domain. Useful to check
@@ -11,7 +13,8 @@ def plot_first_n_traces(traces,n=5,Fsample=1,comment=""):
         axes.plot(x,traces[i], linewidth=1)
     axes.set(xlabel=f'Samples at {Fsample} MHz', ylabel='ADC ticks',
        title=f'First {n} traces in time'+comment)    
-    plotter.show()
+    #plotter.show()
+    plotter.savefig("firstn.png", dpi=300)
     return
 
 # Plots time-wise average and standard deviations of the first n (default 30)
@@ -28,7 +31,8 @@ def plot_avg_stddev_ntraces(traces,n=30,Fsample=1,comment=""):
     axes.plot(x, stddev_to_plot, color='lightgreen', linewidth=1)
     axes.set(xlabel=f'Samples at {Fsample} MHz'+comment, ylabel='ADC ticks',
        title=f'Mean (blue) and std. dev. of the first {n} traces'+comment)     
-    plotter.show()
+    #plotter.show()
+    plotter.savefig("avgstddev.png", dpi=300)
     return
 
 
@@ -45,7 +49,8 @@ def plot_spectrogram(trace, Fsample, windowing=128):
     # - im: the .image.AxesImage instance representing the data in the plot
     Pxx, freqs, bins, im = ax2.specgram(trace,
                                         NFFT=windowing, Fs=Fsample, noverlap=windowing-1)
-    plotter.show()
+    #plotter.show()
+    plotter.savefig("spectrogram.png", dpi=300)
     return
 
 def plot_xcorrelate(trace_a,trace_b):
