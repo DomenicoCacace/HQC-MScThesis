@@ -37,6 +37,7 @@ void send_ctx(DIGIT *u, DIGIT *v);
 
 void wait_connection();
 
+#define DELAY_AMT (20000*100)
 int run(int reps) {
     unsigned char pk[PUBLIC_KEY_BYTES] = {0};
     unsigned char sk[SECRET_KEY_BYTES] = {0};
@@ -54,13 +55,13 @@ int run(int reps) {
         recv_ptx(m);
         randombytes(theta, SHAKE256_512_BYTES);
 
-        DELAY(20000);   // 250 us
+        DELAY(DELAY_AMT);   // 250 us
         TRIGGER_SET
 
         encrypt(u, v, m, theta, pk);
 
         TRIGGER_RESET
-        DELAY(20000);   // 250 us
+        DELAY(DELAY_AMT);   // 250 us
 
         #ifdef DEBUG
         send_ctx(u, v);
@@ -74,17 +75,18 @@ int run(int reps) {
         for(int i = 0; i < reps; i++) {
         recv_ctx(u, v);
 
-        DELAY(20000);   // 250 us
+        DELAY(DELAY_AMT);   // 250 us
         TRIGGER_SET
 
         decrypt(m, u, v, sk);
 
+        TRIGGER_RESET
+        DELAY(DELAY_AMT);   // 250 us
+
+
         #ifdef DEBUG
         send_ptx(m);
         #endif
-
-        TRIGGER_RESET
-        DELAY(20000);   // 250 us
 
         usart_send_str("DONE\n", 5);
     }
