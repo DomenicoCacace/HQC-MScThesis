@@ -1,0 +1,44 @@
+\pgfplotstableread[col sep=comma]{  % enc
+    Label, Reference (R3), sparsemul (R3), Reference (R4), sparsemul (R4), FAFFT (R4)
+    0,      2726,          18920,           136262,         18965,          8834
+    1,      2748,          18937,           138227,         18991,          10107
+    2,      2799,          18986,           142093,         19049,          11595
+    3,      2886,          19064,           147971,         19154,          13189
+    4,      3035,          19196,           155762,         19324,          14856
+}\armEncTiming % enc
+
+\pgfplotstableread[col sep=comma]{  % dec
+    Label,               Reference (R3), sparsemul (R3), Reference (R4), sparsemul (R3), FAFFT (R4)
+    0,                 1942,           9010,           68750,          8915,           5043
+    1,                 1950,           9018,           69733,          8926,           5677
+    2,                 1965,           9027,           71657,          8941,           6409
+    3,                 1989,           9045,           74568,          8958,           7176
+    4,                 2024,           9071,           78415,          8998,           7958
+}\armDecTiming
+
+\pgfplotstableread[col sep=comma]{  % encaps
+    Label,           Reference (R3), sparsemul (R3), Reference (R4), sparsemul (R4), FAFFT (R4)
+    0,                 3913,           20105,          137873,         20571,          10441
+    1,                 3958,           20148,          139835,         20643,          11763
+    2,                 4079,           20261,          143631,         20783,          13333
+    3,                 4289,           20461,          149685,         21051,          15087
+    4,                 4626,           20787,          157722,         21473,          16994
+}\armEncapsTiming
+
+\pgfplotstableread[col sep=comma]{  % decaps
+    Label,               Reference (R3), sparsemul (R3), Reference (R4), sparsemul (R4), FAFFT (R4)
+    0,                 5923,           29182,          206691,         29557,          15546
+    1,                 5974,           29230,          209618,         29634,          17504
+    2,                 6110,           29361,          215263,         29795,          19804
+    3,                 6341,           29578,          224238,         30084,          22326
+    4,                 6724,           29926,          236118,         30540,          25015
+}\armDecapsTiming
+
+\pgfplotstableread[col sep=comma]{  % mult
+    Label,               Reference (R3), sparsemul (R3), Reference (R4), sparsemul (R4), FAFFT (R4)
+    0,                 848,            7897,           66777,          7791,           3062
+    1,                 848,            7897,           67747,          7791,           3688
+    2,                 851,            7897,           69653,          7791,           4404
+    3,                 856,            7897,           72537,          7791,           5146
+    4,                 862,            7897,           76345,          7791,           5892
+}\armMultTiming

@@ -20,11 +20,12 @@ the table below:
 \end{table}
 
 \subsection{Execution time}
+\input{figures/arm_timing.tex}  % contains data for the plots
+
 To measure the execution times we use the Data Watchpoint and Trace Cycle Count Register (\texttt{DWT\_CYCCNT}),
 a 32-bit register that counts the number of clock cycles elapsed since its last reset with a resolution
 of one clock cycle. To avoid overflows, we reset the register after all the measurements of a single round
 are completed; to reduce uncertainty, we average the measurements taken over 1000 rounds.
-
 \subsection{Welch's t-test}
 To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{schneider2015leakage},
 based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
