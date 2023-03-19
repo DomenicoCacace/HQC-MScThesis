@@ -76,7 +76,38 @@ such a product is calculated by the Toom-Cook algorithm~\cite{cook1969minimum}, 
 
 \subsection{Fast Fourier Transform}
 
-We are however free to choose the points at which we sample the polynomials, which can drastically reduce the amount of operations needed.
+We can approach polynomial multiplication in a totally different way: instead of multiplying the polynomial coefficients, we can
+evaluate the inputs at a set of points (\emph{sampling}), calculate the pointwise product of the evaluations and then interpolate the points
+to obtain the product of the polynomials.
+\begin{example}
+    Let $a(x) = x^2 + 2x + 3$ and $b(x) = 4x + 5$ be polynomials with real coefficients of degree at most $n=2$; since their product
+    will have degree at most $2n=4$ we evaluate the polynomials at $2n+1$ points:
+    \begin{align*}
+        a(0) = &1\cdot 0^2 + 2\cdot 0 + 3 = 3 \quad &b(0) = &0\cdot 0^2 + 4\cdot 0 + 5 = 5 \\
+        a(1) = &1\cdot 1^2 + 2\cdot 1 + 3 = 6 \quad &b(1) = &0\cdot 1^2 + 4\cdot 1 + 5 = 9 \\
+        a(2) = &1\cdot 2^2 + 2\cdot 2 + 3 = 11 \quad &b(2) = &0\cdot 2^2 + 4\cdot 2 + 5 = 13 \\
+        a(3) = &1\cdot 3^2 + 2\cdot 3 + 3 = 18 \quad &b(3) = &0\cdot 3^2 + 4\cdot 3 + 5 = 17 \\
+        a(4) = &1\cdot 4^2 + 2\cdot 4 + 3 = 27 \quad &b(4) = &0\cdot 4^2 + 4\cdot 4 + 5 = 21 \\
+        %a(5) = &1\cdot 5^2 + 2\cdot 5 + 3 = 38 \quad &b(5) = &0\cdot 5^2 + 4\cdot 5 + 5 = 25 \\
+    \end{align*}
+    We can then calulate the pointwise multiplication of the samples
+    \begin{align*}
+        c(0) = &a(0)\cdot b(0) = 3\cdot 5 = 15 \\
+        c(1) = &a(1)\cdot b(1) = 6\cdot 9 = 54 \\
+        c(2) = &a(2)\cdot b(2) = 11\cdot 13 = 143 \\
+        c(3) = &a(3)\cdot b(3) = 18\cdot 17 = 306 \\
+        c(4) = &a(4)\cdot b(4) = 27\cdot 21 = 567 \\
+        %c(5) = &a(5)\cdot b(5) = 38\cdot 25 = 950 \\
+    \end{align*}
+    Finally, we can interpolate the result to obtain the coefficients of the product:
+    \begin{equation*}
+        c(x) = 4x^3 + 13x^2 + 22x + 15
+    \end{equation*}
+\end{example}
+This approach might appear slower than the schoolbook method: the sampling requires $\mathcal{O}(n^2)$ operations, the pointwise product
+$\mathcal{O}(n)$ and the interpolation up to $\mathcal{O}(n^3)$ if we use a naive method such as Gaussian elimination; however, 
+with the right choice of sampling points, we can drastically reduce the operations required in all three steps.
+
 Instead of sampling at $2n$ random points, we can choose the points to be the $N$-th roots of unity, \textit{i.e.} we calculate the Discrete
 Fourier Transform of the input polynomials:
 \begin{equation}
@@ -89,7 +120,7 @@ At this point we can perform the pointwise product in the \textit{transformed} d
 The algorithms that compute the discrete Fourier Transform of a sequence (or its inverse) are called fast Fourier transforms (FFT), and have an asymptotic complexity
 of $\mathcal{O}(n\log n)$.
 
-\begin{example}[Cooley-Tukey FFT]
+\subsubsection{Cooley-Tukey FFT}
 The Cooley-Tukey FFT~\cite{cooley1965algorithm} is the most common FFT algorithm. It is a \textit{divide et impera} algorithm, which recursively expresses a DFT of
 size $N = N_1 N_2$ into $N_1$ smaller DFTs of size $N_2$ each. The simplest form of the Cooley-Tukey algorithm is the radix-2 decimation-in-time FFT, which computes the DFTs of
 the even and odd indexed inputs separately and then combines the results. Assuming that N is a power of 2, we can rewrite the DFT as:
@@ -109,7 +140,7 @@ where we split the DFT into two smaller DFTs, on the even and odd indexes respec
 This means that we can express a DFT of size $N$ as two DFTs of size $N/2$, where we can re-use intermediate results to calculate multiple outputs. 
 Since the base case of the recursion has complexity $\mathcal{O}(n)$ we get the recurrence relation $T(n) = 2T(n/2) + \mathcal{O}(n)$;
 following the Master theorem~\cite{bentley1980general}, the computational complexity of the Cooley-Tukey FFT is $\mathcal{O}(n\log n)$.
-\end{example}
+
 
 \subsection{Additive FFT}
     The Cooley-Tukey FFT works when the $n$ points to sample are $n$-th roots of unity, and hence form a cyclic multiplicative group;
