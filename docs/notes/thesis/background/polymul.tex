@@ -1,3 +1,81 @@
+Let $a(x), b(x) \in \mathcal{R}$ be two polynomials. To calculate the product $c(x) = a(x)b(x)$ the most straightforward
+approach, also known as the \emph{schoolbook} algorithm, requires us to multiply each coefficient of the first with each polynomial of the second 
+and add together the results of the same degree. With this method we can calculate the product of the polynomials with $\mathcal{O}(n^2)$ multiplications
+and $\mathcal{O}(n^2)$ additions, as the degree of the operands is at most $n-1$. Even though this approach is simple to understand and implement, 
+it does not scale well as the degree of the operands increases: for this reason, other multiplication algorithms have been proposed.
+
+As shown by Bernstein in~\cite{bernstein2001multidigit}, we can think of most of the polynomial multiplication algorithms in the literature
+as follows:
+\begin{itemize}
+    \item \textbf{Lifting} the operands to a different ring via a homomorphism $f$
+    \item Multiplying the lifted polynomials in the new ring
+    \item \textbf{Mapping} the result back to the original ring via the inverse homomorphism $f^{-1}$
+\end{itemize} 
+By carefully choosing the destination ring and the homomorphism, we can obtain algorithms with drastically better asymptotic complexity:
+in the remainder of this section we will discuss two of the most common algorithms, Karatsuba and the Fast Fourier Transform. 
+
+\subsection{Karatsuba multiplication}
+The Karatsuba algorithm~\cite{karatsuba1962multiplication} is a divide and conquer algorithm that splits a $n$-degree polynomial into 
+three $n/2$-degree polynomials and then calculates the product of the three polynomials in $\mathcal{O}(n^{\log_2 3})$ operations.
+
+Starting from $a(x)$, $b(x)$ of degree $n$ and an integer $m < n$, we can write
+\begin{equation*}
+\begin{aligned}
+    a(x) &= a_0(x) + x^m a_1(x) \\
+    b(x) &= b_0(x) + x^m b_1(x)
+\end{aligned}
+\end{equation*}
+where $a_0(x)$ and $b_0(x)$ have degree less than $m$. At this point, we can calculate the product $c(x) = a(x)\cdot b(x)$ as
+\begin{equation*}
+    \begin{aligned}
+        c(x) &= a(x)b(x) \\
+             &= (a_0(x) + x^m a_1(x))(b_0(x) + x^m b_1(x)) \\
+             &= a_1(x)b_1(x)x^{2m} + (a_1(x)b_0(x) + a_0(x)b_1(x))x^m + a_0(x)b_0(x)\\
+             &= z_2(x)x^{2m} + z_1(x)x^m + z_0(x)
+    \end{aligned}
+\end{equation*}
+where
+\begin{equation*}
+    \begin{aligned}
+        z_2(x) &= a_1(x)b_1(x) \\
+        z_1(x) &= a_1(x)b_0(x) + a_0(x)b_1(x) \\
+        z_0(x) &= a_0(x)b_0(x)
+    \end{aligned}
+\end{equation*}
+Karatsuba observed that, at the cost of some few additions, we can calculate $a(x)b(x)$ with three multiplications, as we can rewrite $z_1$ as
+\begin{equation*}
+    z_1(x) = (a_0(x) + a_1(x))(b_0(x) + b_1(x)) - z_0(x) - z_2(x)
+\end{equation*}
+\begin{example}
+From the ring of binary polynomials $\mathcal{R}$ we take $a(x) = 1 + x + x^3$ and $b(x) = x + x^2$; by taking $m=2$, we rewrite:
+\begin{equation*}
+    \begin{aligned}
+        a(x) &= (1+x) + x^2(x)\\
+        b(x) &= (x) + x^2(1)
+    \end{aligned}
+\end{equation*}
+and calculate the subproducts as
+\begin{equation*}
+    \begin{aligned}
+        z_2(x) &= (1+x)(x) = x + x^2 \\
+        z_0(x) &= (x)(1) = x \\
+        z_1(x) &= (1+x + x)(x + 1) - (x) - (x+x^2) = 1 + x + x^2
+    \end{aligned}
+\end{equation*}
+From the above, we can calculate the full product as
+\begin{equation*}
+    \begin{aligned}
+        c(x) &= (x)x^{2\cdot 2} + (1 + x + x^2)x^2 + (x+x^2) \\
+             &= x^5 + x^4 + x^3 + x
+    \end{aligned}
+\end{equation*}
+\end{example}
+
+The input polynomials can be split into an arbitrary amount of parts, and the product calculated in a similar fashion:
+such a product is calculated by the Toom-Cook algorithm~\cite{cook1969minimum}, which is a generalization of Karatsuba's algorithm.
+
+\subsection{Fast Fourier Transform}
+
 We are however free to choose the points at which we sample the polynomials, which can drastically reduce the amount of operations needed.
 Instead of sampling at $2n$ random points, we can choose the points to be the $N$-th roots of unity, \textit{i.e.} we calculate the Discrete
 Fourier Transform of the input polynomials:
