@@ -1,3 +1,39 @@
+We are however free to choose the points at which we sample the polynomials, which can drastically reduce the amount of operations needed.
+Instead of sampling at $2n$ random points, we can choose the points to be the $N$-th roots of unity, \textit{i.e.} we calculate the Discrete
+Fourier Transform of the input polynomials:
+\begin{equation}
+    \mathcal{F}(x) = \sum_{n=0}^{N} x_n e^{-\frac{i2\pi}{N}kn}
+\end{equation}\label{DFT}
+At this point we can perform the pointwise product in the \textit{transformed} domain and, since $\mathcal{F}$ is invertible, apply the inverse transform:
+\begin{equation}
+    \mathcal{F}^{-1}(X) = \frac{1}{N}\sum_{n=0}^{N} X_n e^{i\frac{2\pi}{N}kn}
+\end{equation}
+The algorithms that compute the discrete Fourier Transform of a sequence (or its inverse) are called fast Fourier transforms (FFT), and have an asymptotic complexity
+of $\mathcal{O}(n\log n)$.
+
+\begin{example}[Cooley-Tukey FFT]
+The Cooley-Tukey FFT~\cite{cooley1965algorithm} is the most common FFT algorithm. It is a \textit{divide et impera} algorithm, which recursively expresses a DFT of
+size $N = N_1 N_2$ into $N_1$ smaller DFTs of size $N_2$ each. The simplest form of the Cooley-Tukey algorithm is the radix-2 decimation-in-time FFT, which computes the DFTs of
+the even and odd indexed inputs separately and then combines the results. Assuming that N is a power of 2, we can rewrite the DFT as:
+\begin{align*}
+    X_k & = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N}nk} \\
+        & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N}(2m)k} + \sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N}(2m+1)k} \\
+        & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} + e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
+        & = E_k + e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
+\end{align*}
+where we split the DFT into two smaller DFTs, on the even and odd indexes respectively. Because of the periodicity of the complex exponential, we can also write:
+\begin{align*}
+    X_{k+N/2} & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}m(k+N/2)} + e^{-\frac{2\pi i}{N}(k+N/2)}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}m(k+N/2)} \\
+        & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} + e^{-\frac{2\pi i}{N}k}e^{-\pi i}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} \\
+        & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} - e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
+        & = E_k - e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
+\end{align*}
+This means that we can express a DFT of size $N$ as two DFTs of size $N/2$, where we can re-use intermediate results to calculate multiple outputs. 
+Since the base case of the recursion has complexity $\mathcal{O}(n)$ we get the recurrence relation $T(n) = 2T(n/2) + \mathcal{O}(n)$;
+following the Master theorem~\cite{bentley1980general}, the computational complexity of the Cooley-Tukey FFT is $\mathcal{O}(n\log n)$.
+\end{example}
+
+\subsection{Additive FFT}
     The Cooley-Tukey FFT works when the $n$ points to sample are $n$-th roots of unity, and hence form a cyclic multiplicative group;
     this and similar algorithms are also referred to as \textit{multiplicative} FFTs, as they are based on the factorization of $x^n-1$.\\
     Unfortunately, multiplicative FFTs do not work when the underlying field does not admit primitive roots of unity, as it happens for fields
@@ -9,8 +45,8 @@
     consider the case $n=2^m$ where $m$ is a power of 2.
 
 
-\subsection{Cantor basis}
-In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in which it is possible to compute the FFT efficiently
+    \subsubsection{Cantor basis}
+    In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in which it is possible to compute the FFT efficiently
     for any $m = p^n$, with $p$ a prime number; later in~\cite{gao2010additive} Gao and Mateer used a simpler construction for the special case
     $p=2$, where the Cantor basis $\mathbf{v} = (v_1, \cdots, v_{m})$ of $\mathds{F}_2^m$ follows the structure:
     \begin{equation}
@@ -61,10 +97,10 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
         \item $s_3(x) = x^8+x^4+x^2+x$
         \item $s_4(x) = x^{16}+x$
     \end{itemize}
-    
+
     \end{example}
 
-\subsubsection{A \textit{novel} polynomial basis}
+    \paragraph{A \textit{novel} polynomial basis}
     In order to perform the LCH FFT, the input polynomial has to be represented in a different basis. Given the Cantor basis $\mathbf{v} = (v_1, \cdots, v_m)$, we define the 
     \emph{novelpoly} basis with respect to $\mathbf{v}$ as $(X_1, \cdots, X_{n-1})$, defined as follows:
     \begin{equation}
@@ -92,12 +128,12 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
         \KwRet{$g(X) = g_0 + g_1(X)X_{2^k} + \cdots + g_{n-1}(X)X_{(m-1)2^k}$}\;
     \end{algorithm2e}
 
-\subsection{Divide et impera: the Butterflies}
+    \subsubsection{Divide et impera: the Butterflies}
     The general idea of the LCH FFT to evaluate $f(x)$ at all points of $W_k$ is to split $f$ into two half sized polynomials, as well
     as splitting the set of points to be evaluated into $W_{k-1}$ and $W_k\setminus W_{k-1} = \{x + v_k | x \in W_{k-1}\}$; the full algorithm
     is detailed in Algorithm~\ref{alg:lchfft}.
 
-\begin{algorithm2e}[H]
+    \begin{algorithm2e}[H]
     \caption{Lin-Chung-Han FFT}
     \label{alg:lchfft}
     \KwIn{$f(x) = g(X) = g_0 + g_1X_1(x) + \cdots + g_{n-1}X_{n-1}(x) \in \mathds{F}_{2^m}[x]_{<n}$,\newline
@@ -111,12 +147,12 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     $h_0(X) \gets p_0(X) + s_k(\alpha)\cdot p_1(X)$\;\label{line:h0}
     $h_1(X) \gets h_0(X) + s_k(v_k)\cdot p_1(X)$\;\label{line:h1}
     \KwRet{$[FFT(h_0(X), \alpha), FFT(h_1(X), v_{k}+\alpha)]$}\;
-\end{algorithm2e}
+    \end{algorithm2e}
     The \textit{actual} computation, performed at lines~\ref{line:h0} and~\ref{line:h1}, is commonly called \emph{butterfly} and
     is schematized in Figure~\ref{fig:butterfly}. Notice that the butterfly performs two field additions but only one field multiplication,
     since $s_k(v_k) = 1$ in Cantor basis.
 
-\begin{figure}
+    \begin{figure}
     \begin{tikzcd}
         {p_0(X)} &&& \oplus &&& {h_0(X)} \\
         \\
@@ -131,9 +167,9 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     \end{tikzcd}
     \caption{Butterfly unit}
     \label{fig:butterfly}
-\end{figure}
+    \end{figure}
 
-\subsection{Frobenius Additive FFT}
+    \subsubsection{Frobenius Additive FFT}
     In~\cite{van2017frobenius} the authors showed that, by using the Frobenius map, it is possible
     to derive more values of polynomials from less evaluation points: given $f(x) \in \mathds{F}_2[x]_{<n}$,
     it is possible to prove that
@@ -143,7 +179,7 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
     meaning that we can derive the value of $f$ at $\phi_2(a)$ by applying the Frobenius map to $f(a)$.
     Our goal now is, given a polynomial $f(x) \in \mathds{F}_2[x]_{<n}$, to design a set $\Sigma \subset \mathds{F}_{2^m}$
     for $m$ a power of 2 such that we can derive $n$ values of $f$ from $\Sigma$.\
-    \subsubsection{Frobenius partition}
+    \paragraph{Frobenius partition}
         Consider the Frobenius map in $\mathds{F}_{2^m}$; with respect to the Cantor basis, it has been shown in~\cite{li2018frobenius}
         that the order of the Frobenius map is
         \begin{equation}
@@ -160,7 +196,7 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
         \end{equation}
         with $|\Omega| = n$ and $\Sigma$ is a Frobenius partition of $\Omega$~\cite{li2018frobenius}.
 
-    \subsubsection{Polynomial evaluation: encoding}
+    \paragraph{Polynomial evaluation}
         Now that we built the Frobenius partition, we have to evaluate $f$ on it: we define the linear map
         \begin{equation}
             E_\Sigma : f(x) \mapsto \{f(v_{l+m/2} + w) \mid w \in W_l\}
@@ -173,7 +209,7 @@ In~\cite{cantor1989arithmetical} Cantor showed how to get a special basis in whi
         performs the actual butterfly computations, we only have to adapt the latter to the new set of evaluation points.
         In particular, we pretend to evaluate $f$ at $v_{l+m/2} + W_l$, but \emph{truncate} the first $l_m$ layers of
         the butterflies, as we do not need the whole evaluation. The first $l_m$ layers of the truncated FFT can also be thought 
-        as an \textit{encoding}: by analyzing the multipliers of the various inputs, it is possible to rewrite this step as 
+        as an \emph{encoding}: by analyzing the multipliers of the various inputs, it is possible to rewrite this step as 
         a vector-matrix product, as shown in~\cite{chen2018multiplying} and summarized in Algorithm~\ref{alg:encoding}.
 
     \begin{algorithm2e}[H]
