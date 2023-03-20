@@ -98,13 +98,6 @@ If $\mathcal{C}$ is a MDS code, we can rewrite this as $\delta = \lfloor \frac{n
     \end{equation}
 \end{definition}
 
-\subsection{Decoding methods}
-https://en.wikipedia.org/wiki/Decoding\_methods
-    \subsubsection{Minimum distance decoding}
-    \subsubsection{Maximum likelihood decoding}
-    \subsubsection{Syndrome decoding}
-
-
 \subsection{Code families}
 Informally, when we say that a code is \textit{good}, we mean that it satisfies some properties, such as:
 \begin{itemize}
@@ -146,29 +139,30 @@ In this section we will describe some of the most common code families and the p
     they have a very low rate and they are not efficient in terms of error correction capability.
 
 \subsubsection{Concatenated codes}
-    Concatenated codes~\cite{forney1965concatenated} are built by combining an \textit{inner} code $\mathcal{C}_{in}$ and an
-    \textit{outer} code $\mathcal{C}_{out}$. The goal of concatenated codes is to obtain a code which has both a 
+    Concatenated codes are built by combining an \textit{inner} code $\mathcal{C}_{in} = [n_{in}, k_{in}]$ and an
+    \textit{outer} code $\mathcal{C}_{out} = [n_{out}, k_{out}]$: the idea is to split the input message
+    \begin{itemize}
+        \item Split the input message into chunks: $\mathbf{m} = (m_1, \cdots, m_{k_{out}})$
+        \item Encode each chunk with the outer code: $\mathbf{c} = (\mathcal{C}_{out}(m_1), \cdots, \mathcal{C}_{out}(m_{k_{out}})) = (m_1^\prime, \cdots, m_{n_{out}}^\prime)$
+        \item Encode the resulting codeword with the inner code: $\mathcal{C}_{in}(\mathbf{c}) = (\mathcal{C}_{in}(m_1^\prime), \cdots, \mathcal{C}_{in}(m_{n_{out}}^\prime))$
+    \end{itemize}
+    The resulting code, denoted as $\mathcal{C}_{out} \circ \mathcal{C}_{in}$ thus has length $n_{out} \cdot n_{in}$ and dimension
+    $k_{out} \cdot k_{in}$.
+
+    As shown by Forney in~\cite{forney1965concatenated}, concatenated codes can be used to achieve both a 
     polynomial-time decoder and exponentially decreasing error probability with increased block length.
 
-\subsubsection{Reed-Muller codes}
-    Reed-Muller codes~\cite{reed1953class,muller1954application} are a family of codes; they are usually denoted as \textsf{RM}$(r,m)$, 
-    as they have a message length which is equal to
+\subsubsection{Reed-Muller and Reed-Solomon codes}
+    Reed-Muller codes~\cite{reed1953class,muller1954application} are a family of codes; by defining the message lenght as
     \begin{equation*}
         k = \sum_{i=0}^r \binom{m}{i}
     \end{equation*}
-    RM codes are:
-    \begin{itemize}
-        \item Locally testable: it is possible to determine whether a string is a word in the code by testing only a few bits of the string.
-        \item Locally decodable: it is possible to recover the original information by using a small amount of bits of the codeword.
-        \item List decodable: TODO
-    \end{itemize}
+    we denote them as \textsf{RM}$(r, m)$, where $n = 2^m$ is the lenght of the code.
+    Reed-Muller codes are locally testable and locally decodable, meaning that it is possible to
+    detect and correct errors in a codeword by looking at a small subset of its coordinates.
 
-    Due to their properties, we can describe RM codes based on low degree polynomials.\\
-
-
-
-
-
+    Reed-Solomon codes~\cite{reed1960polynomial} are a subclass of Reed-Muller codes and they are usually 
+    referred to as \textsf{RS}$(n, k)$, where $n$ and $k$ are the lenght and dimension of the code respectively.
 
 
 \subsection{Difficult problems for cryptography}
