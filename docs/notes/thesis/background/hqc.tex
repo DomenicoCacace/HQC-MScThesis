@@ -1,5 +1,5 @@
 Hamming Quasi-Cyclic~\cite{melchor2018hamming} is a fourth round candidate in the NIST Post-Quantum cryptography standardization process.
-HQC is a code-based cryptosystem, that includes comprises both a public-key encryption (\textsf{HQC.PKE}) and a
+HQC is a code-based cryptosystem, that includes both a public-key encryption (\textsf{HQC.PKE}) and a
 key encapsulation mechanism (\textsf{HQC.KEM}).\\
 In this section we will describe the inner workings of HQC and show its theoretical security; moreover,
 we will give an overview of the currently known attacks against HQC and their practical impact.
@@ -7,13 +7,11 @@ we will give an overview of the currently known attacks against HQC and their pr
 \subsection{Encryption scheme}\label{sec:encryption}
 We can think of a generic encryption scheme as a tuple of four polynomial time algorithms:
 \begin{itemize}
-    \item \textsf{Setup}$(1^\lambda)$: generates the global parameters \textsf{param} based on the security parameter $\lambda$.
+    \item \textsf{Setup}$(1^\lambda)$: generates the parameters \textsf{param} based on the security parameter $\lambda$.
     \item \textsf{Keygen(param)}: generates a public key \textsf{pk} and a secret key \textsf{sk} based on the global parameters \textsf{param}.
     \item \textsf{Encrypt(pk, \textbf{m}, $\theta$)}: outputs the ciphertext \textbf{c} for the message \textbf{m} with the randomness $\theta$ under the public key \textsf{pk}.
     \item \textsf{Decrypt(sk, \textbf{c})}: outputs the message \textbf{m} for the ciphertext \textbf{c} (or $\bot$ if the ciphertext is invalid).
 \end{itemize}
-
-TODO: add security proof?
 
 \subsection{Public Key Encryption}\label{sec:pke}
 HQC uses two different codes:
@@ -35,9 +33,15 @@ The \textsf{HQC.PKE} defines the four algorithms of an encryption scheme as foll
     \item \textsf{Decrypt(sk, \textbf{c})}: outputs $\mathcal{C}.\textsf{Decode}(\mathbf{v} - \mathbf{u\cdot y})$.
 \end{itemize}
 
-The idea at the core of \textsf{HQC.PKE} is to encode the message ($\mathbf{mG}$) and then add random errors that can be removed only by knowing the secret key.\\
-
-TODO: add security proof?
+The idea at the core of \textsf{HQC.PKE} is to encode the message ($\mathbf{mG}$) and then add random errors that can be removed only by knowing the secret key: the code $\mathcal{C}$ correctly decodes $\mathbf{v-u\cdot y}$ whenever
+\begin{equation*}
+	\begin{aligned}
+		\tt{wt}(\mathbf{v-u\cdot y}) &= \tt{wt}(\bf{s\cdot r_2-u\cdot y+e}) \\
+							   &= \tt{wt}(\bf{(x+h\cdot y)\cdot r_2-(r_1+h\cdot r_2)\cdot y +e})\\
+							   &= \tt{wt}(\bf{x\cdot r_2-r_1\cdot y+e}) \leqslant \delta
+	\end{aligned}
+\end{equation*}
+The \textsf{PKE} scheme has been proven to be IND-CPA secure in~\cite{aguilar2018efficient}.
 
 \subsection{Key Encapsulation Mechanism}\label{sec:kem}
 In practice, public key encryption is not used to encrypt large amounts of data because of its high exectution time compared to symmetric encryption.
@@ -58,7 +62,9 @@ Let $\mathcal{E}$ an instance of \textsf{HQC.PKE} and $\mathcal{G, H}$ and $\mat
     If $\mathbf{c \neq c^\prime}$ or $\mathbf{d} \neq \mathcal{H}(\mathbf{m^\prime})$ return $\bot$, otherwise derive the shared key $\mathcal{K}(\mathbf{m^\prime, c^\prime})$.
 \end{itemize}
 
-TODO: what happens if we do not check $\mathbf{d} == \mathcal{H}(\mathbf{m^\prime})$?
+It is important in this setting to pick different hash functions for $\mathcal{H}$ and $\mathcal{G}$: if not, we would have that $\theta = \mathcal{G}(\mathbf{m}) = \mathcal{H}(\mathbf{m}) = \mathbf{d}$, thus
+publishing the randomness used to generate $\mathbf{r}_1, \mathbf{r}_2$ and $\mathbf{e}$. In such a scenario, an eavesdropper could retrieve
+the message $\mathbf{m}$ from $\mathbf{mG + sr_2 +e}$, which is the seed for the secret shared key.
 
 \subsection{Parameters}
 HQC has three different parameters sets, for category 1, 3 and 5 respectively. We will refer to the implementations
