@@ -132,46 +132,14 @@ class PS5422(Scope):
         adcthreshold = int(mV2adc(threshold,ps5000a_ranges[self.trigger_range], maxADC))
         enable_channel = 1
         delay = 0
-        autotrigger_after_ms = 10000
-        #status = ps5000a.ps5000aSetSimpleTrigger(self.scope_handle,
-                                           #enable_channel, 
-                                           #ps5000a_channels[self.trigger_channel], 
-                                           #adcthreshold, 
-                                           #ps5000a_trigger_dir[direction], 
-                                           #delay, 
-                                           #autotrigger_after_ms)
-        threshold_hysteresis = 10
-        threshold_low = 0
-        triggerProperties = ps5000a.PS5000A_TRIGGER_CHANNEL_PROPERTIES_V2(adcthreshold,
-                                                                     threshold_hysteresis,
-                                                                     threshold_low,
-                                                                     threshold_hysteresis,
-                                                                     1)#ps5000a_channels[self.trigger_channel])
-        length_of_trigger_properties_array = 1
-        unused = 0
-        status = ps5000a.ps5000aSetTriggerChannelPropertiesV2(self.scope_handle, 
-                                                         ctypes.byref(triggerProperties), 
-                                                         length_of_trigger_properties_array, 
-                                                         unused)
-
-        triggerConditions = ps5000a.PS5000A_CONDITION(ps5000a_channels[self.trigger_channel],
-                                                 1)#ps5000a.PS5000A_TRIGGER_STATE["PS5000A_CONDITION_TRUE"])
-
-        clear_flag = 1
-        add_flag = 2
-        length_of_conditions_array = 1
-        status = ps5000a.ps5000aSetTriggerChannelConditionsV2(self.scope_handle, 
-                                                         ctypes.byref(triggerConditions), 
-                                                         length_of_conditions_array, 
-                                                         (clear_flag | add_flag))
-
-        triggerDirections = ps5000a.PS5000A_DIRECTION(ps5000a_channels[self.trigger_channel], 
-                                                 2,#ps5000a_trigger_dir[direction], 
-                                                 0)#ps5000a.PS5000A_THRESHOLD_MODE["PS5000A_LEVEL"])
-        length_of_directions_array = 1
-        status = ps5000a.ps5000aSetTriggerChannelDirectionsV2(self.scope_handle, 
-                                                         ctypes.byref(triggerDirections), 
-                                                         length_of_directions_array)
+        autotrigger_after_ms = 1000
+        status = ps5000a.ps5000aSetSimpleTrigger(self.scope_handle,
+                                           enable_channel, 
+                                           ps5000a_channels[self.trigger_channel], 
+                                           adcthreshold, 
+                                           ps5000a_trigger_dir[direction], 
+                                           delay, 
+                                           autotrigger_after_ms)
                                            
         assert_pico_ok(status)
         self.trigger_threshold = threshold
@@ -204,15 +172,10 @@ class PS5422(Scope):
     def set_timebase_nsamples(self,
                               sampling_frequency=500e6,
                               number_of_captures=1000):
-        #if (self.trigger_channel == "Channel_B"):
-            #samples_per_trace = (self.buffer_size/2)/number_of_captures
-        #else:
-            #print("handle external trigger in buffering")
-            #samples_per_trace = (self.buffer_size)/number_of_captures
-            
+                              
         self.timebase,self.sampling_frequency = self.frequency_to_timebase(sampling_frequency)
         # compute expected number of samples
-        expected_samples = self.buffer_size//number_of_captures
+        expected_samples = 350000000//2
         
         computed_max_samples = ctypes.c_int32()
         status = ps5000a.ps5000aGetTimebase2(self.scope_handle, 
@@ -223,10 +186,11 @@ class PS5422(Scope):
                                              ctypes.byref(ctypes.c_int32(0)), 
                                              ctypes.byref(computed_max_samples), 
                                              0)
-        
+        assert_pico_ok(status)
+
         return computed_max_samples.value
     
-    def prepare_memory(self, number_of_captures=1000):
+    def prepare_memory(self, number_of_captures=1):
         
         samples_per_capture = ctypes.c_int32()
         # ps5000aMemorySegments splits the scope buffer and computes the actual
@@ -237,31 +201,29 @@ class PS5422(Scope):
                                                ctypes.byref(samples_per_capture))
         
         assert_pico_ok(status)
-        max_segments = ctypes.c_int32()
-        ps5000a.ps5000aGetMaxSegments(self.scope_handle, 
-                                      ctypes.byref(max_segments))
-        print(f"Splitting buffer into {number_of_captures} two-channel traces of {samples_per_capture} samples each")
-        # sets number of captures
-        status = ps5000a.ps5000aSetNoOfCaptures(self.scope_handle, 
-                                                number_of_captures)
-        assert_pico_ok(status)
-        
-        # this buffer will contain the entirety of the scope buffer
-        # the split is determined by the sequence of 
-        # ps5000aSetDataBuffers calls
-        print(f"Allocating {number_of_captures} buffers, each one {samples_per_capture} long")
-        for i in range(number_of_captures):        
-            self.buffer_list.append( (ctypes.c_int16 * samples_per_capture.value)() )
+            
+        self.buffer_list.append( (ctypes.c_int16 * samples_per_capture.value)() )
+        #self.buffer_list.append( (ctypes.c_int16 * samples_per_capture.value)() )
+        #self.buffer_list.append( (ctypes.c_int16 * samples_per_capture.value)() )
+        #self.buffer_list.append( (ctypes.c_int16 * samples_per_capture.value)() )
 
-        for i in range(number_of_captures):
-            # the last parameter is the aggregation mode 
-            my_PS5000A_RATIO_MODE_NONE = 0
-            status = ps5000a.ps5000aSetDataBuffer(self.scope_handle, 
-                                                   ps5000a_channels[self.sampling_channel], ctypes.byref(self.buffer_list[i]),
-                                                   samples_per_capture, 
-                                                   i, 
-                                                   my_PS5000A_RATIO_MODE_NONE)
-       
+        status = ps5000a.ps5000aSetDataBuffer(self.scope_handle, 
+                                                ps5000a_channels[self.sampling_channel], 
+                                                ctypes.byref(self.buffer_list[0]),
+                                                #ctypes.byref(self.buffer_list[1]),
+                                                samples_per_capture, 
+                                                0, 
+                                                0)
+        assert_pico_ok(status)
+
+        #status = ps5000a.ps5000aSetDataBuffers(self.scope_handle, 
+        #                                        ps5000a_channels[self.trigger_channel], 
+        #                                        ctypes.byref(self.buffer_list[2]),
+        #                                        ctypes.byref(self.buffer_list[3]),
+        #                                        samples_per_capture, 
+        #                                        0, 
+        #                                        0)
+        #assert_pico_ok(status)
         return samples_per_capture.value
     
     def capture(self,
@@ -275,7 +237,7 @@ class PS5422(Scope):
         single_channel_samples_per_capture = samples_per_capture // 2
         pre_trigger_samples = int(single_channel_samples_per_capture*pre_trigger_sample_ratio)
         post_trigger_samples = single_channel_samples_per_capture-pre_trigger_samples
-        memory_segment_index = 0
+
         status = ps5000a.ps5000aRunBlock(self.scope_handle,
                                          # pre-trigger samples
                                          pre_trigger_samples, 
@@ -283,7 +245,7 @@ class PS5422(Scope):
                                          post_trigger_samples, 
                                          self.timebase, 
                                          None, 
-                                         memory_segment_index, 
+                                         0, 
                                          None, 
                                          None)
         assert_pico_ok(status)
@@ -298,32 +260,27 @@ class PS5422(Scope):
                                        ctypes.byref(ready))
         print(" - Scope ready to transfer back samples")         
         number_of_captures,samples_per_capture = traces.shape
-        expected_samples = ctypes.c_int32(samples_per_capture)
-        fetched_samples = ctypes.c_int32(samples_per_capture)
-        my_PS5000A_RATIO_MODE_NONE = 0
-        overflow_flags_buffer = (ctypes.c_int16 * number_of_captures)()
 
-        status= ps5000a.ps5000aGetValuesBulk(self.scope_handle, 
-                                             ctypes.byref(fetched_samples), 
-                                             0, # starting segment index 
-                                             number_of_captures-1, # final segment index 
-                                             0, 
-                                             0, 
-                                             ctypes.byref(overflow_flags_buffer)) 
+        status = ps5000a.ps5000aGetValues(self.scope_handle, 
+                                        0, # starting sample position
+                                        ctypes.byref(ctypes.c_int32(samples_per_capture)), 
+                                        0, #downsample ratio
+                                        0,
+                                        0, 
+                                        ctypes.byref(ctypes.c_int16()))
         assert_pico_ok(status)
-        for i in range(number_of_captures):
-            #status = ps.ps5000aGetValues(self.scope_handle, 
-                                         #0, # starting sample position
-                                         #ctypes.byref(fetched_samples), 
-                                         #0, #downsample ratio
-                                         #my_PS5000A_RATIO_MODE_NONE,
-                                         #ctypes.byref(self.buffer_list[i]), 
-                                         #i, 
-                                         #ctypes.byref(self.overflow_flags_buffer[i]))
-            #assert_pico_ok(status)
-            #if (expected_samples != fetched_samples):
-                #print(f"Fetched {fetched_samples},expected {expected_samples}")
-            traces[i] = np.ctypeslib.as_array(self.buffer_list[i][:samples_per_capture])
-            #.astype(traces.dtype)
+
+        self.get_np_array(traces[0])
+        return
+
+    def get_np_array(self, array):
+        samples_per_capture = len(array)
+        chunk_size = 1000000  
+        for i in range(0, samples_per_capture-chunk_size, chunk_size):
+            chunk = self.buffer_list[0][i:i+chunk_size]  
+            array[i:i+chunk_size] = np.array(chunk) 
+
+        chunk = self.buffer_list[0][i+chunk_size:samples_per_capture]
+        array[i+chunk_size:samples_per_capture] = np.array(chunk)
         return
         

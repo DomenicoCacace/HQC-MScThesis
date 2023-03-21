@@ -89,9 +89,9 @@ if __name__ == "__main__":
 
 
     #plot outcome of the captures to check
-    plot_first_n_traces(traces_avg,Fsample=Sampling_config.sampling_frequency)
-    plot_avg_stddev_ntraces(traces_avg,n=3)
-    plot_spectrogram(traces_avg[0],Sampling_config.sampling_frequency)
+    plot_first_n_traces(traces_avg,Fsample=Sampling_config.sampling_frequency,n=1)
+    plot_avg_stddev_ntraces(traces_avg,n=1)
+    #plot_spectrogram(traces_avg[0],Sampling_config.sampling_frequency)
 
     # Remove files
     myboard.remove_files()
