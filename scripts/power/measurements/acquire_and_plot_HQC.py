@@ -20,7 +20,7 @@ args = parser.parse_args()
 def init_oscilloscope():
     scope = PS5422()
     scope.set_sampling_channel("Channel_A","DC","500mV")
-    scope.set_trigger_channel("Channel_B","DC","5V")
+    scope.set_trigger_channel("Channel_B","DC","1V")
     scope.config_trigger(Sampling_config.threshold_in_mV, "Rising")
     total_samples = ctypes.c_int32()
     total_samples = scope.set_timebase_nsamples(Sampling_config.sampling_frequency,
@@ -54,9 +54,7 @@ if __name__ == "__main__":
     traces = np.ma.zeros( (Sampling_config.captures_per_batch,
                            samples_per_trace),
                            dtype=np.int16 )
-    traces_avg = np.ma.zeros( (Sampling_config.captures_per_batch,
-                               samples_per_trace),
-                               dtype=np.float )
+
     checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,
                                        plaintext_size),
                                        dtype=FreeSCA_config.default_input_byte_type )
@@ -75,22 +73,25 @@ if __name__ == "__main__":
     for batch_id in range(Sampling_config.batches_to_capture):
         if not args.fixed:
             inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
-        for i in range(Sampling_config.num_repetitions_to_average):
-            print(f" * Capturing repetition no. {i+1}/{Sampling_config.num_repetitions_to_average} of batch {batch_id}/{Sampling_config.batches_to_capture}")
-            scope.capture(samples_per_capture)
-        
-            myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
-            
-            # Fetch the traces from the oscilloscope buffer, into the traces buffer 
-            scope.get_traces(traces)
-            traces_avg += traces.astype(np.float)
+        print(f" * Capturing batch {batch_id+1}/{Sampling_config.batches_to_capture}")
+        # Start capture
+        scope.capture(samples_per_capture)
 
-        traces_avg /= Sampling_config.num_repetitions_to_average
+        # Run the algorithm
+        myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
+        
+        # Fetch the traces from the oscilloscope buffer, into the traces buffer 
+        scope.get_traces(traces)
+
+        # Dump the trace to file
+        filename = f"{output_pathname}_{batch_id}.npy"
+        traces.dump(filename)
+
 
 
     #plot outcome of the captures to check
-    plot_first_n_traces(traces_avg,Fsample=Sampling_config.sampling_frequency,n=1)
-    plot_avg_stddev_ntraces(traces_avg,n=1)
+    #plot_first_n_traces(traces_avg,Fsample=Sampling_config.sampling_frequency,n=1)
+    #plot_avg_stddev_ntraces(traces_avg,n=1)
     #plot_spectrogram(traces_avg[0],Sampling_config.sampling_frequency)
 
     # Remove files
