@@ -32,6 +32,7 @@ class PS5422(Scope):
         self.trigger_channel = "Not set"
         self.trigger_range = "Not set"
         self.vert_resolution = "Not set"
+        self.samples_to_capture = 0
         self.scope_handle = ctypes.c_int16(0)
         # size of the scope buffer, in bytes
         self.buffer_size = 512*1024*1024
@@ -175,7 +176,7 @@ class PS5422(Scope):
                               
         self.timebase,self.sampling_frequency = self.frequency_to_timebase(sampling_frequency)
         # compute expected number of samples
-        expected_samples = 350000000//2
+        expected_samples = int(self.samples_to_capture//2)
         
         computed_max_samples = ctypes.c_int32()
         status = ps5000a.ps5000aGetTimebase2(self.scope_handle, 

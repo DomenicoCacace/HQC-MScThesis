@@ -37,19 +37,19 @@ if __name__ == "__main__":
     ciphertext_size = [2209, 2208]
     if args.algorithm == "enc":
         output_size = ciphertext_size
+        samples = 260e6
     else:
         output_size = plaintext_size
+        samples = 110e6
 
     output_pathname = args.output
     
-    scope = init_oscilloscope() 
+    scope = init_oscilloscope()
+    scope.samples_to_capture = int(samples) 
         
     # Prepare memory buffers
     samples_per_capture = scope.prepare_memory(Sampling_config.captures_per_batch)
-    if (scope.trigger_channel == "Channel_B"):
-        samples_per_trace = samples_per_capture//2
-    else:
-        samples_per_trace = samples_per_capture
+    samples_per_trace = int(samples)
     
     traces = np.ma.zeros( (Sampling_config.captures_per_batch,
                            samples_per_trace),
