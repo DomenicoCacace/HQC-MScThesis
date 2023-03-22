@@ -8,5 +8,11 @@ class FreeSCA_config:
     # should plots be enabled for non-inspection scripts?
     default_plotting_enabled = True
     
-class TA_config:
-    template_label_list= ['00','FF']
+class Sampling_config:
+    batches_to_capture = 2
+    captures_per_batch = 1
+    threshold_in_mV = 250
+    sampling_frequency = 500e6
+    num_repetitions_to_average = 1
+
+    
