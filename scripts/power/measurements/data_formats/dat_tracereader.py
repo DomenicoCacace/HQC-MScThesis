@@ -10,7 +10,6 @@ class dat_tracereader:
         self.trace_len = 0
         self.sample_type = ''
         self.numpy_sample_type = None
-        self.plaintext_len = 0
         self.current_trace = 0
         self.pathname = ""
         self.fileref = {}
@@ -20,17 +19,15 @@ class dat_tracereader:
         pretty_printed += "num traces: " + str(self.num_traces) + "\n"
         pretty_printed += "samples per trace: " + str(self.trace_len) + "\n"
         pretty_printed += "sample type: " + self.sample_type + "\n"
-        pretty_printed += "plaintext len: " + str(self.plaintext_len) + "B\n"
         pretty_printed += "current trace id: " + str(self.current_trace) + "\n"       
         return pretty_printed
     
-    def create(self,pathname, trace_len, sample_type, plaintext_len):
+    def create(self,pathname, trace_len, sample_type):
         self.pathname = pathname
         self.fileref = open(pathname,"xb")
         self.num_traces = 0
         self.trace_len = trace_len
         self.sample_type = sample_type
-        self.plaintext_len = plaintext_len
         self.update_header()
         return
         
@@ -51,7 +48,6 @@ class dat_tracereader:
             self.numpy_sample_type = np.int16
         else : # (self.sample_type == 'c')
             self.numpy_sample_type = np.int8
-        self.plaintext_len = int(np.fromfile(self.fileref,dtype=np.int8,count=1))
         return
     
     def open_ro(self,pathname):
@@ -70,7 +66,6 @@ class dat_tracereader:
             self.numpy_sample_type = np.int16
         else : # (self.sample_type == 'c')
             self.numpy_sample_type = np.int8            
-        self.plaintext_len = int(np.fromfile(self.fileref,dtype=np.int8,count=1))
         return
 
     # updates the file header, writing the current in-memory states
@@ -81,7 +76,6 @@ class dat_tracereader:
         self.fileref.write(ctypes.c_uint32(self.num_traces))
         self.fileref.write(ctypes.c_uint32(self.trace_len))
         self.fileref.write(bytes(self.sample_type,'utf-8'))
-        self.fileref.write(ctypes.c_char(self.plaintext_len))
         self.fileref.seek(current_pos,SEEK_SET)
         return
     
@@ -100,7 +94,6 @@ class dat_tracereader:
                     samples_to_trim_head=0, 
                     samples_to_trim_tail=0):
         traces = []
-        plaintexts = []
         for i in range(num_traces):
             # depending on stored type, load the trace data appropriately
             if (self.sample_type == 'f'):
@@ -121,27 +114,17 @@ class dat_tracereader:
             else:
                 traces = trimmed_trace
             
-            ptx = np.fromfile(self.fileref,
-                              dtype=FreeSCA_config.default_input_byte_type,
-                              count=self.plaintext_len)
-            ptx = ptx.reshape(1,self.plaintext_len)
-            if (plaintexts != []):
-                plaintexts = np.concatenate([plaintexts,ptx])
-            else:
-                plaintexts = ptx
         self.current_trace += num_traces
-        return traces,plaintexts
+        return traces
 
     # writes traces performing type coerction into the sample type
-    def write_traces(self,traces,plaintexts):
+    def write_traces(self,traces):
         # sanity checks
         if (self.num_traces == 0):
             self.trace_len = traces.shape[1]
         if (len(traces[0]) != self.trace_len):
             sys.exit("trying to write a trace with different length!\n")
-        if (len(plaintexts[0]) != self.plaintext_len):
-            sys.exit("trying to write a plaintext with different length!\n")
-         
+
         #save current offset 
         current_pos = self.fileref.tell()
         self.fileref.seek(0,SEEK_END)
@@ -159,8 +142,6 @@ class dat_tracereader:
             cast_trace_to_write = traces[i].astype(dtype=dest_type)
             #cast_trace_to_write.dump(self.fileref)
             self.fileref.write(cast_trace_to_write.tobytes())
-            #plaintexts[i].tofile(self.fileref)
-            self.fileref.write(plaintexts[i].tobytes())
         self.num_traces += traces.shape[0]
         self.update_header()
 
@@ -175,6 +156,4 @@ class dat_tracereader:
     #setter for sample_type to fix broken trace files
     def set_sample_type(self,new_type):
         self.sample_type = new_type
-        
-    def set_plaintext_len(self,new_len):
-        self.plaintext_len = new_len
+

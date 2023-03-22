@@ -105,11 +105,11 @@ class nucleo_HQC:
         return
 
 
-    def process_input_and_check(self, inputs, output_size, checked_plaintexts):
+    def process_input_and_check(self, inputs, output_size):
         if self.mode == "enc":
-            self.process_input_and_check_enc(inputs, output_size, checked_plaintexts)
+            self.process_input_and_check_enc(inputs, output_size)
         else:
-            self.process_input_and_check_dec(inputs, output_size, checked_plaintexts)
+            self.process_input_and_check_dec(inputs, output_size)
 
         return
     
@@ -117,7 +117,7 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_enc(self, inputs, ciphertext_size, checked_plaintexts):   
+    def process_input_and_check_enc(self, inputs, ciphertext_size):   
         for i in range(0, self.batch_size): 
             m_in = inputs[i][0]    
             # send message
@@ -143,9 +143,6 @@ class nucleo_HQC:
                 print(f"Computed m {m_in}")
             else:
                 print("Board-side and Host side results match!")
-                m_out = [m_out[i:i+2] for i in range(0, len(m_out), 2)]
-                for j in range(16):
-                    checked_plaintexts[i][j] = int(m_out[j], 16)
 
             self.recv(5)    # DONE
 
@@ -155,7 +152,7 @@ class nucleo_HQC:
     # it. 
     # The expected HQC outputs are computed by a standalone binary 
     # It fills processed_data with the processed inputs
-    def process_input_and_check_dec(self, inputs, plaintext_size, checked_plaintexts):
+    def process_input_and_check_dec(self, inputs, plaintext_size):
         for i in range(0, self.batch_size):
             u = inputs[i][0]
             v = inputs[i][1]
@@ -173,9 +170,6 @@ class nucleo_HQC:
                 print(f"Computed m {m_in}")
             else:
                 print("Board-side and Host side results match!")
-                m_out = [m_out[i:i+2] for i in range(0, len(m_out), 2)]
-                for j in range(16):
-                    checked_plaintexts[i][j] = int(m_out[j], 16)
 
             self.recv(5)    # DONE
 

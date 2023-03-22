@@ -34,10 +34,6 @@ else:
 myboard.exchange_keys()
 inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
 
-checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,
-                                 plaintext_size),
-                                 dtype=FreeSCA_config.default_input_byte_type )
-
 # run the tests
 for batch_id in range(Sampling_config.batches_to_capture):
    if not args.fixed:
@@ -45,7 +41,7 @@ for batch_id in range(Sampling_config.batches_to_capture):
    for i in range(Sampling_config.num_repetitions_to_average):
       print(f" * Capturing repetition no. {i+1}/{Sampling_config.num_repetitions_to_average} of batch {batch_id}/{Sampling_config.batches_to_capture}")
       # Process data and fill checked_plaintexts with the plaintext sent
-      myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
+      myboard.process_input_and_check(inputs, output_size)
 
 # Remove files
 myboard.remove_files()

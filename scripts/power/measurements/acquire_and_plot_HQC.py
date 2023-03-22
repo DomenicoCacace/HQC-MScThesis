@@ -55,10 +55,6 @@ if __name__ == "__main__":
                            samples_per_trace),
                            dtype=np.int16 )
 
-    checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,
-                                       plaintext_size),
-                                       dtype=FreeSCA_config.default_input_byte_type )
-
     # prepare board
     myboard = nucleo_HQC(Sampling_config.captures_per_batch, args.exec_folder, mode=args.algorithm)
     board_serial_no = "303637324646353335373532383737"
@@ -78,7 +74,7 @@ if __name__ == "__main__":
         scope.capture(samples_per_capture,pre_trigger_sample_ratio=0.02)
 
         # Run the algorithm
-        myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
+        myboard.process_input_and_check(inputs, output_size)
         
         # Fetch the traces from the oscilloscope buffer, into the traces buffer 
         scope.get_traces(traces)

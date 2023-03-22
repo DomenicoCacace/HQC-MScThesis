@@ -54,10 +54,6 @@ if __name__ == "__main__":
     traces = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
                           dtype=np.int16 )
 
-    checked_plaintexts = np.ma.zeros( (Sampling_config.captures_per_batch,plaintext_size),
-                          dtype=FreeSCA_config.default_input_byte_type )
-
-
     # Initialize board
     board_serial = "303637324646353335373532383737"
     myboard = nucleo_HQC(Sampling_config.captures_per_batch, args.exec_folder, mode=args.algorithm)
@@ -69,9 +65,9 @@ if __name__ == "__main__":
     # open file for trace storage
     outfile = dat_tracereader.dat_tracereader()
     if (Sampling_config.num_repetitions_to_average == 1):
-        outfile.create(output_pathname, samples_per_capture, 'h', 16)
+        outfile.create(output_pathname, samples_per_capture, 'h')
     else:
-        outfile.create(output_pathname, samples_per_capture, 'f', 16)
+        outfile.create(output_pathname, samples_per_capture, 'f')
 
     myboard.exchange_keys()
     inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
@@ -85,13 +81,13 @@ if __name__ == "__main__":
         scope.capture(samples_per_capture, pre_trigger_sample_ratio=0.02)
         
         # Run the algorithm
-        myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
+        myboard.process_input_and_check(inputs, output_size)
         
         # Fetch the traces from the oscilloscope buffer, into the traces buffer 
         scope.get_traces(traces)
 
         # Write the traces to the file
-        outfile.write_traces(traces,checked_plaintexts)
+        outfile.write_traces(traces)
 
     print(outfile)
     outfile.close()
