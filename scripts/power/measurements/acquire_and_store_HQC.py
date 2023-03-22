@@ -20,8 +20,8 @@ args = parser.parse_args()
 
 def init_oscilloscope():
     scope = PS5422()
-    scope.set_sampling_channel("Channel_A","DC","500mV")
-    scope.set_trigger_channel("Channel_B","DC","1V")
+    scope.set_sampling_channel("Channel_A","DC","1V")
+    scope.set_trigger_channel("Channel_B","DC","5V")
     scope.config_trigger(Sampling_config.threshold_in_mV, "Rising")
     total_samples = ctypes.c_int32()
     total_samples = scope.set_timebase_nsamples(Sampling_config.sampling_frequency,
@@ -38,10 +38,10 @@ if __name__ == "__main__":
     ciphertext_size = [2209, 2208]
     if args.algorithm == "enc":
         output_size = ciphertext_size
-        samples = 260e6
+        samples = 182e6
     else:
         output_size = plaintext_size
-        samples = 110e6
+        samples = 100e6
 
     output_pathname = args.output
     
@@ -82,7 +82,7 @@ if __name__ == "__main__":
             inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
         print(f" * Capturing batch {batch_id+1}/{Sampling_config.batches_to_capture}")
         # Start capture
-        scope.capture(samples_per_capture)
+        scope.capture(samples_per_capture, pre_trigger_sample_ratio=0.02)
         
         # Run the algorithm
         myboard.process_input_and_check(inputs, output_size, checked_plaintexts)
