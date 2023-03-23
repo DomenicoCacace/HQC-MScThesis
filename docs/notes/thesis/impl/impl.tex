@@ -137,6 +137,29 @@ Due to its large memory footprint and the limited resources of the target platfo
             \end{center}
         \end{example}
 
+    \subsubsection{Encoding}
+        As shown before, in the encoding step the multiplication in the truncated butterflies have as one of the factors the basis
+        vectors $(s_{l+1}(v_{l+m/2}), \cdots, s_{l+l_m}(v_{l+m/2})) = (v_{m/2-1}, \cdots, v_{m/2-l_m})$; for a fixed $m$ these vectors
+        are always the same, so we can rewrite this step as a vector-matrix product, summarized in Algorithm~\ref{alg:encoding}.
+
+    \begin{algorithm2e}[H]
+        \caption{Encode}
+        \label{alg:encoding}
+        \KwIn{$f(X) = f_0 + f_1X_1 + \cdots + f_{n-1}X_{n-1} \in \mathds{F}_2[x]_{<n}$}
+        \KwOut{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1} \in \mathds{F}_{2^m}[x]_{<n^\prime}$}
+        
+        \For{$i \leftarrow 0$ \KwTo $n^\prime-1$}{
+            $r_i \gets \prod_{j=0}^{l_m-1} (v_{m/2 - j - 1})^{j_i}$
+        }
+        \For{$i \leftarrow 0$ \KwTo $n^\prime-1$}{
+            $g_i \gets \sum_{j=0}^{m-1}f_{j\cdot n^\prime+i}\cdot r_i$
+        }
+        \KwRet{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1}$}
+    \end{algorithm2e}
+        Since the matrix coefficient is fixed the encoding step is a linear map, hence we can generate a binary circuit
+        to carry out this step.
+
+
 
 \section{Masking}
     The basic principle of masking to secure a cryptographic algorithm is to split every sensitive value $x$ into $d+1$ \textit{shares},

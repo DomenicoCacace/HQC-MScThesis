@@ -173,6 +173,7 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
     With respect to each element of the basis $v_i$ we can define its subspace polynomial $s_i(x)$, also called vanishing polynomial, as:
     \begin{equation}
         s_i(x) = \prod_{a \in W_i} (x - a)
+        \label{eq:vanishing_polynomial}
     \end{equation}
     Since $\dim(W_i) = i$ we have $\deg(s_i(x)) = |W_i| = 2^i$.
     Such polynomials, as shown in~\cite{cantor1989arithmetical,gao2010additive}, satisfy the following useful properties:
@@ -259,22 +260,7 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
     is schematized in Figure~\ref{fig:butterfly}. Notice that the butterfly performs two field additions but only one field multiplication,
     since $s_k(v_k) = 1$ in Cantor basis.
 
-    \begin{figure}
-    \begin{tikzcd}
-        {p_0(X)} &&& \oplus &&& {h_0(X)} \\
-        \\
-        {p_1(X)} && \bullet && \oplus && {h_1(X)}
-        \arrow[from=1-1, to=1-4]
-        \arrow[from=1-4, to=1-7]
-        \arrow[from=3-1, to=3-3]
-        \arrow["s_k(\alpha)", from=3-3, to=1-4]
-        \arrow[from=3-3, to=3-5]
-        \arrow[from=1-4, to=3-5]
-        \arrow[from=3-5, to=3-7]
-    \end{tikzcd}
-    \caption{Butterfly unit}
-    \label{fig:butterfly}
-    \end{figure}
+    \input{figures/butterfly.tex}
 
     \subsubsection{Frobenius Additive FFT}
     In~\cite{van2017frobenius} the authors showed that, by using the Frobenius map, it is possible
@@ -316,26 +302,28 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         recalling that Algorithm~\ref{alg:basiscvt} depends only on the polynomial and that Algorithm~\ref{alg:lchfft} 
         performs the actual butterfly computations, we only have to adapt the latter to the new set of evaluation points.
         In particular, we pretend to evaluate $f$ at $v_{l+m/2} + W_l$, but \emph{truncate} the first $l_m$ layers of
-        the butterflies, as we do not need the whole evaluation. The first $l_m$ layers of the truncated FFT can also be thought 
-        as an \emph{encoding}: by analyzing the multipliers of the various inputs, it is possible to rewrite this step as 
-        a vector-matrix product, as shown in~\cite{chen2018multiplying} and summarized in Algorithm~\ref{alg:encoding}.
-
-    \begin{algorithm2e}[H]
-        \caption{Encode}
-        \label{alg:encoding}
-        \KwIn{$f(X) = f_0 + f_1X_1 + \cdots + f_{n-1}X_{n-1} \in \mathds{F}_2[x]_{<n}$}
-        \KwOut{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1} \in \mathds{F}_{2^m}[x]_{<n^\prime}$}
+        the butterflies, as we do not need the whole evaluation.
         
-        \For{$i \leftarrow 0$ \KwTo $n^\prime-1$}{
-            $r_i \gets \prod_{j=0}^{l_m-1} (v_{m/2 - j - 1})^{j_i}$
-        }
-        \For{$i \leftarrow 0$ \KwTo $n^\prime-1$}{
-            $g_i \gets \sum_{j=0}^{m-1}f_{j\cdot n^\prime+i}\cdot r_i$
-        }
-        \KwRet{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1}$}
-    \end{algorithm2e}
+        \begin{example}
+            Let's consider the calculation of the first value $f_0$ for $m=4$ and a generic $n$. Starting from $4$ points
+            $(a_{0\cdot n^\prime}, a_{1\cdot n^\prime}, a_{2\cdot n^\prime}, a_{3\cdot n^\prime})$, each from $\mathds{F}_2$,
+            the first $l_m=2$ layers of the butterfly stage are truncated as shown in Figure \ref{fig:trunc-fft}. 
+            The multiplications, denoted by ($\bullet$), produce the output:
+            \begin{equation*}
+                f_0 = a_{0\cdot n^\prime} + s_{l+1}(v_{l+m/2})\cdot a_{1\cdot n^\prime} + s_{l+2}(v_{l+m/2})\cdot a_{2\cdot n^\prime} + s_{l+1}(v_{l+m/2})\cdot s_{l+2}(v_{l+m/2})\cdot a_{3\cdot n^\prime}
+            \end{equation*}
+            Because of the recursive nature of the vanishing polynomial, we can rewrite the result above as:
+            \begin{equation*}
+                f_0 = a_{0\cdot n^\prime} + v_{m/2-1}\cdot a_{1\cdot n^\prime} + v_{m/2-2}\cdot a_{2\cdot n^\prime} + v_{m/2-2}\cdot a_{3\cdot n^\prime} 
+            \end{equation*}
+            where the multipliers are independent of $l$ for a fixed $m$. Since the multipliers are in $\mathds{F}_{2^m}$ the output $f_0$ is in the same field, 
+            thus not requiring the computation of the remaining values.
+        \end{example}
+        \input{figures/trunc-fft.tex}
 
-    After this step, we perform the butterfly computations on the encoded polynomial at $\Sigma$.
+    After this step, we can finally carry out the remaining butterfly computations, evaluating the encoded polynomials at the points in $\Sigma$.
+
+    \input{figures/fft-full.tex}
 
     We can finally summarize the Frobenius Additive FFT algorithm in Algorithm~\ref{alg:fafft}.
 
