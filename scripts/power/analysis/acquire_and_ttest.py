@@ -126,6 +126,12 @@ if __name__ == "__main__":
     outfile.close()
     print("Variable inputs - done")
 
+    traces_mean = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
+                        dtype=np.float )    
+    
+    traces_m2 = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
+                        dtype=np.float )
+
     print("\n Fixed inputs - start")
     # Run the actual capture - fixed inputs
     inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
