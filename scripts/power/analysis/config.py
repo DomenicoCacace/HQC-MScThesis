@@ -9,7 +9,7 @@ class FreeSCA_config:
     default_plotting_enabled = True
     
 class Sampling_config:
-    batches_to_capture = 2
+    batches_to_capture = 50
     captures_per_batch = 1
     threshold_in_mV = 250
     sampling_frequency = 500e6
