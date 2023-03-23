@@ -1,6 +1,39 @@
+At the time of writing there are no publicly available implementations of HQC specifically targeting microcontrollers.
+In this section we describe our implementation of HQC targeting ARM Cortex-M4 microcontrollers, showing the implementative
+details for various multiplication algorithms; moreover, we show the first fully masked implementation of HQC, as a countermeasure
+against power side-channel attacks.
+
 \section{Polynomial multiplication}
 From a computational standpoint, the most expensive operations in HQC are by far the polynomial multiplication.
 In this section we will describe the various methods employed to implement polynomial multiplication in HQC.
+
+    The polynomials $v \in \mathcal{R}$ can be represented in two possible forms:
+    \begin{itemize}
+        \item sparse, as a vector of size $\omega$ coefficients, $\omega = \texttt{wt}(v)$, where each entry corresponds to the degree of a non-zero coefficient.
+        \item dense, as a vector of size $\lceil \frac{n}{\texttt{ws}} \rceil$, where \texttt{ws} is the word size of the target architecture.
+    \end{itemize}
+    With the aforementioned parameters, the objects on which HQC operates require the amounts of memory summarized in Table~\ref{tab:memory}.
+    \begin{table}[ht]\small
+        \centering
+        \caption{Memory consumption (in bytes)}
+        % as wide as the page
+        \begin{tabular}{c|c|c|c|c|c|c}
+            Instance & Message & Secret Key & Public Key  & Ciphertext & Dense Poly & Sparse Poly \\
+            \hline 
+            \texttt{hqc-128} & 16 & 2289 & 2249 & 4481 & 2209 & 300\\
+            \hline
+            \texttt{hqc-192} & 24 & 4562 & 4522 & 9026 & 4482 & 456\\
+            \hline
+            \texttt{hqc-256} & 32 & 7285 & 7245 & 14469 & 7205 & 596\\
+        \end{tabular}
+        \label{tab:memory}
+    \end{table}
+
+Note that the secret key size refers to the memory required to store a $\textit{processable}$ version of if; the
+secret key can also be stored as a 40B seed, which is then used to generate the actual key material.
+
+Due to its large memory footprint and the limited resources of the target platform, we will consider only the \texttt{hqc-128} instance.
+
 
 	% descrivere la moltiplicazione shift & add semplice
 	\subsection{Shift and Add}\label{subsec:shift_add}
@@ -56,6 +89,54 @@ In this section we will describe the various methods employed to implement polyn
 		With this algorith we compute the $i$-th shift of $b(x)$ regardless of the value of $\beta_i$, but we sum it to the result only if
 		$\beta_i = 1$ (the mask at line 6 contains either all zeros or all ones, '$\vee$' and '$\wedge$' correspond to the bitwise OR and AND respectively).
 	% descrivere la moltiplicazione con trasformate
+
+    \subsection{Frobenius Additive FFT}
+        The implementation of the FAFFT is based on the work of Chen \textit{et.al.}~\cite{chen2021optimizing}; for the sake of clarity, 
+        we highlight the core ideas of this implementation.
+        
+        As shown in Algorithm~\ref{alg:fafft}, the FAFFT multiplication is composed of four components (with the relative inverses): basis conversion, encoding, butterflies and
+        pointwise multiplication.
+        Our implementation targets a 32-bit platform, hence we pick $m=32$ for the ease of representation of the operands in memory; 
+        recalling Equation~\ref{eq:frobenius_partition}, the optimal Frobenius partition for our parameters is $\Sigma = v_{27} + W_{11}$. 
+        Since the degree of the operands is fixed, it is possible to optimize these algorithms by unrolling the recursive calls and precomputing the necessary tables.
+
+    \subsubsection{Basis conversion}
+        In Algorithm~\ref{alg:basiscvt}, we show how to convert a polynomial from the canonical to the \emph{novelpoly} basis by recursively
+        dividing the input by the vanishing polynomials $s_i(x)$. Since the division by the vanishing polynomial (of largest degree possible) always produces only $h_0(x)$ and $h_1(x)$, 
+        we can unroll the recursive calls and transform the algorithm in a binary circuit with only \texttt{XOR} operations; moreover, we can remove all the operations on coefficients
+        of the input polynomial that we know are zero.
+        \begin{example}
+            Each step splits the input into quotient and remainder, so we can represent the whole algorithm as a tree, where a node's left child is the remainder and the right child is the quotient:
+            by doing so, at the last step of the recursion we can read the leaves, from left to right, as the coefficients $g_0, g_1, \cdots$ of the polynomial in the novelpoly basis.
+
+            Let's take $f(x) = x^6$ in monomial basis, and let's apply the basis conversion algorithm to it. The greatest $i$ such that $2^{2^i} \leqslant \deg(f(x))$ is $i=2$, so at the various
+            levels of the tree we will divide the inputs by $s_2(x)=x^4+x$ and $s_1(x)=x^2+x$:
+            
+            \begin{center}
+                \begin{forest}
+                    [$x^6$[$x^3$[0[0][0]][$x+1$[1][1]]][$x^2$[$x$[0][1]][1[1][0]]]]
+                \end{forest}
+            \end{center}
+            hence the representation of $x^6$ in novelpoly basis is $X_2(x) + X_3(x) + X_5(x) + X_6(x)$.
+
+            If we repeat the same procedure with all the required monomials (of degree less than 8 for this case) we can obtain the following circuit that maps coefficients of the 
+            canonical basis $f_i$ to coefficients of the novelpoly basis $g_i$, where the dashed line marks the separation between the first two levels of the tree after the root:
+
+            % is there another package to plot this kind of circuit? probably, but atm I don't know it
+            \begin{center}
+                \begin{tikzcd}[column sep=35pt]
+                    \lstick{$f_0$} & \qw       & \qw       & \qw       & \qw\slice{} & \qw         & \qw       & \qw       & \qw       & \qw \rstick{$g_0$} \\
+                    \lstick{$f_1$} & \qw       & \qw       & \targ{}   & \qw         & \qw         & \qw       & \qw       & \targ{}   & \qw \rstick{$g_1$} \\
+                    \lstick{$f_2$} & \qw       & \qw       & \qw       & \targ{}     & \qw         & \targ{}   & \qw       & \ctrl{-1} & \qw \rstick{$g_2$} \\
+                    \lstick{$f_3$} & \targ{}   & \qw       & \qw       & \qw         & \qw         & \ctrl{-1} & \qw       & \qw       & \qw \rstick{$g_3$} \\
+                    \lstick{$f_4$} & \qw       & \targ{}   & \ctrl{-3} & \qw         & \qw         & \qw       & \targ{}   & \qw       & \qw \rstick{$g_4$} \\
+                    \lstick{$f_5$} & \qw       & \qw       & \qw       & \ctrl{-3}   & \targ{}     & \qw       & \ctrl{-1} & \qw       & \qw \rstick{$g_5$} \\
+                    \lstick{$f_6$} & \ctrl{-3} & \qw       & \qw       & \qw         & \ctrl{-1}   & \qw       & \qw       & \qw       & \qw \rstick{$g_6$} \\
+                    \lstick{$f_7$} & \qw       & \ctrl{-3} & \qw       & \qw         & \qw         & \qw       & \qw       & \qw       & \qw \rstick{$g_7$} 
+                \end{tikzcd}
+            \end{center}
+        \end{example}
+
 
 \section{Masking}
     The basic principle of masking to secure a cryptographic algorithm is to split every sensitive value $x$ into $d+1$ \textit{shares},

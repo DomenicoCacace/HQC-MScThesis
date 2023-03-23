@@ -48,6 +48,8 @@
 \usepackage{pgfplotstable}
 \pgfplotsset{compat=1.16}
 \usepackage{quiver}
+\usepackage{forest}
+\usetikzlibrary{quantikz}
 
 \usepackage[endianness=big]{bytefield}
 \usepackage{soul}
@@ -57,7 +59,6 @@
                     tick label style={font=\normalsize}
                     }}
                     
-\usetikzlibrary{}
 \graphicspath{{./Images/}} % Directory of the images
 \usepackage{caption} % Coloured captions
 \usepackage{xcolor} % Coloured captions
@@ -70,8 +71,8 @@
 \usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{bm}
-\usepackage[overload]{empheq} % For braced-style systems of equations.
-\usepackage{fix-cm} % To override original LaTeX restrictions on sizes
+%\usepackage[overload]{empheq} % For braced-style systems of equations.
+%\usepackage{fix-cm} % To override original LaTeX restrictions on sizes
 \usepackage{dsfont} % For double-struck letters
 
 % PACKAGES FOR TABLES
@@ -147,7 +148,7 @@
 
 \usepackage[most]{tcolorbox}
 \newcounter{example}
-\usepackage{xparse}
+%\usepackage{xparse}
 
 \newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
 \newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
@@ -161,7 +162,7 @@
 \colorlet{colexam}{bluepoli!55!black} % Global example color
 \newtcolorbox[use counter=example]{examplebox}{%
     % Example Frame Start
-    empty,% Empty previously set parameters
+    empty,% Empty previously set parameters    
     title={Example: #1},% use \thetcbcounter to access the example counter text
     % Attaching a box requires an overlay
     attach boxed title to top left,

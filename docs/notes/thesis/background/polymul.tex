@@ -217,14 +217,12 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
     \end{equation}
     In other words, $X_k(x)$ is the product of all the $i$-th vanishing polynomials, where the $i$s are the set bits of $k$ in its binary representation.
 
-    To convert a polynomial $f(x) \in \mathds{F}_2[x]_{<n}$ from the monomial to the \emph{novelpoly} basis we can recursively divide $f$ by $s_i$, with $i=2^k$;
-    since the coefficients of $s_i$ are always 1 in Cantor basis, the resulting algorithm requires only field additions and no division.
-
     \begin{algorithm2e}
         \caption{Basis conversion from monomial to \emph{novelpoly}}
         \label{alg:basiscvt}
         \KwIn{$f(x) = f_0 + f_1x+f_2x^2+\cdots + f_{n-1}x^{n-1}  \in \mathds{F}_2[x]_{<n}$}
         \KwOut{$g(X) = g_0 + g_1X_1(x) + g_2X_2(x) + \cdots + g_{n-1}X_{n-1}(x) \in \mathds{F}_2[x]_{<n}$}
+        \KwData{$y = x^{2^i}+x = s_i(x)$}
         \If{$\deg f(x) \leqslant 1$} {
             \KwRet{$g(X) \gets f_0 + f_1X_1$}\;
         }
@@ -298,6 +296,7 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         If we define $l_m = \log_2 m$, $l_n = \log_2 n$ and $l = l_n-l_m$, we can design a set with maximum order as:
         \begin{equation}
             \Sigma := v_{l+m/2}+W_l = \{v_{l+m/2} + x \mid x \in W_l\}
+            \label{eq:frobenius_partition}
         \end{equation}
         with size $n^\prime = |\Sigma| = |W_l| = 2^l = n/m$ and order $m$. By applying the Frobenius map to $\Sigma$ repeatedly, it is possible to prove that
         \begin{equation}
@@ -338,10 +337,10 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
 
     After this step, we perform the butterfly computations on the encoded polynomial at $\Sigma$.
 
-    We can finally summarize the Fast Additive FFT algorithm in Algorithm~\ref{alg:fafft}.
+    We can finally summarize the Frobenius Additive FFT algorithm in Algorithm~\ref{alg:fafft}.
 
     \begin{algorithm2e}[H]
-        \caption{Fast Additive FFT Multiplication}
+        \caption{Frobenius Additive FFT Multiplication}
         \label{alg:fafft}
         \KwIn{$A(x) = a_0 + a_1x + \cdots + a_{n-1}x^{n-1} \in \mathds{F}_2[x]_{<n}$,\newline
             $B(x) = b_0 + b_1x + \cdots + b_{n-1}x^{n-1} \in \mathds{F}_2[x]_{<n}$}

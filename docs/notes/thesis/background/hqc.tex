@@ -92,33 +92,3 @@ HQC has three different parameters sets, for category 1, 3 and 5 respectively. W
         \label{tab:parameters}
 	\end{table}
 
-	\subsection{Memory consumption\\}\label{subsec:memory}
-		From this point we assume that $n$ is a prime number with $ord_n(2) = n-1$, as per the parameters of HQC. We recall that 
-		$\mathcal{R}$ is the ring of polynomials $\mathds{F}_2[X]/\langle X^n+1\rangle$ and denote with $\mathcal{R}_\omega$ the polynomials
-		in $\mathcal{R}$ with $\omega$ non-zero coefficients.
-		
-		The polynomials $v \in \mathcal{R}$ can be represented in two possible forms:
-		\begin{itemize}
-			\item sparse, as a vector of size $\omega$ coefficients, $\omega = \texttt{wt}(v)$, where each entry corresponds to the degree of a non-zero coefficient.
-			\item dense, as a vector of size $\lceil \frac{n}{\texttt{ws}} \rceil$, where \texttt{ws} is the word size of the target architecture.
-		\end{itemize}
-		With the aforementioned parameters, the objects on which HQC operates require the amounts of memory summarized in Table~\ref{tab:memory}.
-		\begin{table}[ht]\small
-			\centering
-			\caption{Memory consumption (in bytes)}
-			\label{tab:memory}
-			% as wide as the page
-			\begin{tabular}{c|c|c|c|c|c|c|c}
-				Instance & Message & Secret Key & Public Key & Shared Secret & Ciphertext & Dense Poly & Sparse Poly \\
-				\hline 
-				\texttt{hqc-128} & 16 & 2289 & 2249 & 64 & 4481 & 2209 & 300\\
-				\hline
-				\texttt{hqc-192} & 24 & 4562 & 4522 & 64 & 9026 & 4482 & 456\\
-				\hline
-				\texttt{hqc-256} & 32 & 7285 & 7245 & 64 & 14469 & 7205 & 596\\
-			\end{tabular}
-		\end{table}
-
-		Note that the secret key size refers to the memory required to store a $\textit{processable}$ version of if; the
-		secret key can also be stored as a 40B seed, which is then used to generate the actual key material.
-
