@@ -103,10 +103,12 @@ if __name__ == "__main__":
         # Fetch the traces from the oscilloscope buffer, into the traces buffer 
         scope.get_traces(traces_in)
 
+        # remove average
+        m = np.average(traces_in, axis=1)
         # update rolling mean and m2
-        delta = traces_in - traces_mean
+        delta = (traces_in - m) - traces_mean
         traces_mean += delta / (batch_id + 1)
-        delta2 = traces_in - traces_mean
+        delta2 = (traces_in - m) - traces_mean
         traces_m2 += delta * delta2
     
 
@@ -143,15 +145,14 @@ if __name__ == "__main__":
         # Fetch the traces from the oscilloscope buffer, into the traces buffer 
         scope.get_traces(traces_in)
 
+        # remove average
+        m = np.average(traces_in, axis=1)
         # update rolling mean and m2
-        delta = traces_in - traces_mean
+        delta = (traces_in - m) - traces_mean
         traces_mean += delta / (batch_id + 1)
-        delta2 = traces_in - traces_mean
+        delta2 = (traces_in - m) - traces_mean
         traces_m2 += delta * delta2
-
-    # subtract the mean from the trace
-    m = np.average(traces_in)
-    traces_in = traces_in - m
+    
     
     # Store traces to file
     outfile = dat_tracereader.dat_tracereader()
