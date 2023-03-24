@@ -109,19 +109,16 @@ if __name__ == "__main__":
         delta2 = traces_in - traces_mean
         traces_m2 += delta * delta2
     
-    # subtract the mean from the trace
-    # m = np.average(traces_in)
-    # traces_in = traces_in - m
 
     # Store traces to file
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_mean", samples_per_capture, 'f')
+    outfile.create(f"{output_pathname}_var_mean", samples_per_capture, 'f')
     outfile.write_traces(traces_mean)
     outfile.close()
 
     traces_m2 = traces_m2 / (num_traces - 1)
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_var", samples_per_capture, 'f')
+    outfile.create(f"{output_pathname}_var_m2", samples_per_capture, 'f')
     outfile.write_traces(traces_m2)
     outfile.close()
     print("Variable inputs - done")
@@ -153,37 +150,37 @@ if __name__ == "__main__":
         traces_m2 += delta * delta2
 
     # subtract the mean from the trace
-    # m = np.average(traces_in)
-    # traces_in = traces_in - m
+    m = np.average(traces_in)
+    traces_in = traces_in - m
     
     # Store traces to file
-    #outfile = dat_tracereader.dat_tracereader()
-    #outfile.create(f"{output_pathname}_fix_mean", samples_per_capture, 'h')
-    #outfile.write_traces(traces_mean)
-    #outfile.close()
+    outfile = dat_tracereader.dat_tracereader()
+    outfile.create(f"{output_pathname}_fix_mean", samples_per_capture, 'h')
+    outfile.write_traces(traces_mean)
+    outfile.close()
 
     traces_m2 = traces_m2 / (num_traces - 1)
-    #outfile = dat_tracereader.dat_tracereader()
-    #outfile.create(f"{output_pathname}_fix_var", samples_per_capture, 'h')
-    #outfile.write_traces(traces_m2)
-    #outfile.close()
+    outfile = dat_tracereader.dat_tracereader()
+    outfile.create(f"{output_pathname}_fix_m2", samples_per_capture, 'h')
+    outfile.write_traces(traces_m2)
+    outfile.close()
     print("Fixed inputs - done")
 
     del traces_in
 
     file = dat_tracereader.dat_tracereader()
-    file.open(f"{output_pathname}_mean")
+    file.open(f"{output_pathname}_var_mean")
     tstat = file.read_traces(1)
     file.close()
-    # num: mean_variable - mean2_fixed
+    # num: mean_m2iable - mean2_fixed
     tstat = tstat - traces_mean
     del traces_mean
 
-    file.open(f"{output_pathname}_var")
+    file.open(f"{output_pathname}_var_m2")
     var2 = file.read_traces(1)
     file.close()
     print("Calculating tstat...")
-    # den: sqrt(var_fixed/n + var_variable/n)
+    # den: sqrt(var_fixed/n + var_m2iable/n)
     tstat = tstat / np.sqrt((var2 + traces_m2)/num_traces)
     del traces_m2
     print("Done!\n")
@@ -201,6 +198,3 @@ if __name__ == "__main__":
 
     # Remove files
     myboard.remove_files()
-    system(f"rm {output_pathname}_var")
-    system(f"rm {output_pathname}_mean")
-
