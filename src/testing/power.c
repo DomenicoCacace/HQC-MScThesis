@@ -67,6 +67,10 @@ int run(int reps) {
         send_ctx(u, v);
         #endif
 
+        memset(m, 0, VEC_K_SIZE_BYTES);
+        memset(u, 0, VEC_N_SIZE_BYTES);
+        memset(v, 0, VEC_N1N2_SIZE_BYTES);
+
         usart_send_str("DONE\n", 5);
     }
     #endif
@@ -87,6 +91,10 @@ int run(int reps) {
         #ifdef DEBUG
         send_ptx(m);
         #endif
+
+        memset(m, 0, VEC_K_SIZE_BYTES);
+        memset(u, 0, VEC_N_SIZE_BYTES);
+        memset(v, 0, VEC_N1N2_SIZE_BYTES);
 
         usart_send_str("DONE\n", 5);
     }
@@ -144,6 +152,11 @@ void encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned 
     shares_add(&tmp1, &tmp1, &tmp2);
     shares_n_collapse(tmp1.s0, &tmp1, e);
     vect_resize(v, PARAM_N1N2, tmp1.s0, PARAM_N);
+
+    // Reset data
+    memset(h, 0, VEC_N_SIZE_BYTES);
+    memset(s, 0, VEC_N_SIZE_BYTES);
+    memset(e, 0, VEC_N_SIZE_BYTES);
 }
 
 void decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
@@ -182,6 +195,11 @@ void decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) 
     //shares_n_init(&tmp1);
     code_decode(m, _v);
     shares_collapse_msg(m, &_m, m);
+
+    // reset values to zero
+    memset(x, 0, VEC_N_SIZE_BYTES);
+    memset(pk, 0, PUBLIC_KEY_BYTES);
+    memset(_v, 0, VEC_N_SIZE_BYTES);
 }
 
 void recv_key(unsigned char *pk, unsigned char *sk) {
