@@ -312,6 +312,7 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
             \begin{equation*}
                 f_0 = a_{0\cdot n^\prime} + s_{l+1}(v_{l+m/2})\cdot a_{1\cdot n^\prime} + s_{l+2}(v_{l+m/2})\cdot a_{2\cdot n^\prime} + s_{l+1}(v_{l+m/2})\cdot s_{l+2}(v_{l+m/2})\cdot a_{3\cdot n^\prime}
             \end{equation*}
+            \input{figures/trunc-fft.tex}
             Because of the recursive nature of the vanishing polynomial, we can rewrite the result above as:
             \begin{equation*}
                 f_0 = a_{0\cdot n^\prime} + v_{m/2-1}\cdot a_{1\cdot n^\prime} + v_{m/2-2}\cdot a_{2\cdot n^\prime} + v_{m/2-2}\cdot a_{3\cdot n^\prime} 
@@ -319,7 +320,6 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
             where the multipliers are independent of $l$ for a fixed $m$. Since the multipliers are in $\mathds{F}_{2^m}$ the output $f_0$ is in the same field, 
             thus not requiring the computation of the remaining values.
         \end{example}
-        \input{figures/trunc-fft.tex}
 
     After this step, we can finally carry out the remaining butterfly computations, evaluating the encoded polynomials at the points in $\Sigma$.
 

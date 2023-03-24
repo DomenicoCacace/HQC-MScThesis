@@ -111,30 +111,21 @@ Due to its large memory footprint and the limited resources of the target platfo
 
             Let's take $f(x) = x^6$ in monomial basis, and let's apply the basis conversion algorithm to it. The greatest $i$ such that $2^{2^i} \leqslant \deg(f(x))$ is $i=2$, so at the various
             levels of the tree we will divide the inputs by $s_2(x)=x^4+x$ and $s_1(x)=x^2+x$:
-            
-            \begin{center}
-                \begin{forest}
-                    [$x^6$[$x^3$[0[0][0]][$x+1$[1][1]]][$x^2$[$x$[0][1]][1[1][0]]]]
-                \end{forest}
-            \end{center}
+            \begin{figure}[H]
+                \begin{center}
+                    \begin{forest}
+                        [$x^6$[$x^3$[0[0][0]][$x+1$[1][1]]][$x^2$[$x$[0][1]][1[1][0]]]]
+                    \end{forest}
+                \end{center}
+                \caption{Expansion of the basis conversion algorithm for $f(x) = x^6$}
+                \label{fig:tree}
+            \end{figure}
             hence the representation of $x^6$ in novelpoly basis is $X_2(x) + X_3(x) + X_5(x) + X_6(x)$.
 
             If we repeat the same procedure with all the required monomials (of degree less than 8 for this case) we can obtain the following circuit that maps coefficients of the 
             canonical basis $f_i$ to coefficients of the novelpoly basis $g_i$, where the dashed line marks the separation between the first two levels of the tree after the root:
 
-            % is there another package to plot this kind of circuit? probably, but atm I don't know it
-            \begin{center}
-                \begin{tikzcd}[column sep=35pt]
-                    \lstick{$f_0$} & \qw       & \qw       & \qw       & \qw\slice{} & \qw         & \qw       & \qw       & \qw       & \qw \rstick{$g_0$} \\
-                    \lstick{$f_1$} & \qw       & \qw       & \targ{}   & \qw         & \qw         & \qw       & \qw       & \targ{}   & \qw \rstick{$g_1$} \\
-                    \lstick{$f_2$} & \qw       & \qw       & \qw       & \targ{}     & \qw         & \targ{}   & \qw       & \ctrl{-1} & \qw \rstick{$g_2$} \\
-                    \lstick{$f_3$} & \targ{}   & \qw       & \qw       & \qw         & \qw         & \ctrl{-1} & \qw       & \qw       & \qw \rstick{$g_3$} \\
-                    \lstick{$f_4$} & \qw       & \targ{}   & \ctrl{-3} & \qw         & \qw         & \qw       & \targ{}   & \qw       & \qw \rstick{$g_4$} \\
-                    \lstick{$f_5$} & \qw       & \qw       & \qw       & \ctrl{-3}   & \targ{}     & \qw       & \ctrl{-1} & \qw       & \qw \rstick{$g_5$} \\
-                    \lstick{$f_6$} & \ctrl{-3} & \qw       & \qw       & \qw         & \ctrl{-1}   & \qw       & \qw       & \qw       & \qw \rstick{$g_6$} \\
-                    \lstick{$f_7$} & \qw       & \ctrl{-3} & \qw       & \qw         & \qw         & \qw       & \qw       & \qw       & \qw \rstick{$g_7$} 
-                \end{tikzcd}
-            \end{center}
+            \input{figures/basisconv.tex}
         \end{example}
 
     \subsubsection{Encoding}
