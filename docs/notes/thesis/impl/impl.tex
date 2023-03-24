@@ -100,6 +100,12 @@ Due to its large memory footprint and the limited resources of the target platfo
         recalling Equation~\ref{eq:frobenius_partition}, the optimal Frobenius partition for our parameters is $\Sigma = v_{27} + W_{11}$. 
         Since the degree of the operands is fixed, it is possible to optimize these algorithms by unrolling the recursive calls and precomputing the necessary tables.
 
+    \subsubsection{Pointwise multiplication}
+        To carry out the 2048 pointwise multiplications in $\mathds{F}_{2^{32}}$ the field elements are represented in a bitsliced format,
+        where each element is stored in a memory word. Given  $a$ and $b$ elements in $\mathds{F}_{2^{32}}$, we can compute their product
+        by splitting them as $a_0 + a_1\cdot x^{16}$ and $b_0 + b_1\cdot x^{16}$, and computing the product using the Karatsuba multiplication
+        algorithm in $\mathds{F}_{2^{16}}$.
+
     \subsubsection{Basis conversion}
         In Algorithm~\ref{alg:basiscvt}, we show how to convert a polynomial from the canonical to the \emph{novelpoly} basis by recursively
         dividing the input by the vanishing polynomials $s_i(x)$. Since the division by the vanishing polynomial (of largest degree possible) always produces only $h_0(x)$ and $h_1(x)$, 
@@ -129,7 +135,7 @@ Due to its large memory footprint and the limited resources of the target platfo
         \end{example}
 
     \subsubsection{Encoding}
-        As shown before, in the encoding step the multiplication in the truncated butterflies have as one of the factors the basis
+        As shown previously, in the encoding step the multiplication in the truncated butterflies have as one of the factors the basis
         vectors $(s_{l+1}(v_{l+m/2}), \cdots, s_{l+l_m}(v_{l+m/2})) = (v_{m/2-1}, \cdots, v_{m/2-l_m})$; for a fixed $m$ these vectors
         are always the same, so we can rewrite this step as a vector-matrix product, summarized in Algorithm~\ref{alg:encoding}.
 
@@ -150,7 +156,15 @@ Due to its large memory footprint and the limited resources of the target platfo
         Since the matrix coefficient is fixed the encoding step is a linear map, hence we can generate a binary circuit
         to carry out this step.
 
-
+    \subsubsection{Butterflies}
+        The multiplication step in the $i$-th layer of the butterflies is always of the form $\beta \cdot p_1(s_1(\beta))$, with
+        $\beta \in v_{l+m/2-i}+W_{l-i}$, so it is possible to precompute and store the values of $\beta$ in a static table.
+        Moreover, by noticing that $\beta = v + w$ with $w \in W_{l-i}$, we can rewrite a generic multiplication $\beta \cdot \gamma$ as
+        $\gamma \cdot v + \gamma \cdot w$: the multiplication by $v$ is performed as a linear map in the same fashion as the encoding step,
+        while the multiplication by $w$ is performed by carrying out $32/2^{\lceil \log_2(l-i)\rceil}$ multiplications in the subfield of
+        size $2^{2^{\lceil \log_2 (l-i) \rceil}}$, as $w$ is an element of such subfield.
+        This approach, as shown empirically in~\cite{chen2021optimizing}, takes the least amount of cycles among the possible approaches.
+        
 
 \section{Masking}
     The basic principle of masking to secure a cryptographic algorithm is to split every sensitive value $x$ into $d+1$ \textit{shares},

@@ -337,10 +337,10 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         $\bar{B}(X) \gets \textsc{BasisCvt}(B(x)) \in \mathds{F}_2[x]_{<n}$\;
         $\tilde{A}(X) \gets \textsc{Encode}(\bar{A}(X)) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
         $\tilde{B}(X) \gets \textsc{Encode}(\bar{B}(X)) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
-        $[\hat{a}_1, \cdots, \hat{a}_{n^\prime}] \gets \textsc{FFT}(\tilde{A}(X), \Sigma) \in \mathds{F}_{2^m}^{n^\prime}$\;
-        $[\hat{b}_1, \cdots, \hat{b}_{n^\prime}] \gets \textsc{FFT}(\tilde{B}(X), \Sigma) \in \mathds{F}_{2^m}^{n^\prime}$\;
+        $[\hat{a}_1, \cdots, \hat{a}_{n^\prime}] \gets \textsc{Butterflies}(\tilde{A}(X), \Sigma) \in \mathds{F}_{2^m}^{n^\prime}$\;
+        $[\hat{b}_1, \cdots, \hat{b}_{n^\prime}] \gets \textsc{Butterflies}(\tilde{B}(X), \Sigma) \in \mathds{F}_{2^m}^{n^\prime}$\;
         $\hat{C} = [\hat{c}_1, \cdots, \hat{c}_{n^\prime}] \gets [\hat{a}_1\cdot \hat{b}_1, \cdots, \hat{a}_{n^\prime}\cdot \hat{b}_{n^\prime}]$\;
-        $\tilde{C}(X) \gets \textsc{FFT}^{-1}(\hat{C}, \Sigma) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
+        $\tilde{C}(X) \gets \textsc{Butterflies}^{-1}(\hat{C}, \Sigma) \in \mathds{F}_{2^m}[x]_{<n^\prime}$\;
         $\bar{C}(X) \gets \textsc{Decode}(\tilde{C}(X)) \in \mathds{F}_2[x]_{<n}$\;
         $C(x) \gets \textsc{BasisCvt}^{-1}(\bar{C}(X)) \in \mathds{F}_2[x]_{<n}$\;
         \KwRet{$C(x)$}
