@@ -167,14 +167,6 @@ Due to its large memory footprint and the limited resources of the target platfo
         
 
 \section{Masking}
-    The basic principle of masking to secure a cryptographic algorithm is to split every sensitive value $x$ into $d+1$ \textit{shares},
-    in such a way that the following relation holds:
-    \begin{equation}
-        x = x_0 \oplus x_1 \oplus \cdots \oplus x_d
-    \end{equation}
-    The shares $x_1, \cdots, x_d$ are called \textit{masks} and are randomly sampled, while the secret $x_0$ is processed in 
-    such a way that the relation above holds. The goal of masking is to make the sensitive value indistinguishable from
-    a random value, so that the observation of a side channel does not reveal any sensitive information.
 
     Unlike many other cryptosystems, HQC is \textit{linear} in all its operations, making its primitives to be easily masked entirely.
     In the next algorithms we will use the following notation and conventions:
