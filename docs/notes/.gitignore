@@ -6,6 +6,7 @@
 *.fdb_latexmk
 *.fls
 *.log
+*.loa
 *.lof
 *.lot
 *.out

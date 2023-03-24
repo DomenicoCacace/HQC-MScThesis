@@ -134,7 +134,7 @@ Due to its large memory footprint and the limited resources of the target platfo
         are always the same, so we can rewrite this step as a vector-matrix product, summarized in Algorithm~\ref{alg:encoding}.
 
     \begin{algorithm2e}[H]
-        \caption{Encode}
+        \caption{Encoding, as a vector-matrix product}
         \label{alg:encoding}
         \KwIn{$f(X) = f_0 + f_1X_1 + \cdots + f_{n-1}X_{n-1} \in \mathds{F}_2[x]_{<n}$}
         \KwOut{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1} \in \mathds{F}_{2^m}[x]_{<n^\prime}$}
@@ -178,7 +178,7 @@ Due to its large memory footprint and the limited resources of the target platfo
     by $h$: the multiplication between a polynomial and a share-split is performed by multiplying each share by $h$, so the result is
     itself share-split.\\
     \begin{algorithm2e}[H]
-        \caption{Keygen}
+        \caption{Keygen, masked version}
         \KwIn{none}
         \KwOut{$\kpub \in \mathcal{R}\times \mathcal{R}; \kpri \in \mathcal{R} \times \mathcal{R}$}
         $h \sample \mathcal{R}$\;
@@ -194,7 +194,7 @@ Due to its large memory footprint and the limited resources of the target platfo
     $e,r_1$ and $r_2$, as their leakage would allow an attacker to remove the \textit{excess} errors and decode $m$ from the ciphertext.
     
     \begin{algorithm2e}[H]
-        \caption{Encrypt($\kpub$, $m$)}
+        \caption{Encrypt($\kpub$, $m$), masked version}
         \KwData{$\mathbf{G}$: a $\mathds{F}_2^{k \times n}$ matrix generating an efficiently correctable code}
         \KwIn{$\kpub$, $m\in \{0,1\}^k$}
         \KwOut{$c = (u, v) \in \mathcal{R} \times \mathcal{R}$}
@@ -217,7 +217,7 @@ Due to its large memory footprint and the limited resources of the target platfo
     After the decoding we can collapse $\ssplit{\bar{m}}$ and the decoded message: since the code is linear, the final result
     is the original message, as if we had performed the decoding on $v-uy$ directly.
     \begin{algorithm2e}
-        \caption{Decrypt($\kpri$, $c$)}
+        \caption{Decrypt($\kpri$, $c$), masked version}
         \KwData{$\mathbf{G}$: a $\mathds{F}_2^{k \times n}$ matrix generating an efficiently correctable code}
         \KwIn{$\kpri=(x,y) \in \mathcal{R}_\omega \times \mathcal{R}_\omega$, $c = (u,v) \in \mathcal{R} \times \mathcal{R}$}
         \KwOut{$m\in \{0,1\}^k$}
