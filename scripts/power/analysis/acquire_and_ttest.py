@@ -72,7 +72,7 @@ if __name__ == "__main__":
                         dtype=np.float )
 
     traces_m2 = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
-                        dtype=np.float )
+                        dtype=np.double )
     
     # Initialize board
     board_serial = "303637324646353335373532383737"
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     traces_m2 = traces_m2 / (num_traces - 1)
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_var_m2", samples_per_capture, 'f')
+    outfile.create(f"{output_pathname}_var_m2", samples_per_capture, 'd')
     outfile.write_traces(traces_m2)
     outfile.close()
     print("Variable inputs - done")
@@ -129,7 +129,7 @@ if __name__ == "__main__":
                         dtype=np.float )    
     
     traces_m2 = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
-                        dtype=np.float )
+                        dtype=np.double )
 
     print("\n Fixed inputs - start")
     # Run the actual capture - fixed inputs
@@ -156,13 +156,13 @@ if __name__ == "__main__":
     
     # Store traces to file
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_fix_mean", samples_per_capture, 'h')
+    outfile.create(f"{output_pathname}_fix_mean", samples_per_capture, 'f')
     outfile.write_traces(traces_mean)
     outfile.close()
 
     traces_m2 = traces_m2 / (num_traces - 1)
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_fix_m2", samples_per_capture, 'h')
+    outfile.create(f"{output_pathname}_fix_m2", samples_per_capture, 'd')
     outfile.write_traces(traces_m2)
     outfile.close()
     print("Fixed inputs - done")
