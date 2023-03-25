@@ -1,32 +1,27 @@
 We chose the STM32L476RG Nucleo board as our benchmarking platform, featuring 96KB of RAM, 1MB of Flash memory,
 a 32-bit ARM Cortex M4 which can be clocked up to 80MHz and a true random number generator.
 Due to its large memory footprint and the limited amount of memory available on our target platform,
-we take into consideration only the \texttt{hqc-128} instance.
+we take into consideration only the \texttt{hqc-128} instance. 
+We use \texttt{libopencm3} (1.0.0) as firmware library and compile the project with \texttt{gcc-arm-none-eabi} (7.2.1)
+using the \texttt{-O3} optimization flag. The board is clocked at a range of frequencies between 16 and 80 MHz to
+evaluate the impact of the memory wait states, as shown in Table~\ref{tab:waitstates}.
 
-We use \texttt{libopencm3} (1.0.0) as firmware library and compile the project with\newline \texttt{gcc-arm-none-eabi} (7.2.1)
-using the \texttt{-O3} optimization flag. The board is clocked at a range of frequencies between 16 and 80 MHz, in order to
-evaluate the impact of the memory wait states; the frequencies and corresponding amounts of wait cycles are reported in
-the table below:
 \begin{table}[ht]
     \centering
-    \label{tab:waitstates}
-    \begin{tabular}{|c|c|c|c|c|c|}
-        \hline
+    \begin{tabular}{c|c|c|c|c|c}
         Frequency (MHz) & 16 & 32 & 48 & 64 & 80 \\
         \hline 
         Wait States & 0 & 1 & 2 & 3 & 4  \\
-        \hline    
     \end{tabular}
+    \caption{Wait states and corresponding frequencies}
+    \label{tab:waitstates}
 \end{table}
 
-\subsection{Execution time}
-\input{figures/arm_timing.tex}  % contains data for the plots
+For completeness, we run the same experiments on
+a x86 machine, equipped with an AMD Ryzen 25000U, 8GB of DDR4 DRAM and running ArchLinux 6.2; the executables are compiled with
+\texttt{gcc} (12.2.1) using the \texttt{-O3} optimization flag and, for AVX implementations, the \texttt{-march=native} flag. 
 
-To measure the execution times we use the Data Watchpoint and Trace Cycle Count Register (\texttt{DWT\_CYCCNT}),
-a 32-bit register that counts the number of clock cycles elapsed since its last reset with a resolution
-of one clock cycle. To avoid overflows, we reset the register after all the measurements of a single round
-are completed; to reduce uncertainty, we average the measurements taken over 1000 rounds.
-\subsection{Welch's t-test}
+\subsubsection{Welch's t-test}
 To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{schneider2015leakage},
 based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
 populations differ; the t-test statistic is computed as follows:
@@ -37,6 +32,74 @@ where $\mu, s^2$ and $n$ are the mean, variance and number of samples of the two
 Small $t$ values give evidence to accept the null hypothesis that the two populations have the same mean; 
 usually, for the sake of simplicity, a threshold of $|t| > 4.5$ is defined to reject the null hypothesis with
 a confidence level of $99,999\%$.\\
-In our case, we take the populations to be the execution times of an algorithm, where in the first we draw
-new inputs randomly each time, while in the second we use the same inputs for all the rounds; each population
-is composed of 1000 samples.\\
+
+
+\section{Execution time}
+\input{figures/arm_timing.tex}  % contains data for the plots
+\input{figures/x86_timing.tex}  % contains data for the plots
+
+To measure the execution times on ARM we use the Data Watchpoint and Trace Cycle Count Register (\texttt{DWT\_CYCCNT}),
+a 32-bit register that counts the number of clock cycles elapsed since its last reset with a resolution
+of one clock cycle; to avoid overflows, we reset the register after all the measurements of a single round.
+As for the x86 machine, we use the \texttt{rdtsc} instruction, that returns the current value of the processor's time stamp counter;
+moreover, to get accurate measurements, we lock the frequency of all cores to 2.0GHz using \texttt{cpupower} and disable
+the Turbo Boost feature.\\
+In both cases, in order to reduce uncertainty, we run the experiments 1000 times and average the results.
+
+As already mentioned, the multiplication operation is the most time-consuming operation for all primitives, hence the choice of
+the multiplication algorithm is crucial to achieve good performance. The execution times of the various multiplication algorithms
+are shown in Figure~\ref{fig:multTiming} and in Table~\ref{tab:multTiming}.
+
+\begin{figure}[H]
+    \subfloat{
+        \ARMtimingplotmult{\armMultTiming}
+    }
+    \subfloat{
+        \xtimingplotmult{\xMultTiming}
+    }
+    \caption{Multiplication execution times on ARM (left) and x86 (right)}
+    \label{fig:multTiming}
+\end{figure}
+As expected, the fastest multiplication algorithm on ARM (after the shift and add) is the one using the Frobenius FFT, followed by the
+constant-time version of shift and add. In the graph we can also see how the execution time for the Frobenius FFT is the only one
+that is significantly impacted by the amount of memory wait states: as explained in Section~\ref{subsec:fafft} this algorithm heavily
+relies on precomputed tables, requiring a higher amount of memory accesses and requiring up to 92\% more clock cycles; finally, 
+we can see that the Karatsuba algorithm takes the longest amount of time.
+Things change dramatically on x86: on this architecture we can take advantage of AVX instructions, which allow us to carry out
+operations with 256-bit vectors in a single clock cycle: this benefits the Karatsuba algorithm, which is the fastest one by a large margin,
+while the Frobenius FFT becomes the slowest one.\\
+
+These results are clearly reflected in the execution times of both the PKE and KEM schemes, as shown in Figures~\ref{fig:encdecTiming},~\ref{fig:encapsdecapsTiming}.
+and in Tables \ref{tab:pkeTiming}, \ref{tab:kemTiming}.
+
+\begin{figure}[H]
+    \subfloat{
+        \ARMtimingplot{\armEncTiming}
+    }
+    \subfloat{
+        \ARMtimingplot{\armDecTiming}
+    }
+    \caption{Encryption/decryption execution times on ARM}
+    \label{fig:encdecTiming}
+\end{figure}
+\begin{figure}[H]
+    \subfloat{
+        \ARMtimingplot{\armEncapsTiming}
+    }
+    \subfloat{
+        \ARMtimingplot{\armDecapsTiming}
+    }
+    \caption{Key encapsulation/decapsulation execution times on ARM}
+    \label{fig:encapsdecapsTiming}
+\end{figure}
+
+
+\section{Power measurements}
+Our power measuring setup employs the PicoScope 5244D oscilloscope sampling at 500MS/s, two Agilent INA-10386 amplifiers in a cascade
+configuration achieving a 52dB gain and a H-probe, placed on top of the STM32L476RG package. The EM traces are recorded and analyzed on a 
+computer equipped with an AMD A8-6600K CPU, 16GB of DDR3 DRAM running Debian 10. To ensure that the encryption/decryption process runs
+correctly, we generate the inputs on the same machine, send them to the target via the USART1 interface and compare the outputs with the
+expected ones; the executables to generate the inputs and verify the outputs are compiled with \texttt{gcc} (9.3.0) on the same machine,
+using the \texttt{-O3} optimization flag.\\
+
+

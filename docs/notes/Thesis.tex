@@ -60,6 +60,7 @@
                     
 \graphicspath{{./Images/}} % Directory of the images
 \usepackage{caption} % Coloured captions
+\usepackage{subcaption}
 \usepackage{xcolor} % Coloured captions
 \usepackage{amsthm,thmtools,xcolor} % Coloured "Theorem"
 \usepackage{float}
@@ -293,8 +294,8 @@ Abstract IT
 \cleardoublepage
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
 \appendix
-\chapter{Appendix A}
-Appendix
+\input{thesis/appendix.tex}
+
 
 % LIST OF FIGURES
 \listoffigures
