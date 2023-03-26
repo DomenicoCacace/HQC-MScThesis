@@ -3,41 +3,19 @@
         \centering
         \begin{axis}[
             height=70mm, width=90mm,
-        %
             bar width=0.2,
-            ybar=1pt,
+            ybar=0pt,
             enlarge x limits={abs=0.5},
-            %ymin=0,
-            %ymax=170000,
-            %ytick distance=10000,
             ymode=log,
-            %yticklabel style={font=\small},
-            %yticklabel=\pgfmathprintnumber{\tick},
-            %ylabel={Execution time (kcycles)},
-            % no ticks on y axis
             ytick={},
             yticklabels={},
-            %xlabel={Wait States},
             xtick=data,
             xticklabels from table={#1}{Label},
-        %
-            %nodes near coords,
-            %nodes near coords style={font=\tiny,
-            %                        /pgf/number format/.cd,
-            %                                    precision=0,
-            %                                    zerofill,
-            %                        },
-            legend style={legend pos=north east,
-                        cells={anchor=west},
-                        font=\footnotesize,
-                        }
         ]
-        \addplot table [x expr=\coordindex,y=reference (R3)]{#1};
-        %\addplot table [x expr=\coordindex,y=sparsemul (R3)]{#1};
-        \addplot table [x expr=\coordindex,y=reference (R4)]{#1};
-        \addplot table [x expr=\coordindex,y=sparsemul (R4)]{#1};
-        \addplot table [x expr=\coordindex,y=fastmul]{#1};
-        %\legend{reference (R3), sparsemul (R3), sparsemul (R4), fastmul}    
+        \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[fill=orange!30] table [x expr=\coordindex, y=sparsemul (R4)]{#1};
+        \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1}; 
         \end{axis}
     \end{tikzpicture}
 }
@@ -47,26 +25,23 @@
         \centering
         \begin{axis}[
             height=70mm, width=127mm,
-        %
             bar width=0.15,
-            ybar=2pt,
+            ybar=0pt,
             enlarge x limits={abs=0.5},
             ymode=log,
             yticklabel style={font=\small},
             yticklabel=\pgfmathprintnumber{\tick},
-            %ylabel={Execution time (kcycles)},
             xlabel={Wait States},
             xtick=data,
-        %
             legend style={legend pos=north east,
                         cells={anchor=west},
                         font=\footnotesize,
                         }
         ]
-        \addplot table [x expr=\coordindex,y=reference (R3)]{#1};
-        \addplot table [x expr=\coordindex,y=reference (R4)]{#1};
-        \addplot table [x expr=\coordindex,y=sparsemul]{#1};
-        \addplot table [x expr=\coordindex,y=fastmul]{#1};
+        \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[fill=orange!30] table [x expr=\coordindex, y=sparsemul]{#1};
+        \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
     \end{tikzpicture}
 }
@@ -76,23 +51,36 @@
         \centering
         \begin{axis}[
             height=70mm, width=40mm,
-        %
             bar width=0.15,
-            ybar=2pt,
+            ybar=0pt,
             enlarge x limits={abs=0.5},
             ymode=log,
             yticklabel style={font=\small},
             yticklabel pos = right,
             yticklabel=\pgfmathprintnumber{\tick},
-            %ylabel={Execution time},
             xlabel={\phantom{X}},
             xtick=data,
             xticklabels={\phantom{X}},
-        ]
-        \addplot table [x expr=\coordindex, y=reference (R3)]{#1};
-        \addplot table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot table [x expr=\coordindex, y=sparsemul]{#1};
-        \addplot table [x expr=\coordindex, y=fastmul]{#1};
+        ]        
+        \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[fill=orange!30] table [x expr=\coordindex, y=sparsemul]{#1};
+        \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
+    \end{tikzpicture}
+}
+
+\newcommand{\timingLegend}{
+    \begin{tikzpicture}
+        % draw a rectangle around all
+        \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (12.5, 0.4);
+        \node [draw, fill=blue!30, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+        \node [right=0.01cm of box1] (text1) {\small Shift\&Add};
+        \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+        \node [right=0.01cm of box2] (text2) {\small Karatsuba};
+        \node [draw, fill=orange!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+        \node [right=0.01cm of box3] (text3) {\small CT Shift\&Add};
+        \node [draw, fill=green!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text3] (box4) {};
+        \node [right=0.01cm of box4] (text4) {\small Frobenius FFT};
     \end{tikzpicture}
 }
