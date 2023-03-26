@@ -73,13 +73,13 @@
 \newcommand{\timingLegend}{
     \begin{tikzpicture}
         % draw a rectangle around all
-        \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (12.5, 0.4);
+        \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (12.7, 0.4);
         \node [draw, fill=blue!30, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
         \node [right=0.01cm of box1] (text1) {\small Shift\&Add};
         \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
-        \node [right=0.01cm of box2] (text2) {\small Karatsuba};
+        \node [right=0.01cm of box2] (text2) {\small Karatsuba$^{\dagger}$};
         \node [draw, fill=orange!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
-        \node [right=0.01cm of box3] (text3) {\small CT Shift\&Add};
+        \node [right=0.01cm of box3] (text3) {\small CT Shift\&Add$^{\dagger}$};
         \node [draw, fill=green!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text3] (box4) {};
         \node [right=0.01cm of box4] (text4) {\small Frobenius FFT};
     \end{tikzpicture}

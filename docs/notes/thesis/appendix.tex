@@ -14,13 +14,15 @@
         \hline
         x86 & 39  &  34  &  246  &  530
     \end{tabular}
-    \caption{Execution times in kcycles for multiplication on ARM (above) and x86 (below)}
+    \caption{Execution times in kcycles for multiplication}
     \label{tab:multTiming}
 \end{table}
 
 \begin{table}[H]
+    \centering
     \begin{tabular}{c|c|c||c|c|c}
-        WS & \texttt{reference} (R3) & \texttt{sparsemul} (R3) & \texttt{reference} (R4) & \texttt{sparsemul} (R4) & \texttt{fastmul} \\
+        & \multicolumn{2}{c||}{Round 3} & \multicolumn{3}{c}{Round 4} \\
+        WS & \texttt{reference} & \texttt{sparsemul} & \texttt{reference} & \texttt{sparsemul} & \texttt{fastmul} \\
         \hline
         0 & 2726 & 18920 & 136262 & 18965 & 8834 \\
         1 & 2748 & 18937 & 138227 & 18991 & 10107 \\
@@ -44,8 +46,10 @@
 \end{table}
 
 \begin{table}[H]
+    \centering
     \begin{tabular}{c|c|c||c|c|c}
-        WS & \texttt{reference} (R3) & \texttt{sparsemul} (R3) & \texttt{reference} (R4) & \texttt{sparsemul} (R4) & \texttt{fastmul} \\
+        & \multicolumn{2}{c||}{Round 3} & \multicolumn{3}{c}{Round 4} \\
+        WS & \texttt{reference} & \texttt{sparsemul} & \texttt{reference} & \texttt{sparsemul} & \texttt{fastmul} \\
         \hline
         0 & 3913 & 20105 & 137873 & 20571 & 10441 \\
         1 & 3958 & 20148 & 139835 & 20643 & 11763 \\
