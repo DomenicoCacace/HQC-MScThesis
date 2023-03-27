@@ -51,7 +51,7 @@ int run(int reps) {
     recv_key(pk, sk);
 
     #ifdef ENCRYPT
-    for(int i = 0; i < reps; i++) {
+    while(1) {
         recv_ptx(m);
         randombytes(theta, SHAKE256_512_BYTES);
 
@@ -76,7 +76,7 @@ int run(int reps) {
     #endif
 
     #ifdef DECRYPT
-        for(int i = 0; i < reps; i++) {
+        while(1) {
         recv_ctx(u, v);
 
         DELAY(DELAY_AMT);   // 250 us
