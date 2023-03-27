@@ -4,7 +4,7 @@ Regardless of the means of the implementation, the electronic devices that run t
 \textit{leak} information about the internal state of the device, potentially exposing secrets.
 But how does a device leak information?
 
-A \textit{side channel} is some observable aspect of a cryptosystem that reveals information held within that system~\cite{standaert2010introduction};
+A \textit{side channel} is some observable aspect of a cryptosystem that reveals information held within that system~\cite{kocher1996timing, standaert2010introduction};
 example of side channels can be the execution time of an algorithm, the power consumption of a device or the electromagnetic
 radiation emitted while running some operations.\\
 In this chapter we will describe the most common side channel attacks, how they can be used to retrieve secret information and
@@ -97,7 +97,7 @@ of a digital device is affected by the operations it performs, and thus can be u
     Both methods have their pros and cons: the first one is more accurate, but requires to phisically install the shunt resistor on the device;
     the second one is non-intrusive, but the measurements are tipically noisy due to external interferences.
 
-    Regardless of the source of a power trace, there are several possibilities to carry out an attack, such as:
+    Regardless of the source of a power trace, there are several possibilities to carry out an attack~\cite{randolph2020power}, such as:
     \begin{itemize}
         \item Simple Power Analysis: observe the power consumption over a single trace
         \item Differential Power Analysis: analyze multiple executions over the same algorithm with different inputs to detect small input-dependent differences

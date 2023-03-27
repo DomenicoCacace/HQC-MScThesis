@@ -130,7 +130,7 @@
 			\\
 			Advisor: {\advisor}
 			\\
-			Co-advisors: {\coadvisor}
+			Co-advisor: {\coadvisor}
 			\\
 			Academic Year: {\academicyear}
 			}

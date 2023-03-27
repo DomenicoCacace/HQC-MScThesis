@@ -47,7 +47,7 @@ The \textsf{PKE} scheme has been proven to be IND-CPA secure in~\cite{aguilar201
 In practice, public key encryption is not used to encrypt large amounts of data because of its high exectution time compared to symmetric encryption.
 For this reason, we use public key encryption to exchange a shared secret key, which is then used to encrypt the actual data: the practice
 of using a public key encryption scheme to exchange a shared secret key is referred to as key encapsulation mechanism (KEM).\\
-The Fujisaki-Okamoto transformation~\cite{fujisaki2013secure} is a technique that allows to transform a \textit{weak} IND-CPA encryption scheme
+The Fujisaki-Okamoto and HHK transformations~\cite{fujisaki2013secure, hofheinz2017modular} are techniques that allows to transform a \textit{weak} IND-CPA encryption scheme
 into a \textit{stronger} IND-CCA2 key encapsulation mechanism.
 
 Let $\mathcal{E}$ an instance of \textsf{HQC.PKE} and $\mathcal{G, H}$ and $\mathcal{K}$ hash functions. The \textsf{HQC.KEM} scheme is defined as follows:
