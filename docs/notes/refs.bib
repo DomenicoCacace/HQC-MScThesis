@@ -115,6 +115,13 @@
   year={2018}
 }
 
+@article{chen2021optimizing,
+  title={Optimizing {BIKE} for the {I}ntel {H}aswell and {ARM} {C}ortex-{M}4},
+  author={Chen, Ming-Shing and Chou, Tung and Krausz, Markus},
+  journal={Cryptology ePrint Archive},
+  year={2021}
+}
+
 
 
 % HQC specs and relative attacks
@@ -180,6 +187,56 @@
   journal={Cryptology ePrint Archive},
   year={2022}
 }
+
+
+@article{DBLP:journals/amco/Wafo-TapaBBGM22,
+  author    = {Guillaume Wafo{-}Tapa and
+               Slim Bettaieb and
+               Lo{\"{\i}}c Bidoux and
+               Philippe Gaborit and
+               Etienne Marcatel},
+  title     = {{A practicable timing attack against {HQC} and its countermeasure}},
+  journal   = {Adv. Math. Commun.},
+  volume    = {16},
+  number    = {3},
+  pages     = {621--642},
+  year      = {2022},
+  url       = {https://doi.org/10.3934/amc.2020126},
+  doi       = {10.3934/amc.2020126},
+  timestamp = {Mon, 04 Jul 2022 08:26:35 +0200},
+  biburl    = {https://dblp.org/rec/journals/amco/Wafo-TapaBBGM22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/sacrypt/PaivaT19,
+  author    = {Thales Bandiera Paiva and
+               Routo Terada},
+  editor    = {Kenneth G. Paterson and
+               Douglas Stebila},
+  title     = {{A Timing Attack on the {HQC} Encryption Scheme}},
+  booktitle = {Selected Areas in Cryptography - {SAC} 2019 - 26th International Conference,
+               Waterloo, ON, Canada, August 12-16, 2019, Revised Selected Papers},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {11959},
+  pages     = {551--573},
+  publisher = {Springer},
+  year      = {2019},
+  url       = {https://doi.org/10.1007/978-3-030-38471-5\_22},
+  doi       = {10.1007/978-3-030-38471-5\_22},
+  timestamp = {Thu, 06 Feb 2020 18:14:47 +0100},
+  biburl    = {https://dblp.org/rec/conf/sacrypt/PaivaT19.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{goy2022new,
+  title={A new key recovery side-channel attack on HQC with chosen ciphertext},
+  author={Goy, Guillaume and Loiseau, Antoine and Gaborit, Philippe},
+  booktitle={Post-Quantum Cryptography: 13th International Workshop, PQCrypto 2022, Virtual Event, September 28--30, 2022, Proceedings},
+  pages={353--371},
+  year={2022},
+  organization={Springer}
+}
+
 
 % Coding theory
 @article{gilbert1952comparison,
@@ -363,21 +420,22 @@
   publisher={ACM New York, NY, USA}
 }
 
-@article{feynman1986quantum,
-  title={Quantum mechanical computers.},
-  author={Feynman, Richard P},
-  journal={Found. Phys.},
-  volume={16},
-  number={6},
-  pages={507--532},
-  year={1986}
+@inproceedings{shor1994algorithms,
+  title={Algorithms for quantum computation: discrete logarithms and factoring},
+  author={Shor, Peter W},
+  booktitle={Proceedings 35th annual symposium on foundations of computer science},
+  pages={124--134},
+  year={1994},
+  organization={Ieee}
 }
 
-@book{mermin2007quantum,
-  title={Quantum computer science: an introduction},
-  author={Mermin, N David},
-  year={2007},
-  publisher={Cambridge University Press}
+@inproceedings{bos2018crystals,
+  title={{CRYSTALS-K}yber: a {CCA}-secure module-lattice-based {KEM}},
+  author={Bos, Joppe and Ducas, L{\'e}o and Kiltz, Eike and Lepoint, Tancr{\`e}de and Lyubashevsky, Vadim and Schanck, John M and Schwabe, Peter and Seiler, Gregor and Stehl{\'e}, Damien},
+  booktitle={2018 IEEE European Symposium on Security and Privacy (EuroS\&P)},
+  pages={353--367},
+  year={2018},
+  organization={IEEE}
 }
 
 @misc{baldi2020ledacrypt,
@@ -387,10 +445,62 @@
   publisher={Accessed: Mar}
 }
 
-@article{chen2021optimizing,
-  title={Optimizing {BIKE} for the {I}ntel {H}aswell and {ARM} {C}ortex-{M}4},
-  author={Chen, Ming-Shing and Chou, Tung and Krausz, Markus},
-  journal={Cryptology ePrint Archive},
+@article{biondi2021quantum,
+  title={Quantum computing use cases are getting real--what you need to know},
+  author={Biondi, M and Heid, A and Henke, N and Mohr, N and Pautasso, L and Ostojic, I and Wester, L and Zemme, R},
+  journal={McKinsey Insights},
   year={2021}
 }
 
+@misc{ClassicMcEliece, 
+author = {Daniel J. Bernstein and
+Tung Chou and
+Carlos Cid and
+Jan Gilcher and
+Tanja Lange and
+Varun Maram and
+Ingo von Maurich and
+Rafael Misoczki and
+Ruben Niederhagen and
+Edoardo Persichetti and
+Christiane Peters and
+Nicolas Sendrier and
+Jakub Szefer and
+Cen Jung Tjhai and
+Martin Tomlinson and
+Wen Wang}, 
+title = {{Classic McEliece Supporting Documentation}}, 
+howpublished = {\url{https://classic.mceliece.org/mceliece-spec-20221023.pdf}},
+year = {2022},
+}
+
+
+@misc{BIKE, 
+author = {Nicolas Aragon and 
+Paulo Barreto  and 
+Slim Bettaieb  and 
+Loic Bidoux and  
+Olivier Blazy and 
+Jean-Christophe Deneuville and 
+Phillipe Gaborit and 
+Shay Gueron and 
+Tim Guneysu and 
+Carlos Aguilar Melchor and 
+Rafael Misoczki and 
+Edoardo Persichetti and 
+Nicolas Sendrier and 
+Jean-Pierre Tillich and 
+Gilles Zemor and 
+Valentin Vasseur and 
+Santosh Ghosh and 
+Jan Richter-Brokmann},
+title = {{BIKE Supporting Documentation}}, 
+howpublished = {\url{https://bikesuite.org/files/v5.0/BIKE_Spec.2022.10.10.1.pdf}},
+year = {2022},
+}
+
+@misc{PQM4,
+  title = {{PQM4}: Post-quantum crypto library for the {ARM} {Cortex-M4}},
+  author = {Matthias J. Kannwischer and Richard Petri and Joost Rijneveld and Peter Schwabe and Ko Stoffelen},
+  note = {\url{https://github.com/mupq/pqm4}}
+}
