@@ -224,15 +224,38 @@
 
 % ABSTRACT IN ENGLISH
 \chapter*{Abstract} 
-Abstract EN
+Cryptography plays a fundamental role in the security of modern information systems, as it guarantees
+confidentiality, integrity and authenticity of data. Current cryptosystems can achieve these goals, but
+the advent of quantum computers undermines their security.
+To prepare for the \emph{quantum apocalypse}, in 2016 the U.S. National Institute of Standards and Technologies
+started a competition to evaluate and standardize one or more post-quantum secure schemes; other than security strenght, candidates are also
+judged on their efficiency and security against side-channel attacks, which are especially
+relevant in the context of embedded devices.\\
+In this thesis we present the first constant-time imlementation of HQC tailored for Cortex-M4, showing
+its efficiency and constant-time behavior; furthermore, we implement an efficient masking scheme
+that protects the public key encryption scheme against power side-channel attacks, showing its
+efficacy in practice. Finally, we compare the performance of our implementations with other
+standardization candidates, highlighting the efficiency and shortcomings of our approach.
 
-\textbf{Keywords:} here, the keywords, of your thesis % Keywords
+\textbf{Keywords:} post-quantum cryptography, code-based cryptosystems, constant-time implementation, masking
 
 % ABSTRACT IN ITALIAN
 \chapter*{Introduzione}
-Abstract IT
+La crittografia gioca un ruolo fondamentale nella sicurezza dei moderni sistemi informativi, garantendo
+confidenzialità, integrità e autenticità dei dati. Le primitive crittografiche attuali possono
+garantire queste proprietà, ma l'avvento dei computer quantistici mina la loro sicurezza.
+In vista dell'\emph{apocalisse quantistica}, nel 2016 l'istituto per la standardizzazione e la tecnologia degli 
+Stati Uniti ha avviato una competizione per valutare e standardizzare una o più primitive crittografiche
+resistenti ai computer quantistici; oltre alla sicurezza formale, i candidati sono giudicati anche in base
+alla loro efficienza e alla loro resistenza agli attacchi di tipo side-channel, che sono particolarmente
+rilevanti nel caso di dispositivi embedded.\\
+In questa tesi presentiamo la prima implementazione a tempo costante di HQC ottimizzata per processori 
+Cortex-M4, mostrandone l'efficienza e l'esecuzione in tempo costante; inoltre, implementiamo uno schema di masking
+efficiente in grado di proteggere lo schema di crittografia a chiave pubblica contro attacchi side-channel
+basati sul consumo energetico, mostrandone empiricamente l'efficacia. Infine, confrontiamo le prestazioni delle 
+nostre implementazioni con altri candidati per la standardizzazione, evidenziandone l'efficienza e le limitazioni.
 
-\textbf{Parole chiave:} qui, vanno, le parole chiave, della tesi % Keywords (italian)
+\textbf{Parole chiave:} crittografia post-quantistica, crittosistemi basati su codici, implementazioni a tempo costante, masking % Keywords (italian)
 
 %----------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
