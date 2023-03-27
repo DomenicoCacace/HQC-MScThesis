@@ -6,6 +6,7 @@ import ctypes
 from config import FreeSCA_config,Sampling_config
 import argparse
 
+import data_formats.dat_tracereader as dat_tracereader
 from trace_visualization import plot_first_n_traces,plot_avg_stddev_ntraces,plot_spectrogram
 
 parser = argparse.ArgumentParser(description='Test the configuration')
@@ -80,9 +81,10 @@ if __name__ == "__main__":
         scope.get_traces(traces)
 
         # Dump the trace to file
-        filename = f"{output_pathname}_{batch_id}.npy"
-        traces.dump(filename)
-
+        outfile = dat_tracereader.dat_tracereader()
+        outfile.create(f"{output_pathname}_{batch_id}", samples_per_capture, 'h')
+        outfile.write_traces(traces)
+        outfile.close()
 
 
     #plot outcome of the captures to check
