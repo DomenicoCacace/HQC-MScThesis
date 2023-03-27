@@ -20,7 +20,7 @@ args = parser.parse_args()
 
 def init_oscilloscope():
     scope = PS5422()
-    scope.set_sampling_channel("Channel_A","DC","1V")
+    scope.set_sampling_channel("Channel_A","DC","200mV")
     scope.set_trigger_channel("Channel_B","DC","5V")
     scope.config_trigger(Sampling_config.threshold_in_mV, "Rising")
     total_samples = ctypes.c_int32()
