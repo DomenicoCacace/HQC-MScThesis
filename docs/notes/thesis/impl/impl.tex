@@ -177,12 +177,49 @@ Due to its large memory footprint and the limited resources of the target platfo
         \item $(a+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$: masking of $a$ with $d-1$ masks sampled from the same field of $a$
         \item \textsc{Collapse}(a, \ssplit{b}): sum all shares of $b$, in order, to $a$
     \end{itemize}
-    In our implementation we will consider only the case $d=2$.
+    To prove the soundness of our masking scheme we show how the share splitting of an input preserves the output
+    with respect to the operations performed by the algorithm, namely addition, multiplication and encoding/decoding.
+    We will restrict our attention to the case of $d=2$ shares ($\ssplit{a} = (a\oplus x, x)$ with $x$ random mask) with boolean masks,
+    as it is the one used in our implementation, but the same reasoning can be applied for an arbitrary number of shares.
+
+    \paragraph{Addition} Let us consider $\ssplit{a} = (a\oplus x, x)$ and $\ssplit{b} = (b\oplus y, y)$;
+    the addition of the two share-split numbers is performed by adding the shares of the same index, getting the result
+    \begin{equation*}
+        \ssplit{a+b} = (a\oplus x \oplus b\oplus y, x \oplus y) = (a\oplus b\oplus x\oplus y, x \oplus y)
+    \end{equation*}
+    which, once collapsed, gives the expected result $(a \oplus b \oplus x \oplus y) \oplus (x \oplus y) = a \oplus b$.\\
+    In the case of an addition between a share-split number and a constant, we can simply add the constant to the first share of the
+    share-split number: in this way we are considering the constant as a share-split number with a zero mask, so the result is
+    the same as the previous case.
+
+    \paragraph*{Multiplication} Let us consider $\ssplit{a} = (a\oplus x, x)$ and $b$; in our setting, all the multiplications
+    involve a constant and a share-split value. The multiplication between a constant and a share-split number $\ssplit{a}\cdot b$ is performed by multiplying
+    every share of $\ssplit{a}$ by $b$, getting the result 
+    \begin{equation*}
+        \ssplit{a}\cdot b = ((a\oplus x)\cdot b, x\cdot b) = (a\cdot b \oplus x\cdot b, x\cdot b)
+    \end{equation*}
+    which, once collapsed, gives the result $(a \cdot b \oplus x \cdot b) \oplus (x \cdot b) = a \cdot b$.
+
+    \paragraph*{Encoding/Decoding} Let us consider $\ssplit{a} = (a\oplus x, x)$; the encoding and decoding of a share-split value
+    are performed by simply encoding and decoding each share separately:
+    \begin{equation*}
+        \begin{aligned}
+        \textsc{Encode}(\ssplit{a}) &= (\textsc{Encode}(a\oplus x), \textsc{Encode}(x)) = \ssplit{\textsc{Encode}(a)} = \ssplit{b} \\
+        \textsc{Decode}(\ssplit{b}) &= (\textsc{Decode}(b\oplus x), \textsc{Decode}(x))
+        \end{aligned}
+    \end{equation*}
+    When we collapse the decoded shares, we get as a result $\textsc{Decode}(b \oplus x) \oplus \textsc{Decode}(x)$; if the code we are using
+    is linear, we can further rewrite this result as
+    \begin{equation*}
+        (\textsc{Decode}(b) \oplus \textsc{Decode}(x)) \oplus \textsc{Decode}(x) = \textsc{Decode}(b) = a
+    \end{equation*}
+    correctly decoding the masked value.
+
 
     \subsection{Keygen}
     The masking of the key generation algorithm is straightforward: after sampling the private key, we mask $y$ and multiply 
-    by $h$: the multiplication between a polynomial and a share-split is performed by multiplying each share by $h$, so the result is
-    itself share-split.\\
+    by $h$ to obtain the share-split version of $s$, which is then collapsed to obtain the public key.
+    
     \begin{algorithm2e}[H]
         \caption{Keygen, masked version}
         \KwIn{none}

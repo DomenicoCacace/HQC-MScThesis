@@ -22,8 +22,8 @@ in the security proofs.
 
 \subsubsection{Related Work}
 Given the sound security record of HQC, much attention has been devoted to its side-channel resistance. Most of the 
-independent analyses focus on extracting electromagnetic traces~\cite{schamberger2021power, schamberger2022power, goy2022new},
-whilst at the end of Round 2 of the NIST contest the authors in~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} and \cite{DBLP:conf/sacrypt/PaivaT19}
+independent analyses focus on extracting electromagnetic and power traces~\cite{schamberger2021power, schamberger2022power, goy2022new},
+whilst at the end of Round 2 of the NIST contest the authors in~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} and~\cite{DBLP:conf/sacrypt/PaivaT19}
 proposed a timing attack that takes advantage of the non constant-time implementation of the BCH decoder and the dependence
 between the decoding time and the amount of errors to correct; these attacks are no longer relevant starting from Round 3, 
 as the authors of HQC swapped the BCH code with a Reed-Muller Reed-Solomon code, implementing a constant-time decoder. Nonetheless,
