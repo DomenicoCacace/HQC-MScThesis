@@ -68,12 +68,18 @@ if __name__ == "__main__":
     traces_in = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
                             dtype=np.int16 )
     
-    traces_mean = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
+    mean_fix = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
                         dtype=np.float )
 
-    traces_m2 = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
+    m2_fix = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
                         dtype=np.double )
     
+    mean_var = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
+                        dtype=np.float )
+
+    m2_var = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
+                        dtype=np.double )
+
     # Initialize board
     board_serial = "303637324646353335373532383737"
     myboard = nucleo_HQC(Sampling_config.captures_per_batch, args.exec_folder, mode=args.algorithm)
@@ -106,30 +112,24 @@ if __name__ == "__main__":
         # remove average
         m = np.average(traces_in, axis=1)
         # update rolling mean and m2
-        delta = (traces_in - m) - traces_mean
-        traces_mean += delta / (batch_id + 1)
-        delta2 = (traces_in - m) - traces_mean
-        traces_m2 += delta * delta2
+        delta = (traces_in - m) - mean_var
+        mean_var += delta / (batch_id + 1)
+        delta2 = (traces_in - m) - mean_var
+        m2_var += delta * delta2
     
 
     # Store traces to file
     outfile = dat_tracereader.dat_tracereader()
     outfile.create(f"{output_pathname}_var_mean", samples_per_capture, 'f')
-    outfile.write_traces(traces_mean)
+    outfile.write_traces(mean_var)
     outfile.close()
 
-    traces_m2 = traces_m2 / (num_traces - 1)
+    m2_fix = m2_fix / (num_traces - 1)
     outfile = dat_tracereader.dat_tracereader()
     outfile.create(f"{output_pathname}_var_m2", samples_per_capture, 'd')
-    outfile.write_traces(traces_m2)
+    outfile.write_traces(m2_var)
     outfile.close()
     print("Variable inputs - done")
-
-    traces_mean = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
-                        dtype=np.float )    
-    
-    traces_m2 = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
-                        dtype=np.double )
 
     print("\n Fixed inputs - start")
     # Run the actual capture - fixed inputs
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         print(f" * Capturing batch {batch_id+1}/{num_traces}")
         # Start capture
         scope.capture(samples_per_capture, pre_trigger_sample_ratio=0.02)
-        
+
         # Run the algorithm
         myboard.process_input_and_check(inputs, output_size)
         
@@ -148,42 +148,30 @@ if __name__ == "__main__":
         # remove average
         m = np.average(traces_in, axis=1)
         # update rolling mean and m2
-        delta = (traces_in - m) - traces_mean
-        traces_mean += delta / (batch_id + 1)
-        delta2 = (traces_in - m) - traces_mean
-        traces_m2 += delta * delta2
+        delta = (traces_in - m) - mean_fix
+        mean_fix += delta / (batch_id + 1)
+        delta2 = (traces_in - m) - mean_fix
+        m2_fix += delta * delta2
     
     
     # Store traces to file
     outfile = dat_tracereader.dat_tracereader()
     outfile.create(f"{output_pathname}_fix_mean", samples_per_capture, 'f')
-    outfile.write_traces(traces_mean)
+    outfile.write_traces(mean_fix)
     outfile.close()
 
-    traces_m2 = traces_m2 / (num_traces - 1)
+    m2_fix = m2_fix / (num_traces - 1)
     outfile = dat_tracereader.dat_tracereader()
     outfile.create(f"{output_pathname}_fix_m2", samples_per_capture, 'd')
-    outfile.write_traces(traces_m2)
+    outfile.write_traces(m2_fix)
     outfile.close()
     print("Fixed inputs - done")
 
-    del traces_in
-
-    file = dat_tracereader.dat_tracereader()
-    file.open(f"{output_pathname}_var_mean")
-    tstat = file.read_traces(1)
-    file.close()
-    # num: mean_m2iable - mean2_fixed
-    tstat = tstat - traces_mean
-    del traces_mean
-
-    file.open(f"{output_pathname}_var_m2")
-    var2 = file.read_traces(1)
-    file.close()
+    tstat = mean_var - mean_fix
+    
     print("Calculating tstat...")
     # den: sqrt(var_fixed/n + var_m2iable/n)
-    tstat = tstat / np.sqrt((var2 + traces_m2)/num_traces)
-    del traces_m2
+    tstat = tstat / np.sqrt((m2_var + m2_fix)/num_traces)
     print("Done!\n")
 
     print("Dumping data to file...")
