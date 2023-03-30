@@ -58,7 +58,7 @@ int run(int reps) {
         DELAY(DELAY_AMT);   // 250 us
         TRIGGER_SET
 
-        encrypt(u, v, m, theta, pk);
+        hqc_pke_encrypt(u, v, m, theta, pk);
 
         TRIGGER_RESET
         DELAY(DELAY_AMT);   // 250 us
@@ -66,10 +66,6 @@ int run(int reps) {
         #ifdef DEBUG
         send_ctx(u, v);
         #endif
-
-        memset(m, 0, VEC_K_SIZE_BYTES);
-        memset(u, 0, VEC_N_SIZE_BYTES);
-        memset(v, 0, VEC_N1N2_SIZE_BYTES);
 
         usart_send_str("DONE\n", 5);
     }
@@ -82,7 +78,7 @@ int run(int reps) {
         DELAY(DELAY_AMT);   // 250 us
         TRIGGER_SET
 
-        decrypt(m, u, v, sk);
+        hqc_pke_decrypt(m, u, v, sk);
 
         TRIGGER_RESET
         DELAY(DELAY_AMT);   // 250 us
@@ -92,114 +88,11 @@ int run(int reps) {
         send_ptx(m);
         #endif
 
-        memset(m, 0, VEC_K_SIZE_BYTES);
-        memset(u, 0, VEC_N_SIZE_BYTES);
-        memset(v, 0, VEC_N1N2_SIZE_BYTES);
-
         usart_send_str("DONE\n", 5);
     }
     #endif
 
     return 0;
-}
-
-
-void encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk) {
-    seedexpander_state seedexpander;
-    DIGIT h[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT s[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT e[VEC_N_SIZE_DIGIT] = {0};
-    shares_n_t r1;
-    shares_n_t r2;
-    shares_n_t tmp1;
-    shares_n_t tmp2;
-    shares_n1n2_t _v;
-    shares_k_t _m;
-
-    shares_n_init(&r1);
-    shares_n_init(&r2);
-    shares_n1n2_init(&_v);
-    shares_k_init(&_m);
-    shares_n_init(&tmp1);
-    shares_n_init(&tmp2);
-
-    // Create seed_expander from theta
-    seedexpander_init(&seedexpander, theta, SEED_BYTES);
-
-    // Retrieve h and s from public key
-    hqc_public_key_from_string(h, s, pk);
-
-    // Generate r1, r2 and e
-    vect_set_random_fixed_weight(&seedexpander, r1.s0, PARAM_OMEGA_R);
-    vect_set_random_fixed_weight(&seedexpander, r2.s0, PARAM_OMEGA_R);
-    vect_set_random_fixed_weight(&seedexpander, e, PARAM_OMEGA_E);
-    shares_init_from_data(&r1, r1.s0);
-    shares_init_from_data(&r2, r2.s0);
-
-    // Compute u = r1 + r2.h
-    shares_vec_mul(&tmp1, &r2, h);
-    shares_add(&tmp1, &tmp1, &r1);
-    shares_collapse_nosum(u, &tmp1);
-
-    // Compute v = m.G by encoding the message
-    shares_n_init(&tmp1);
-    shares_init_from_msg(&_m, m);
-    code_encode_shares(&_v, &_m);
-    shares_resize_n(&tmp1, &_v);
-
-    // Compute v = m.G + s.r2 + e
-    shares_vec_mul(&tmp2, &r2, s);
-    shares_add(&tmp1, &tmp1, &tmp2);
-    shares_n_collapse(tmp1.s0, &tmp1, e);
-    vect_resize(v, PARAM_N1N2, tmp1.s0, PARAM_N);
-
-    // Reset data
-    memset(h, 0, VEC_N_SIZE_BYTES);
-    memset(s, 0, VEC_N_SIZE_BYTES);
-    memset(e, 0, VEC_N_SIZE_BYTES);
-}
-
-void decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
-    DIGIT x[VEC_N_SIZE_DIGIT] = {0};
-    uint8_t pk[PUBLIC_KEY_BYTES] = {0};
-    shares_n_t y;
-    DIGIT _v[VEC_N_SIZE_DIGIT] = {0};
-    shares_k_t _m;
-    shares_n1n2_t c;
-    shares_n_t tmp1;
-
-    // Retrieve x, y, pk from secret key
-    shares_n_init(&y);
-    hqc_secret_key_from_string(x, y.s0, pk, sk);
-    shares_init_from_data(&y, y.s0);
-
-    // Generate and encode a random codeword
-    shares_init_random_msg(&_m);
-    shares_n1n2_init(&c);
-    code_encode_shares(&c, &_m);
-
-    // Mask v with the encoded random codeword
-    shares_n_init(&tmp1);
-    vect_resize(_v, PARAM_N, v, PARAM_N1N2);
-    shares_resize_n(&tmp1, &c);
-    shares_n_collapse(_v, &tmp1, _v);
-
-    // Compute u.y
-    shares_n_init(&tmp1);
-    shares_vec_mul(&tmp1, &y, u);
-
-    // Compute v - u.y
-    shares_n_collapse(_v, &tmp1, _v);
-
-    // Decode v - u.y
-    //shares_n_init(&tmp1);
-    code_decode(m, _v);
-    shares_collapse_msg(m, &_m, m);
-
-    // reset values to zero
-    memset(x, 0, VEC_N_SIZE_BYTES);
-    memset(pk, 0, PUBLIC_KEY_BYTES);
-    memset(_v, 0, VEC_N_SIZE_BYTES);
 }
 
 void recv_key(unsigned char *pk, unsigned char *sk) {

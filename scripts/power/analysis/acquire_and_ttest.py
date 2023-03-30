@@ -72,13 +72,13 @@ if __name__ == "__main__":
                         dtype=np.float )
 
     m2_fix = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
-                        dtype=np.double )
+                        dtype=np.float )
     
     mean_var = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
                         dtype=np.float )
 
     m2_var = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
-                        dtype=np.double )
+                        dtype=np.float )
 
     # Initialize board
     board_serial = "303637324646353335373532383737"
@@ -110,11 +110,12 @@ if __name__ == "__main__":
         scope.get_traces(traces_in)
 
         # remove average
-        m = np.average(traces_in, axis=1)
+        m = np.average(traces_in)
+        traces_in = traces_in - m
         # update rolling mean and m2
-        delta = (traces_in - m) - mean_var
+        delta = traces_in - mean_var
         mean_var += delta / (batch_id + 1)
-        delta2 = (traces_in - m) - mean_var
+        delta2 = traces_in - mean_var
         m2_var += delta * delta2
     
 
@@ -124,9 +125,9 @@ if __name__ == "__main__":
     outfile.write_traces(mean_var)
     outfile.close()
 
-    m2_fix = m2_fix / (num_traces - 1)
+    m2_var = (m2_var / (num_traces - 1))
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_var_m2", samples_per_capture, 'd')
+    outfile.create(f"{output_pathname}_var_m2", samples_per_capture, 'f')
     outfile.write_traces(m2_var)
     outfile.close()
     print("Variable inputs - done")
@@ -146,12 +147,13 @@ if __name__ == "__main__":
         scope.get_traces(traces_in)
 
         # remove average
-        m = np.average(traces_in, axis=1)
+        m = np.average(traces_in)
+        traces_in = traces_in - m
         # update rolling mean and m2
-        delta = (traces_in - m) - mean_fix
-        mean_fix += delta / (batch_id + 1)
-        delta2 = (traces_in - m) - mean_fix
-        m2_fix += delta * delta2
+        delta = traces_in - mean_fix
+        mean_fix += (delta / (batch_id + 1))
+        delta2 = traces_in - mean_fix
+        m2_fix += (delta * delta2)
     
     
     # Store traces to file
@@ -160,9 +162,9 @@ if __name__ == "__main__":
     outfile.write_traces(mean_fix)
     outfile.close()
 
-    m2_fix = m2_fix / (num_traces - 1)
+    m2_fix = (m2_fix / (num_traces - 1))
     outfile = dat_tracereader.dat_tracereader()
-    outfile.create(f"{output_pathname}_fix_m2", samples_per_capture, 'd')
+    outfile.create(f"{output_pathname}_fix_m2", samples_per_capture, 'f')
     outfile.write_traces(m2_fix)
     outfile.close()
     print("Fixed inputs - done")
