@@ -202,11 +202,15 @@ void setup_gpio(void) {
     gpio_set_af(GPIOA, GPIO_AF7, GPIO0 | GPIO1);
 
     // Prepare the Trigger GPIO
-    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO8 | GPIO9);
-    gpio_clear(GPIOB, GPIO8 | GPIO9);
+    //gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO8 | GPIO9);
+    //gpio_clear(GPIOB, GPIO8 | GPIO9);
+    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO9);
+    gpio_clear(GPIOB, GPIO9);
+    
+
 
     // Prepare the LED GPIO
-    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5);
+    //gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5);
 }
 
 void setup_usart(void) {
@@ -258,12 +262,12 @@ void usart_recv_str(char *str, int bytes) {
 
 void trigger_set(void) {
     gpio_set(GPIOB, GPIO9);
-    gpio_set(GPIOA, GPIO5);
+    //gpio_set(GPIOA, GPIO5);
 }
 
 void trigger_reset(void) {
     gpio_clear(GPIOB, GPIO9);
-    gpio_clear(GPIOA, GPIO5);
+    //gpio_clear(GPIOA, GPIO5);
 }
 
 void pulse(void) {
