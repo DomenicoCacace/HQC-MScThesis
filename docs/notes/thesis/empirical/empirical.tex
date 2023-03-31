@@ -136,6 +136,122 @@ However, similar results are achieved as well on the non-masked version of the a
 a power side-channel attack on the RMRS decoder~\cite{DBLP:conf/pqcrypto/SchambergerHRWS22, DBLP:conf/pqcrypto/GoyLG22}, we conclude that 
 further measurements are required to assess the security of the masking scheme.
 
+\section{Comparison with other schemes}
+    Similarly to ~\cite{alagic2022status} we can compare the performance of our implementation with the other Round 4 candidates; 
+    it is interesting to note that all three candidates are code-based cryptosystems and that they all have a Cortex-M4 implementation.
+    In the graphs below we can see the different amount of time required by our implementations, BIKE~\cite{DBLP:journals/tches/ChenCK21}
+    and McEliece~\cite{DBLP:journals/tches/ChenC21} to perform the different operations; for consistency, we consider only 
+    the optimized implementations for Cortex M4 with level 1 parameters. For HQC, we consider the results
+    obtained with zero memory wait states, as the authors of the other implementations did.
+        
+    \begin{figure}[H]
+        \centering
+    \pgfplotstableread[col sep=comma]{ % data 
+        Label,     Keygen, Encaps, Decaps
+        McEliece, 2146932, 582, 2706
+        BIKE, 24935, 3253, 49911
+        HQC, 4934, 10441, 15546
+        HQC (masked), 8228, 17050, 25522
+            }\mydata
+        \begin{tikzpicture}
+        \centering
+        \begin{axis}[
+            height=70mm, width=125mm,
+    %
+            bar width=0.22,
+            ybar=2pt,
+            enlarge x limits={abs=0.5},
+            ymin=0,
+            ymax=55000,
+            ytick distance=10000,
+            yticklabel style={font=\small},
+            yticklabel=\pgfmathprintnumber{\tick},
+            ylabel={Execution time (kcycles)},
+            %xlabel={Cryptosystem},
+            xtick=data,
+            xticklabels from table={\mydata}{Label},
+    %
+            nodes near coords,
+            nodes near coords style={font=\tiny,
+                                    /pgf/number format/.cd,
+                                                precision=0,
+                                                zerofill,
+                                    },
+            legend style={legend pos=north east,
+                        cells={anchor=west},
+                        font=\footnotesize,
+                        }
+        ]
+    \addplot table [x expr=\coordindex,y=Keygen]{\mydata};
+    \addplot table [x expr=\coordindex,y=Encaps]{\mydata};
+    \addplot table [x expr=\coordindex,y=Decaps]{\mydata};
+    \legend{Keygen, Encaps, Decaps}    
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Execution times}
+    \label{fig:time}
+    \end{figure}
+    We can see how the McEliece cryptosystem is the fastest one in terms of encapsulation and decapsulation, but 
+    requires $2\cdot 10^{12}$ cycles to generate the keypair. With respect to BIKE, the most promising
+    candidate in this round, we can see how HQC outperforms it in terms of key generation and decapsulation,
+    not only in the fast implementation but also in the masked one.
+
+
+    In terms of size, we can see how McEliece is prohibitively large in terms of keysize (over 250KB for the public key only).
+    With respect to BIKE, we can see that HQC ciphertext and public keys are larger by a factor of $2.9$ and $1.5$ respectively.
+
+    \begin{figure}[H]
+        \centering
+    \pgfplotstableread[col sep=comma]{ % data 
+    Label,     pk, sk, ctx
+    McEliece, 261120, 6492, 128
+    BIKE, 1540, 280, 1572
+    HQC, 2249, 40, 4481
+        }\memorytable
+        \begin{tikzpicture}
+        \centering
+        \begin{axis}[
+            height=67mm, width=125mm,
+    %
+            bar width=0.22,
+            ybar=2pt,
+            enlarge x limits={abs=0.5},
+            ymin=0,
+            ymax=7000,
+            ytick distance=1000,
+            yticklabel style={font=\small},
+            yticklabel=\pgfmathprintnumber{\tick},
+            ylabel={Memory usage (Bytes)},
+            %xlabel={Cryptosystem},
+            xtick=data,
+            xticklabels from table={\memorytable}{Label},
+    %
+            nodes near coords,
+            nodes near coords style={font=\tiny,
+                                    /pgf/number format/.cd,
+                                                precision=0,
+                                                zerofill,
+                                    },
+            legend style={legend pos=north east,
+                        cells={anchor=west},
+                        font=\footnotesize,
+                        }
+        ]
+    \addplot table [x expr=\coordindex,y=pk]{\memorytable};
+    \addplot table [x expr=\coordindex,y=sk]{\memorytable};
+    \addplot table [x expr=\coordindex,y=ctx]{\memorytable};
+    \legend{Public Key, Secret Key, Ciphertext}    
+    \end{axis}
+        \end{tikzpicture}
+        \caption{Memory usage}
+        \label{fig:memory}
+    \end{figure}
+
+
+
+
+
+
 
 
 
