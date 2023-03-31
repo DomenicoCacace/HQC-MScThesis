@@ -193,9 +193,9 @@ if __name__ == "__main__":
     file.close()
     print("Done!\n")
 
-    print("Saving csv file...")
-    output_csv(tstat[0], f"{output_pathname}_tstat.csv")
-    print("Done!")
+    #print("Saving csv file...")
+    #output_csv(tstat[0], f"{output_pathname}_tstat.csv")
+    #print("Done!")
 
     # Remove files
     myboard.remove_files()
