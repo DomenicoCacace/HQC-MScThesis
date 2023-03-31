@@ -79,7 +79,7 @@ of bits, at the cost of reduced redundancy (and thus reduced error correcting ca
         d = \min_{\mathbf{v}, \mathbf{w} \in \mathcal{C}, \mathbf{v}\neq \mathbf{w}} \omega(\mathbf{v} - \mathbf{w})
     \end{equation*}
 \end{definition}
-The length, dimension and minimum distance of a linear code $\mathcal{C} = [n,k,d]$ are tied by the Singleton bound~\cite{singleton1964maximum}:
+The length, dimension and minimum distance of a linear code $\mathcal{C} = [n,k,d]$ are tied by the Singleton bound~\cite{DBLP:journals/tit/Singleton64}:
 \begin{equation*}
     d \leq n-k+1
 \end{equation*}
@@ -153,7 +153,7 @@ In this section we will describe some of the most common code families and the p
     polynomial-time decoder and exponentially decreasing error probability with increased block length.
 
 \subsubsection{Reed-Muller and Reed-Solomon codes}
-    Reed-Muller codes~\cite{reed1953class,muller1954application} are a family of codes; by defining the message lenght as
+    Reed-Muller codes~\cite{DBLP:journals/tit/Reed54,DBLP:journals/tc/Muller54} are a family of codes; by defining the message lenght as
     \begin{equation*}
         k = \sum_{i=0}^r \binom{m}{i}
     \end{equation*}
@@ -184,7 +184,7 @@ the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
     distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
     $\sigma(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
 \end{definition}
-This problem has been proven to be NP-complete in~\cite{berlekamp1978inherent}.
+This problem has been proven to be NP-complete in~\cite{DBLP:journals/tit/BerlekampMT78}.
 
 \begin{definition}[Decisional \textsf{SD} Problem]
     Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$, the \textsf{DSD} problem 

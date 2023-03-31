@@ -66,7 +66,7 @@ Due to its large memory footprint and the limited resources of the target platfo
 	% descrivere la versione a tempo costante della mul shift & add 
 	\subsection{Constant-time shift and add}\label{subsec:const_shift_add}
 		Due to the high sparsity of one of the operands, we would like to exploit the fact that the algorithm is very fast to implement a constant-time version of it;
-		such an algorithm is implemented in LEDAcrypt~\cite{baldi2020ledacrypt} and is based on \textit{shifts with conditional commitment}.\\
+		such an algorithm is implemented in LEDAcrypt~\cite{DBLP:conf/cbc/BaldiBCPS19} and is based on \textit{shifts with conditional commitment}.\\
 
 		\begin{algorithm2e}[H]
 			\caption{Constant-time monomial multiplication}
@@ -91,7 +91,7 @@ Due to its large memory footprint and the limited resources of the target platfo
 	% descrivere la moltiplicazione con trasformate
 
     \subsection{Frobenius Additive FFT}\label{subsec:fafft}
-        The implementation of the FAFFT is based on the work of Chen \textit{et.al.}~\cite{chen2021optimizing}; for the sake of clarity, 
+        The implementation of the FAFFT is based on the work of Chen \textit{et.al.}~\cite{DBLP:journals/tches/ChenCK21}; for the sake of clarity, 
         we highlight the core ideas of this implementation.
         
         As shown in Algorithm~\ref{alg:fafft}, the FAFFT multiplication is composed of four components (with the relative inverses): basis conversion, encoding, butterflies and
@@ -163,7 +163,7 @@ Due to its large memory footprint and the limited resources of the target platfo
         $\gamma \cdot v + \gamma \cdot w$: the multiplication by $v$ is performed as a linear map in the same fashion as the encoding step,
         while the multiplication by $w$ is performed by carrying out $32/2^{\lceil \log_2(l-i)\rceil}$ multiplications in the subfield of
         size $2^{2^{\lceil \log_2 (l-i) \rceil}}$, as $w$ is an element of such subfield.
-        This approach, as shown empirically in~\cite{chen2021optimizing}, takes the least amount of cycles among the possible approaches.
+        This approach, as shown empirically in~\cite{DBLP:journals/tches/ChenCK21}, takes the least amount of cycles among the possible approaches.
         
 
 \section{Masking}

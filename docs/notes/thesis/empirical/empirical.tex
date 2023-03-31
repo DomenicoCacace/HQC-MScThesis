@@ -21,7 +21,7 @@ We run the same experiments on a x86 machine, equipped with an AMD Ryzen 25000U,
 \texttt{gcc} (12.2.1) using the \texttt{-O3} optimization flag and, for AVX implementations (marked with a `$\dagger$'), the \texttt{-march=native} flag. 
 
 \subsubsection{Welch's t-test}
-To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{schneider2015leakage},
+To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{DBLP:journals/jce/SchneiderM16},
 based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
 populations differ; the t-test statistic is computed as follows:
 \begin{equation}
@@ -105,7 +105,7 @@ the frequency is set to 80MHz. The results of the tests are reported in Table~\r
 
 As expected, the schoolbook Shift\&Add does not run in constant time while the other algorithms do, as they perform always the same
 operations regardless of the inputs; the constant-time behavior of a part of the system however does not guarantee that the whole
-system runs in constant time. In~\cite{guo2022don}, the authors show that the algorithm employed in HQC and BIKE to sample polynomials
+system runs in constant time. In~\cite{DBLP:journals/tches/GuoHJLNS22}, the authors show that the algorithm employed in HQC and BIKE to sample polynomials
 with a fixed Hamming weight is not constant-time and can be exploited to fully recover the secret key; this vulnerability was discovered
 on the Round 3 version, and it has been fixed in the subsequent round. We therefore run the TVLA on the PKE and KEM schemes with
 the same settings as before, and find the results reported in Table~\ref{tab:ct}.

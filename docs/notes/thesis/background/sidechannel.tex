@@ -4,7 +4,7 @@ Regardless of the means of the implementation, the electronic devices that run t
 \textit{leak} information about the internal state of the device, potentially exposing secrets.
 But how does a device leak information?
 
-A \textit{side channel} is some observable aspect of a cryptosystem that reveals information held within that system~\cite{kocher1996timing, standaert2010introduction};
+A \textit{side channel} is some observable aspect of a cryptosystem that reveals information held within that system~\cite{DBLP:conf/crypto/Kocher96, DBLP:books/sp/10/Standaert10};
 example of side channels can be the execution time of an algorithm, the power consumption of a device or the electromagnetic
 radiation emitted while running some operations.\\
 In this chapter we will describe the most common side channel attacks, how they can be used to retrieve secret information and
@@ -41,7 +41,7 @@ by measuring the execution time of the operation we can infer information about 
 \end{example}
 
 Even though this attack strategy may seem trivial and easy to mitigate, it can still wreck havoc: real-life examples of timing attacks include, 
-for example, Spectre~\cite{Kocher2018spectre} and Meltdown~\cite{Lipp2018meltdown}, which affected almost all modern processors and allowed
+for example, Spectre~\cite{DBLP:journals/cacm/KocherHFGGHHLMP20} and Meltdown~\cite{DBLP:journals/cacm/LippSGPHHMKGYHS20}, which affected almost all modern processors and allowed
 an attacker to read the memory of any process running on the same machine.
 
 \subsection{Power attacks}
@@ -97,11 +97,11 @@ of a digital device is affected by the operations it performs, and thus can be u
     Both methods have their pros and cons: the first one is more accurate, but requires to phisically install the shunt resistor on the device;
     the second one is non-intrusive, but the measurements are tipically noisy due to external interferences.
 
-    Regardless of the source of a power trace, there are several possibilities to carry out an attack~\cite{randolph2020power}, such as:
+    Regardless of the source of a power trace, there are several possibilities to carry out an attack~\cite{DBLP:journals/cryptography/RandolphD20}, such as:
     \begin{itemize}
         \item Simple Power Analysis: observe the power consumption over a single trace
-        \item Differential Power Analysis: analyze multiple executions over the same algorithm with different inputs to detect small input-dependent differences
-        \item Template attacks: collect a large number of traces and use them to build a \emph{template} of the power consumption of the device to detect
+        \item Differential Power Analysis~\cite{DBLP:conf/crypto/KocherJJ99}: analyze multiple executions over the same algorithm with different inputs to detect small input-dependent differences
+        \item Template attacks~\cite{DBLP:conf/ches/ChariRR02}: collect a large number of traces and use them to build a \emph{template} of the power consumption of the device to detect
         when the device is performing a specific operation 
     \end{itemize}
 
@@ -113,7 +113,7 @@ of a digital device is affected by the operations it performs, and thus can be u
     execute regardless of the input; this can be achieved, for example, by replacing branching statements that depend on the inputs.
 
     A very effective way to avoid leakage, especially with respect to power attacks, is to randomize the inputs of the algorithm without
-    affecting the output. To do so, we can \emph{mask} the inputs: the basic principle of masking~\cite{prouff2013masking} is to split every sensitive value $x$ 
+    affecting the output. To do so, we can \emph{mask} the inputs: the basic principle of masking~\cite{DBLP:conf/eurocrypt/ProuffR13} is to split every sensitive value $x$ 
     into $d+1$ \textit{shares}, in such a way that the following relation holds:
     \begin{equation}
         x = x_0 \odot x_1 \odot \cdots \odot x_d
@@ -123,8 +123,8 @@ of a digital device is affected by the operations it performs, and thus can be u
     a random value, so that the observation of a side channel does not reveal any sensitive information, but only random noise.
     There is no particular constraint on the choice of the operation $\odot$ as long as it preserves the relation above;
     in practice, the most common choice is to use the XOR operation, as it is very fast and easy to implement: such a masking
-    scheme (e.g.~\cite{ishai2003private}) is often referred to as \emph{boolean} masking.
-    As proven in~\cite{chari1999towards}, a masking scheme with $d$ shares is a sound counermeasure against a side-channel attack 
+    scheme (e.g.~\cite{DBLP:conf/crypto/IshaiSW03}) is often referred to as \emph{boolean} masking.
+    As proven in~\cite{DBLP:conf/crypto/ChariJRR99}, a masking scheme with $d$ shares is a sound counermeasure against a side-channel attack 
     of $d$-th order, where an attacker can have up to $d$ \emph{probes} on the target system; this means that a $d+1$-th order
     attack could be possible, but such attacks become impractical as $d$ increases.
 
