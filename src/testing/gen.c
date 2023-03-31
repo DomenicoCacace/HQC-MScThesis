@@ -19,6 +19,8 @@ void ENC(void);
 
 void DEC(void);
 
+void ENCODE(void);
+
 void write_to_file(char *name, uint8_t *data, int len);
 
 void read_from_file(char *name, uint8_t *data, int len);
@@ -69,6 +71,17 @@ void DEC(void) {
     hqc_pke_decrypt(m, u, v, sk);
 
     write_to_file("m_out", (uint8_t *)m, VEC_K_SIZE_BYTES);
+}
+
+void ENCODE(void) {
+    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT c[VEC_N1N2_SIZE_DIGIT] = {0};
+
+    read_from_file("m_in", (uint8_t *)m, VEC_K_SIZE_BYTES);
+
+    code_encode(c, m);
+
+    write_to_file("c", (uint8_t *)c, VEC_N1N2_SIZE_BYTES);
 }
 
 void write_to_file(char *name, uint8_t *data, int len) {

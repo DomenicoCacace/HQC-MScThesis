@@ -49,12 +49,22 @@ if __name__ == "__main__":
     # Prepare inputs
     plaintext_size = 16
     ciphertext_size = [2209, 2208]
+
     if args.algorithm == "enc":
         output_size = ciphertext_size
         samples = 182e6
-    else:
+        pretrig = 0.02
+    elif args.algorithm == "dec":
         output_size = plaintext_size
         samples = 100e6
+        pretrig = 0.02
+    elif args.algorithm == "decode":
+        output_size = plaintext_size
+        samples = 7.5e6
+        pretrig = 0.004
+    else:
+        raise Exception("Unknown algorithm")
+
 
     output_pathname = args.output
     
@@ -91,17 +101,17 @@ if __name__ == "__main__":
     myboard.reset_board(board_serial)
 
     myboard.exchange_keys()
-    inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
+    inputs = myboard.generate_inputs()
         
     num_traces = Sampling_config.batches_to_capture
 
     print("Variable inputs - start")
     # Run the actual capture - variable inputs
     for batch_id in range(num_traces):
-        inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
+        inputs = myboard.generate_inputs()
         print(f" * Capturing batch {batch_id+1}/{num_traces}")
         # Start capture
-        scope.capture(samples_per_capture, pre_trigger_sample_ratio=0.02)
+        scope.capture(samples_per_capture, pre_trigger_sample_ratio=pretrig)
         
         # Run the algorithm
         myboard.process_input_and_check(inputs, output_size)
@@ -134,11 +144,11 @@ if __name__ == "__main__":
 
     print("\n Fixed inputs - start")
     # Run the actual capture - fixed inputs
-    inputs = myboard.generate_inputs(Sampling_config.captures_per_batch, fixed=args.fixed)
+    inputs = myboard.generate_inputs()
     for batch_id in range(num_traces):
         print(f" * Capturing batch {batch_id+1}/{num_traces}")
         # Start capture
-        scope.capture(samples_per_capture, pre_trigger_sample_ratio=0.02)
+        scope.capture(samples_per_capture, pre_trigger_sample_ratio=pretrig)
 
         # Run the algorithm
         myboard.process_input_and_check(inputs, output_size)

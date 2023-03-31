@@ -21,13 +21,11 @@
 #include "vector.h"
 
 
-void encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk);
-
-void decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk);
-
 void recv_key(unsigned char *pk, unsigned char *sk);
 
 void recv_ptx(DIGIT *m);
+
+void recv_encoded(DIGIT *c);
 
 void recv_ctx(DIGIT *u, DIGIT *v);
 
@@ -72,7 +70,7 @@ int run(int reps) {
     #endif
 
     #ifdef DECRYPT
-        while(1) {
+    while(1) {
         recv_ctx(u, v);
 
         DELAY(DELAY_AMT);   // 250 us
@@ -92,6 +90,35 @@ int run(int reps) {
     }
     #endif
 
+    #ifdef DECODE
+    DIGIT c[VEC_N1N2_SIZE_DIGIT] = {0};
+    DIGIT m_mask[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT c_mask[VEC_N1N2_SIZE_DIGIT] = {0};
+    while(1) {
+        recv_encoded(c);
+        RANDOM_BYTES(m_mask, VEC_K_SIZE_BYTES);
+        code_encode(c_mask, m_mask);
+        vect_add(c, c, c_mask, VEC_N1N2_SIZE_DIGIT);
+
+        DELAY(DELAY_AMT);   // 250 us
+        TRIGGER_SET
+
+        code_decode(m, c);
+
+        TRIGGER_RESET
+        DELAY(DELAY_AMT);   // 250 us
+
+        vect_add(m, m, m_mask, VEC_K_SIZE_DIGIT);
+
+        #ifdef DEBUG
+        send_ptx(m);
+        #endif
+
+        usart_send_str("DONE\n", 5);
+    }
+    #endif
+
+
     return 0;
 }
 
@@ -106,6 +133,11 @@ void recv_key(unsigned char *pk, unsigned char *sk) {
 void recv_ptx(DIGIT *m) {
     uint8_t *p = (uint8_t *)m;
     usart_recv_str(p, VEC_K_SIZE_BYTES);
+}
+
+void recv_encoded(DIGIT *c) {
+    uint8_t *p = (uint8_t *)c;
+    usart_recv_str(p, VEC_N1N2_SIZE_BYTES);
 }
 
 void recv_ctx(DIGIT *u, DIGIT *v) {

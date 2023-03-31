@@ -18,6 +18,7 @@ class nucleo_HQC:
         self.keygen = exec_folder + "keygen"
         self.encrypt = exec_folder + "encrypt"
         self.decrypt = exec_folder + "decrypt"
+        self.encode = exec_folder + "encode"
         self.exec_folder = exec_folder
         return
 
@@ -67,40 +68,35 @@ class nucleo_HQC:
     def gen_msg(self):
         return subprocess.check_output(["xxd", "-l", "16", "-p", "/dev/urandom"]).decode("utf-8").strip()
 
+    def gen_encoded(self, m):
+        with open("m_in", "w") as f:
+            f.write(m)
+        return subprocess.run(self.encode, capture_output=True).stdout.strip().decode("utf-8").split('\n')[0]
+
     def gen_ctx(self, m_in):
         with open("m_in", "w") as f:
             f.write(m_in)
         ctx = subprocess.run(self.encrypt, capture_output=True).stdout.strip().decode("utf-8").split('\n')
         return ctx[0], ctx[1]
     
-    def generate_inputs(self, amount, fixed):
-        out = []
-        if fixed:
-            m = self.gen_msg()
-            if self.mode == "enc":
-                for i in range(amount):
-                    out.append([m])
-            if self.mode == "dec":
-                u, v = self.gen_ctx(m)
-                for i in range(amount):
-                    out.append([u, v, m])
-        else:
-            for i in range(amount):
-                m = self.gen_msg()
-                if self.mode == "enc":
-                    out.append([m])
-                if self.mode == "dec":
-                    u, v = self.gen_ctx(m)
-                    out.append([u, v, m])
+    def generate_inputs(self):
+        m = self.gen_msg()
+        if self.mode == "enc":
+            return [[m]]
+        elif self.mode == "dec":
+            u, v = self.gen_ctx(m)
+            return [[u, v, m]]
+        elif self.mode == "decode":
+            return [[m, self.gen_encoded(m)]]
 
-        return out
-        
     def remove_files(self):
         system("rm pk sk")
         if self.mode == "enc":
             system("rm u v")
-        else:
+        elif self.mode == "dec":
             system("rm m_in")
+        elif self.mode == "decode":
+            system("rm m_in c")
 
         return
 
@@ -108,8 +104,10 @@ class nucleo_HQC:
     def process_input_and_check(self, inputs, output_size):
         if self.mode == "enc":
             self.process_input_and_check_enc(inputs, output_size)
-        else:
+        elif self.mode == "dec":
             self.process_input_and_check_dec(inputs, output_size)
+        elif self.mode == "decode":
+            self.process_input_and_check_decode(inputs, output_size)
 
         return
     
@@ -148,10 +146,6 @@ class nucleo_HQC:
 
         return
     
-    # This method sends the input to the board, waits for the results and checks
-    # it. 
-    # The expected HQC outputs are computed by a standalone binary 
-    # It fills processed_data with the processed inputs
     def process_input_and_check_dec(self, inputs, plaintext_size):
         for i in range(0, self.batch_size):
             u = inputs[i][0]
@@ -164,6 +158,28 @@ class nucleo_HQC:
             # receive decrypted message
             m_out = self.recv(plaintext_size*2+1).strip().decode("utf-8")
 
+            if(m_in != m_out):
+                print("Results mismatch:")
+                print(f"Getting  m {m_out}")
+                print(f"Computed m {m_in}")
+            else:
+                print("Board-side and Host side results match!")
+
+            self.recv(5)    # DONE
+
+        return
+
+    def process_input_and_check_decode(self, inputs, decoded_size):   
+        for i in range(0, self.batch_size): 
+            m_in = inputs[i][0]    
+            c = inputs[i][1]
+            # send message
+            self.send(bytes.fromhex(c))
+            
+            # receive decoded
+            m_out = self.recv(decoded_size*2+1).strip().decode("utf-8")
+
+                    
             if(m_in != m_out):
                 print("Results mismatch:")
                 print(f"Getting  m {m_out}")

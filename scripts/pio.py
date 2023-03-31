@@ -89,17 +89,20 @@ elif mode == 4 or mode == 5: #fast ttest/timing
         alg = 0
     env.Append(CPPDEFINES=[("{}".format(algs[alg]))])
 elif mode == 6: #power
-    print("Algorithm\n[0] Encrypt (Default)\n[1] Decrypt\n")
+    print("Algorithm\n[0] Encrypt (Default)\n[1] Decrypt\n[2] Decode\n")
     try:
         alg = int(input("Select algorithm: \n"))
     except ValueError:
         alg = 0
-    if alg > 1:
+    if alg > 2:
         alg = 0
-    algs = ["ENC", "DEC"]
+    algs = ["ENC", "DEC", "DECODE"]
     print("Algorithm selected: " + algs[alg])
     env.Append(CPPDEFINES=[("ALG", algs[alg])])
-    env.Append(CPPDEFINES=[("{}RYPT".format(algs[alg]))])
+    if alg < 2:
+        env.Append(CPPDEFINES=[("{}RYPT".format(algs[alg]))])
+    else:
+        env.Append(CPPDEFINES=[("DECODE")])
 else:   # PLAIN/TIMING/TTEST
     print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Multiplication\n[3] Encrypt\n[4] Decrypt\n[5] Encaps\n[6] Decaps\n[7] Keygen\n")
     try:
