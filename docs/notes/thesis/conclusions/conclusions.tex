@@ -1,0 +1,14 @@
+In this thesis we provided the first constant-time implementation of HQC and the
+first masked implementation of HQC's public key encryption scheme.
+
+To do so, we evaluated different multiplication methods in terms of both performance and constant-time behavior, 
+crowning the Frobenius Additive FFT as the best one on the ARM Cortex-M4 and the Karatsuba algorithm on x86 architectures;
+moreover, we implemented a masking scheme for the key generation, encryption and decryption primitives
+of HQC's public key encryption scheme.
+
+We provided a comparative analysis of the Round 4 NIST PQC candidates, showing how both our constant-time and masked implementations 
+of HQC offer a good trade-off in terms of memory consumption and execution time, making them suitable for the standardization.
+
+As future work, a first thing to do would be empirically showing the efficacy of our masking scheme against power attacks.
+Since our masking scheme targets the PKE only, it could be possible to extend the masking scheme to 
+the SHAKE functions and make the whole KEM secure against power attacks, such as the one proposed in~\cite{DBLP:journals/tches/UenoXTITH22}.
