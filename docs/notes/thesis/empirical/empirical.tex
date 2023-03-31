@@ -122,4 +122,22 @@ correctly, we generate the inputs on the same machine, send them to the target v
 expected ones; the executables to generate the inputs and verify the outputs are compiled with \texttt{gcc} (9.3.0) on the same machine,
 using the \texttt{-O3} optimization flag.\\
 
+Due to the significant amount of time required to acquire the EM traces, the populations of our TVLA contain 1000 traces each. Our tests 
+results show no significant leakage in neither the encryption nor the decryption algorithm, as shown in Figure~\ref{fig:decEM}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics{figures/decrypt_tstat.png}
+    \caption{Power consumption t-values, decryption}
+    \label{fig:decEM}
+\end{figure}
+
+However, similar results are achieved as well on the non-masked version of the algorithms: since other works have proven the existence of 
+a power side-channel attack on the RMRS decoder~\cite{DBLP:conf/pqcrypto/SchambergerHRWS22, DBLP:conf/pqcrypto/GoyLG22}, we conclude that 
+further measurements are required to assess the security of the masking scheme.
+
+
+
+
+
 
