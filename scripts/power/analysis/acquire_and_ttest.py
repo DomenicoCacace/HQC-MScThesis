@@ -62,6 +62,10 @@ if __name__ == "__main__":
         output_size = plaintext_size
         samples = 7.5e6
         pretrig = 0.004
+    elif args.algorithm == "decode-rs":
+        output_size = plaintext_size
+        samples = 1.65e6
+        pretrig = 0.0003
     else:
         raise Exception("Unknown algorithm")
 

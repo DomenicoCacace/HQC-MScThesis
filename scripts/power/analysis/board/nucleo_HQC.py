@@ -86,7 +86,7 @@ class nucleo_HQC:
         elif self.mode == "dec":
             u, v = self.gen_ctx(m)
             return [[u, v, m]]
-        elif self.mode == "decode":
+        elif self.mode == "decode" or self.mode == "decode-rs":
             return [[m, self.gen_encoded(m)]]
 
     def remove_files(self):
@@ -106,7 +106,7 @@ class nucleo_HQC:
             self.process_input_and_check_enc(inputs, output_size)
         elif self.mode == "dec":
             self.process_input_and_check_dec(inputs, output_size)
-        elif self.mode == "decode":
+        elif self.mode == "decode" or self.mode == "decode-rs":
             self.process_input_and_check_decode(inputs, output_size)
 
         return

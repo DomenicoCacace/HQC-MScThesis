@@ -118,6 +118,37 @@ int run(int reps) {
     }
     #endif
 
+    #ifdef RSDECODE
+    DIGIT c[VEC_N1N2_SIZE_DIGIT] = {0};
+    DIGIT m_mask[VEC_K_SIZE_DIGIT] = {0};
+    DIGIT c_mask[VEC_N1N2_SIZE_DIGIT] = {0};
+    DIGIT tmp[VEC_N1_SIZE_DIGIT] = {0};
+    while(1) {
+        recv_encoded(c);
+        RANDOM_BYTES(m_mask, VEC_K_SIZE_BYTES);
+        code_encode(c_mask, m_mask);
+        vect_add(c, c, c_mask, VEC_N1N2_SIZE_DIGIT);
+
+        reed_muller_decode(tmp, c);
+
+        DELAY(DELAY_AMT);   // 250 us
+        TRIGGER_SET
+
+        reed_solomon_decode(m, tmp);
+
+        TRIGGER_RESET
+        DELAY(DELAY_AMT);   // 250 us
+
+        vect_add(m, m, m_mask, VEC_K_SIZE_DIGIT);
+
+        #ifdef DEBUG
+        send_ptx(m);
+        #endif
+
+        usart_send_str("DONE\n", 5);
+    }
+    #endif
+
 
     return 0;
 }
