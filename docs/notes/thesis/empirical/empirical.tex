@@ -123,8 +123,14 @@ expected ones; the executables to generate the inputs and verify the outputs are
 using the \texttt{-O3} optimization flag.\\
 
 Due to the significant amount of time required to acquire the EM traces, the populations of our TVLA contain 1000 traces each. Our tests 
-results show no significant leakage in neither the encryption nor the decryption algorithm, as shown in Figure~\ref{fig:decEM}.
+results show no significant leakage in neither the encryption nor the decryption algorithm, as shown in Figure~\ref{fig:encEM} and Figure~\ref{fig:decEM}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics{figures/encrypt_tstat.png}
+    \caption{Power consumption t-values, encryption}
+    \label{fig:encEM}
+\end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics{figures/decrypt_tstat.png}
