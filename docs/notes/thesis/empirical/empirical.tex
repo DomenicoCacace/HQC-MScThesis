@@ -2,7 +2,7 @@ We choose the STM32L476RG Nucleo board as our benchmarking platform, featuring 9
 a 32-bit ARM Cortex M4 which can be clocked up to 80MHz and a true random number generator.
 Due to its large memory footprint and the limited amount of memory available on our target platform,
 we take into consideration only the \texttt{hqc-128} instance. 
-We use \texttt{libopencm3} (1.0.0) as firmware library and compile the project with \texttt{gcc-arm-none-eabi} (7.2.1)
+We use \texttt{libopencm3} 1.0.0 as firmware library and compile the project with \texttt{gcc-arm-none-eabi} 7.2.1
 using the \texttt{-O3} optimization flag. The board is clocked at a range of frequencies between 16 and 80 MHz to
 evaluate the impact of the memory wait states, as shown in Table~\ref{tab:waitstates}.
 
@@ -18,12 +18,13 @@ evaluate the impact of the memory wait states, as shown in Table~\ref{tab:waitst
 \end{table}
 
 We run the same experiments on a x86 machine, equipped with an AMD Ryzen 25000U, 8GB of DDR4 DRAM and running ArchLinux 6.2; the executables are compiled with
-\texttt{gcc} (12.2.1) using the \texttt{-O3} optimization flag and, for AVX implementations (marked with a `$\dagger$'), the \texttt{-march=native} flag. 
+\texttt{gcc} 12.2.1 using the \texttt{-O3} optimization flag and, for AVX implementations (marked with a `$\dagger$'), the \texttt{-march=native} flag. 
 
+\vspace{-10pt}
 \subsubsection{Welch's t-test}
 To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{DBLP:journals/jce/SchneiderM16},
 based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
-populations differ; the t-test statistic is computed as follows:
+populations differ; the t-test statistic is computed as follows:\
 \begin{equation}
     t = \frac{\mu_0 - \mu_1}{\sqrt{\frac{s_0^2}{n_0} + \frac{s_1^2}{n_1}}}
 \end{equation}  
@@ -69,13 +70,13 @@ relies on precomputed tables, requiring a higher amount of memory accesses and t
 we can see that the Karatsuba algorithm takes the longest amount of time.
 Things change dramatically on x86: on this architecture we can take advantage of AVX instructions, which allow us to carry out
 operations with 256-bit vectors in a single clock cycle: this benefits the Karatsuba algorithm, which is the fastest one by a large margin,
-while the Frobenius FFT becomes the slowest one.\\
+while the Frobenius FFT becomes the slowest one.
 
 These results are clearly reflected in the execution times of both the PKE and KEM schemes, as shown in Figures~\ref{fig:encdecTiming},~\ref{fig:encapsdecapsTiming}.
 and in Tables \ref{tab:pkeTiming}, \ref{tab:kemTiming}.
 
 \begin{figure}[H]
-    \caption{Encryption/decryption execution times on ARM}
+    \caption{Public Key Encryption execution times on ARM}
     \subfloat[Encryption]{
         \ARMtimingplot{\armEncTiming}
     }
@@ -84,8 +85,9 @@ and in Tables \ref{tab:pkeTiming}, \ref{tab:kemTiming}.
     }
     \label{fig:encdecTiming}
 \end{figure}
+
 \begin{figure}[H]
-    \caption{Key encapsulation/decapsulation execution times on ARM}
+    \caption{Key Encapsulation Mechanism execution times on ARM}
     \subfloat[Encapsulation]{
         \ARMtimingplot{\armEncapsTiming}
     }
@@ -120,7 +122,7 @@ configuration achieving a 52dB gain and a H-probe, placed on top of the STM32L47
 computer equipped with an AMD A8-6600K CPU, 16GB of DDR3 DRAM running Debian 10. To ensure that the encryption/decryption process runs
 correctly, we generate the inputs on the same machine, send them to the target via the USART1 interface and compare the outputs with the
 expected ones; the executables to generate the inputs and verify the outputs are compiled with \texttt{gcc} (9.3.0) on the same machine,
-using the \texttt{-O3} optimization flag.\\
+using the \texttt{-O3} optimization flag.
 
 Due to the significant amount of time required to acquire the EM traces, the populations of our TVLA contain 1000 traces each. Our tests 
 results show no significant leakage in neither the encryption nor the decryption algorithm, as shown in Figure~\ref{fig:EMtstat}.
@@ -150,53 +152,7 @@ further measurements are required to assess the security of the masking scheme.
     the optimized implementations for Cortex M4 with level 1 parameters. For HQC, we consider the results
     obtained with zero memory wait states, as the authors of the other implementations did.
         
-    \begin{figure}[H]
-        \centering
-    \pgfplotstableread[col sep=comma]{ % data 
-        Label,     Keygen, Encaps, Decaps
-        McEliece, 2146932, 582, 2706
-        BIKE, 24935, 3253, 49911
-        HQC, 4934, 10441, 15546
-        HQC (masked), 8228, 17050, 25522
-            }\mydata
-        \begin{tikzpicture}
-        \centering
-        \begin{axis}[
-            height=70mm, width=125mm,
-    %
-            bar width=0.22,
-            ybar=2pt,
-            enlarge x limits={abs=0.5},
-            ymin=0,
-            ymax=55000,
-            ytick distance=10000,
-            yticklabel style={font=\small},
-            yticklabel=\pgfmathprintnumber{\tick},
-            ylabel={Execution time (kcycles)},
-            %xlabel={Cryptosystem},
-            xtick=data,
-            xticklabels from table={\mydata}{Label},
-    %
-            nodes near coords,
-            nodes near coords style={font=\tiny,
-                                    /pgf/number format/.cd,
-                                                precision=0,
-                                                zerofill,
-                                    },
-            legend style={legend pos=north east,
-                        cells={anchor=west},
-                        font=\footnotesize,
-                        }
-        ]
-    \addplot table [x expr=\coordindex,y=Keygen]{\mydata};
-    \addplot table [x expr=\coordindex,y=Encaps]{\mydata};
-    \addplot table [x expr=\coordindex,y=Decaps]{\mydata};
-    \legend{Keygen, Encaps, Decaps}    
-    \end{axis}
-    \end{tikzpicture}
-    \caption{Execution times}
-    \label{fig:time}
-    \end{figure}
+    \input{figures/comp_extime.tex}
     We can see how the McEliece cryptosystem is the fastest one in terms of encapsulation and decapsulation, but 
     requires $2\cdot 10^{12}$ cycles to generate the keypair. With respect to BIKE, the most promising
     candidate in this round, we can see how HQC outperforms it in terms of key generation and decapsulation,
@@ -206,60 +162,4 @@ further measurements are required to assess the security of the masking scheme.
     In terms of size, we can see how McEliece is prohibitively large in terms of keysize (over 250KB for the public key only).
     With respect to BIKE, we can see that HQC ciphertext and public keys are larger by a factor of $2.9$ and $1.5$ respectively.
 
-    \begin{figure}[H]
-        \centering
-    \pgfplotstableread[col sep=comma]{ % data 
-    Label,     pk, sk, ctx
-    McEliece, 261120, 6492, 128
-    BIKE, 1540, 280, 1572
-    HQC, 2249, 40, 4481
-        }\memorytable
-        \begin{tikzpicture}
-        \centering
-        \begin{axis}[
-            height=67mm, width=125mm,
-    %
-            bar width=0.22,
-            ybar=2pt,
-            enlarge x limits={abs=0.5},
-            ymin=0,
-            ymax=7000,
-            ytick distance=1000,
-            yticklabel style={font=\small},
-            yticklabel=\pgfmathprintnumber{\tick},
-            ylabel={Memory usage (Bytes)},
-            %xlabel={Cryptosystem},
-            xtick=data,
-            xticklabels from table={\memorytable}{Label},
-    %
-            nodes near coords,
-            nodes near coords style={font=\tiny,
-                                    /pgf/number format/.cd,
-                                                precision=0,
-                                                zerofill,
-                                    },
-            legend style={legend pos=north east,
-                        cells={anchor=west},
-                        font=\footnotesize,
-                        }
-        ]
-    \addplot table [x expr=\coordindex,y=pk]{\memorytable};
-    \addplot table [x expr=\coordindex,y=sk]{\memorytable};
-    \addplot table [x expr=\coordindex,y=ctx]{\memorytable};
-    \legend{Public Key, Secret Key, Ciphertext}    
-    \end{axis}
-        \end{tikzpicture}
-        \caption{Memory usage}
-        \label{fig:memory}
-    \end{figure}
-
-
-
-
-
-
-
-
-
-
-
+    \input{figures/comp_mem.tex}

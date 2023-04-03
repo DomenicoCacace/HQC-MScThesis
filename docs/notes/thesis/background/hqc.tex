@@ -30,7 +30,7 @@ The \textsf{HQC.PKE} defines the four algorithms of an encryption scheme as foll
      $(\mathbf{u}, \mathbf{v})$, where $\mathbf{u} = \mathbf{r_1} + \mathbf{h}\cdot\mathbf{r_2}$ and $\mathbf{v} = \mathbf{mG} + \mathbf{s\cdot r_2} + \mathbf{e}$.
     \item \textsf{Decrypt(sk, \textbf{c})}: outputs $\mathcal{C}.\textsf{Decode}(\mathbf{v} - \mathbf{u\cdot y})$.
 \end{itemize}
-
+\newpage
 The idea at the core of \textsf{HQC.PKE} is to encode the message ($\mathbf{mG}$) and then add random errors that can be removed only by knowing the secret key: the code $\mathcal{C}$ correctly decodes $\mathbf{v-u\cdot y}$ whenever
 \begin{equation*}
 	\begin{aligned}

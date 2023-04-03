@@ -250,15 +250,15 @@ Due to its large memory footprint and the limited resources of the target platfo
         $\ssplit{v} \gets \ssplit{m}\mathbf{G} + s \ssplit{r_2} + e $\;
         \KwRet $(\textsc{Collapse}(\ssplit{u}),\textsc{Collapse}(\ssplit{v}))$\;
     \end{algorithm2e}
-    When calculating \ssplit{v} it is important to perform the operations reported at line 7 from left to right, to avoid leaking
-    information about $e$; in alternative, we can also mask $e$ and then sum it to \ssplit{v}.
-
+    When calculating \ssplit{v} it is important to perform the operations at line 7 from left to right, to avoid leaking
+    information about $e$; in alternative, we can mask $e$ and sum it to \ssplit{v}.
 
     \subsection{Decrypt}
     In the decryption we exploit the linearity of the correctable code: after masking $y$ and multiplying by $u$, we 
     generate a random codeword $\ssplit{\bar{m}}$ and encode it into \ssplit{\bar{c}} to protect $v-uy$ during the decoding.
     After the decoding we can collapse $\ssplit{\bar{m}}$ and the decoded message: since the code is linear, the final result
     is the original message, as if we had performed the decoding on $v-uy$ directly.
+
     \begin{algorithm2e}
         \caption{Decrypt($\kpri$, $c$), masked version}
         \KwData{$\mathbf{G}$: a $\mathds{F}_2^{k \times n}$ matrix generating an efficiently correctable code}

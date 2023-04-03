@@ -1,5 +1,5 @@
 In this section we give the basic concepts and definitions of coding theory (\cite{macwilliams1977theory}), required to formally define
-the problems on which HQC and similar cryptosystems are based.
+the problems on which HQC is based.
 
 \subsection{General definitions}
 \begin{definition}[Circulant matrix]
@@ -17,13 +17,12 @@ the problems on which HQC and similar cryptosystems are based.
 The algebra of $n\times n$ circulant matrices over $\mathds{F}_2$ is isomorphic to the algebra of polynomials
 in the ring $\mathcal{R}$:
 \begin{align*}
-    \mathbf{circ(v)} \simeq v_0 + v_1x + v_2x^2 + \cdots + x_{n-1}x^{n-1} \\
+    \mathbf{circ(v)} \simeq v_0 + v_1x + v_2x^2 + \cdots + x_{n-1}x^{n-1} 
 \end{align*}
 
 \begin{definition}[Linear $q$-ary Codes]
     A Linear $q$-ary code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathds{F}_q^n$.\\
-    Due to their vast use in cryptography (and in particular in this work), the following definitions and results are relative
-    to binary codes ($q=2$).
+    Due to their vast use in cryptography, we will consider only binary codes ($q=2$).
 \end{definition}
 
 \begin{definition}[Linear Codes]
@@ -64,7 +63,7 @@ A high rank code can correct more errors with fewer parity-check equations, but 
     \begin{equation*}
         \sigma(\mathbf{v}) = \mathbf{Hv}^\top
     \end{equation*}
-    From this definition, we can say that a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
+    From this definition,  a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
 \end{definition}
 
 \begin{definition}[Rate]
@@ -164,7 +163,7 @@ In this section we will describe some of the most common code families and the p
     Reed-Solomon codes~\cite{reed1960polynomial} are a subclass of Reed-Muller codes and they are usually 
     referred to as \textsf{RS}$(n, k)$, where $n$ and $k$ are the lenght and dimension of the code respectively.
 
-
+\newpage
 \subsection{Difficult problems for cryptography}
 The problems we are interested in are all variants of the \textit{decoding problem}, which requires to find 
 the closest codeword to a given word with respect to a certain metric (the Hamming weight in our case).\\

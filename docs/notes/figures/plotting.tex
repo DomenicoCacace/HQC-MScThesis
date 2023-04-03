@@ -14,7 +14,7 @@
         ]
         \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
         \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot[fill=orange!30] table [x expr=\coordindex, y=sparsemul (R4)]{#1};
+        \addplot[fill=yellow!30] table [x expr=\coordindex, y=sparsemul (R4)]{#1};
         \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1}; 
         \end{axis}
     \end{tikzpicture}
@@ -40,7 +40,7 @@
         ]
         \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
         \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot[fill=orange!30] table [x expr=\coordindex, y=sparsemul]{#1};
+        \addplot[fill=yellow!30] table [x expr=\coordindex, y=sparsemul]{#1};
         \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
     \end{tikzpicture}
@@ -64,7 +64,7 @@
         ]        
         \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
         \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot[fill=orange!30] table [x expr=\coordindex, y=sparsemul]{#1};
+        \addplot[fill=yellow!30] table [x expr=\coordindex, y=sparsemul]{#1};
         \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
     \end{tikzpicture}
@@ -78,7 +78,7 @@
         \node [right=0.01cm of box1] (text1) {\small Shift\&Add};
         \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
         \node [right=0.01cm of box2] (text2) {\small Karatsuba$^{\dagger}$};
-        \node [draw, fill=orange!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+        \node [draw, fill=yellow!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
         \node [right=0.01cm of box3] (text3) {\small CT Shift\&Add$^{\dagger}$};
         \node [draw, fill=green!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text3] (box4) {};
         \node [right=0.01cm of box4] (text4) {\small Frobenius FFT};

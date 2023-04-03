@@ -58,6 +58,7 @@ to a transistor can be thought of as a small capacitor and, as such, follows its
 where $I$ is the current, $C$ is the capacitance of the capacitor and $V$ is the voltage across the capacitor. To turn on a transistor 
 (\textit{i.e.} to increase the voltage across the capacitor) we need to apply a \emph{charge} to it: because of this behavior, if we have a changing
 voltage on the capacitor, for example when transitioning from 0 to 1, we can observe the flow of current through the capacitor. \\
+\newpage
 All operations in a digital circuit are performed by switching millions of transistors on and off: this means that the power consumption
 of a digital device is affected by the operations it performs, and thus can be used to infer information about the internal state of the device.
 
@@ -117,9 +118,10 @@ of a digital device is affected by the operations it performs, and thus can be u
 
     Regarding timing attacks, the most common countermeasure is to use \emph{constant-time} algorithms, that take the same amount of time to
     execute regardless of the input; this can be achieved, for example, by replacing branching statements that depend on the inputs.
-
     A very effective way to avoid leakage, especially with respect to power attacks, is to randomize the inputs of the algorithm without
-    affecting the output. To do so, we can \emph{mask} the inputs: the basic principle of masking~\cite{DBLP:conf/eurocrypt/ProuffR13} is to split every sensitive value $x$ 
+    affecting the output. 
+    \newpage
+    To do so, we can \emph{mask} the inputs: the basic principle of masking~\cite{DBLP:conf/eurocrypt/ProuffR13} is to split every sensitive value $x$ 
     into $d+1$ \textit{shares}, in such a way that the following relation holds:
     \begin{equation}
         x = x_0 \odot x_1 \odot \cdots \odot x_d

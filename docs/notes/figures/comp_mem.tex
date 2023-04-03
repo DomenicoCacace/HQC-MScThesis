@@ -1,0 +1,56 @@
+\begin{figure}[H]
+    \centering
+\pgfplotstableread[col sep=comma]{ % data 
+Label,     pk, sk, ctx
+McEliece, 261120, 6492, 128
+BIKE, 1540, 280, 1572
+HQC, 2249, 40, 4481
+    }\memorytable
+    \begin{tikzpicture}
+    \centering
+    \begin{axis}[
+        height=80mm, width=170mm,
+%
+        bar width=0.22,
+        ybar=0pt,
+        enlarge x limits={abs=0.5},
+        ymin=0,
+        ymax=8000,
+        ytick distance=1000,
+        yticklabel style={font=\small},
+        yticklabel=\pgfmathprintnumber{\tick},
+        ylabel={Memory usage (Bytes)},
+        %xlabel={Cryptosystem},
+        xtick=data,
+        xticklabels from table={\memorytable}{Label},
+%
+        nodes near coords,
+        nodes near coords style={font=\tiny,
+                                /pgf/number format/.cd,
+                                            precision=0,
+                                            zerofill,
+                                },
+        legend style={legend pos=north east,
+                    cells={anchor=west},
+                    font=\footnotesize,
+                    }
+    ]
+\addplot[fill=blue!30] table [x expr=\coordindex,y=pk]{\memorytable};
+\addplot[fill=red!30] table [x expr=\coordindex,y=sk]{\memorytable};
+\addplot[fill=yellow!30] table [x expr=\coordindex,y=ctx]{\memorytable};
+\end{axis}
+    \end{tikzpicture}
+
+    \begin{tikzpicture}
+        % draw a rectangle around all
+        \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (8.4, 0.4);
+        \node [draw, fill=blue!30, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+        \node [right=0.01cm of box1] (text1) {\small Public key};
+        \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+        \node [right=0.01cm of box2] (text2) {\small Secret Key};
+        \node [draw, fill=yellow!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+        \node [right=0.01cm of box3] (text3) {\small Ciphertext};
+    \end{tikzpicture}
+    \caption{Memory usage comparison of McEliece, BIKE and HQC}
+    \label{fig:memory}
+\end{figure}

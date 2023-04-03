@@ -25,7 +25,9 @@ Starting from $a(x)$, $b(x)$ of degree $n$ and an integer $m < n$, we can write
     b(x) &= b_0(x) + x^m\cdot b_1(x)
 \end{aligned}
 \end{equation*}
-where $a_0(x)$ and $b_0(x)$ have degree less than $m$. At this point, we can calculate the product $c(x) = a(x)\cdot b(x)$ as
+where $a_0(x)$ and $b_0(x)$ have degree less than $m$. 
+
+At this point, we can calculate the product $c(x) = a(x)\cdot b(x)$ as
 \begin{equation*}
     \begin{aligned}
         c(x) &= a(x)\cdot b(x) \\
@@ -46,6 +48,7 @@ Karatsuba observed that, at the cost of some few additions, we can calculate $a(
 \begin{equation*}
     z_1(x) = (a_0(x) + a_1(x))\cdot (b_0(x) + b_1(x)) - z_0(x) - z_2(x)
 \end{equation*}
+\vspace{-5pt}
 \begin{example}[Karatsuba multiplication]
 From the ring of binary polynomials $\mathcal{R}$ we take $a(x) = 1 + x + x^3$ and $b(x) = x + x^2$; by choosing $m=2$, we rewrite the operands as
 \begin{equation*}
@@ -130,7 +133,10 @@ the even and odd indexed inputs separately and then combines the results. Assumi
         & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk} + e^{-\frac{2\pi i}{N}k}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk} \\
         & = E_k + e^{-\frac{2\pi i}{N}k}O_k \qquad \text{ for } k = 0, \cdots, N/2-1
 \end{align*}
-where we split the DFT into two smaller DFTs, on the even and odd indexes respectively. Because of the periodicity of the complex exponential, we can also write:
+\vspace{-5pt}
+where we split the DFT into two smaller DFTs, on the even and odd indexes respectively. 
+
+Because of the periodicity of the complex exponential, we can also write:
 \begin{align*}
     X_{k+N/2} & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}m(k+N/2)} + e^{-\frac{2\pi i}{N}(k+N/2)}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}m(k+N/2)} \\
         & = \sum_{m=0}^{N/2-1}x_{2m}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} + e^{-\frac{2\pi i}{N}k}e^{-\pi i}\sum_{m=0}^{N/2-1}x_{2m+1}e^{-\frac{2\pi i}{N/2}mk}e^{-2\pi mi} \\
@@ -152,8 +158,7 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
     and the Lin-Chung-Han FFT~\cite{DBLP:conf/focs/LinCH14}.\\
     We will now focus on the LCH FFT, as it will be the foundation for a faster approach based on the Frobenius map; for this reason, we will
     consider the case $n=2^m$ where $m$ is a power of 2.
-
-
+    \newpage
     \subsubsection{Cantor basis}
     In~\cite{DBLP:journals/jct/Cantor89} Cantor showed how to get a special basis in which it is possible to compute the FFT efficiently
     for any $m = p^n$, with $p$ a prime number; later in~\cite{DBLP:journals/tit/GaoM10} Gao and Mateer used a simpler construction for the special case
@@ -191,13 +196,14 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         \begin{equation*}
             \beta(1+1^2)+\gamma(x+x^2) + \delta(x^2+(x^2)^2) + \epsilon(x^3+(x^3)^2) = v_{i-1}
         \end{equation*}
-        The resulting Cantor basis is $\mathbf{v} = (1, \alpha+\alpha^2, \alpha, \alpha+\alpha^3)$. As a consequence, the subspaces $W_i$ are:
+        \newpage
+        The resulting Cantor basis is $\mathbf{v} = (1, \alpha+\alpha^2, \alpha, \alpha+\alpha^3)$, inducing the subspaces $W_i$:
         \begin{itemize}
             \item $W_0 = \{0\}$
             \item $W_1 = \{0, 1\}$
             \item $W_2 = \{0, 1, \alpha+\alpha^2, 1+\alpha+\alpha^2\}$
             \item $W_3 = \{0, 1, \alpha+\alpha^2, 1+\alpha+\alpha^2, \alpha, 1+\alpha, \alpha^2, 1+\alpha^2\}$
-            \item $W_4 = \{0, 1, \alpha+\alpha^2, 1+\alpha+\alpha^2, \alpha, 1+\alpha, \alpha^2, 1+\alpha^2, \alpha+\alpha^3, 1+\alpha+\alpha^3, \alpha^2+\alpha^3, 1+\alpha^2+\alpha^3, \alpha^3, 1+\alpha^3, \alpha+\alpha^2+\alpha^3, 1+\alpha+\alpha^2+\alpha^3\} = \mathds{F}_{16}$
+            \item $W_4 = \mathds{F}_{16}$
         \end{itemize}
     Consequently, the vanishing polynomials are:
     \begin{itemize}
@@ -207,7 +213,6 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         \item $s_3(x) = x^8+x^4+x^2+x$
         \item $s_4(x) = x^{16}+x$
     \end{itemize}
-
     \end{example}
 
     \paragraph{A \textit{novel} polynomial basis}
@@ -216,9 +221,9 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
     \begin{equation}
         X_k(x) = \prod(s_i(x))^{b_i} \qquad \text{ where } k = \sum_{i=0}^{\log_2 n} b_i 2^i
     \end{equation}
-    In other words, $X_k(x)$ is the product of all the $i$-th vanishing polynomials, where the $i$s are the set bits of $k$ in its binary representation.
 
-    \begin{algorithm2e}
+    \vspace{-5pt}
+    \begin{algorithm2e}[H]
         \caption{Basis conversion from monomial to \emph{novelpoly}}
         \label{alg:basiscvt}
         \KwIn{$f(x) = f_0 + f_1x+f_2x^2+\cdots + f_{n-1}x^{n-1}  \in \mathds{F}_2[x]_{<n}$}
@@ -269,7 +274,8 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
     \begin{equation}
         f(\phi_2(a)) = \phi_2(f(a))
     \end{equation}
-    meaning that we can derive the value of $f$ at $\phi_2(a)$ by applying the Frobenius map to $f(a)$.
+    so that we can derive the value of $f$ at $\phi_2(a)$ by applying the Frobenius map to $f(a)$.
+    \newpage
     Our goal now is, given a polynomial $f(x) \in \mathds{F}_2[x]_{<n}$, to design a set $\Sigma \subset \mathds{F}_{2^m}$
     for $m$ a power of 2 such that we can derive $n$ values of $f$ from $\Sigma$.\
     \paragraph{Frobenius partition}
@@ -303,8 +309,8 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         performs the actual butterfly computations, we only have to adapt the latter to the new set of evaluation points.
         In particular, we pretend to evaluate $f$ at $v_{l+m/2} + W_l$, but \emph{truncate} the first $l_m$ layers of
         the butterflies, as we do not need the whole evaluation.
-        
-        \begin{example}
+        \newpage
+        \begin{example}[A truncated butterfly]
             Let's consider the calculation of the first value $f_0$ for $m=4$ and a generic $n$. Starting from $4$ points
             $(a_{0\cdot n^\prime}, a_{1\cdot n^\prime}, a_{2\cdot n^\prime}, a_{3\cdot n^\prime})$, each from $\mathds{F}_2$,
             the first $l_m=2$ layers of the butterfly stage are truncated as shown in Figure \ref{fig:trunc-fft}. 
