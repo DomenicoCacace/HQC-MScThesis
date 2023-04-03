@@ -2,6 +2,7 @@
 
 \begin{table}[H]
     \centering
+    \caption{Execution times in kcycles for multiplication}
     \begin{tabular}{c|c|c|c|c}
         WS  & Shift\&Add & Karatsuba & CT Shift\&Add & FAFFT\\
         \hline
@@ -14,12 +15,12 @@
         \hline
         x86 & 39  &  34  &  246  &  530
     \end{tabular}
-    \caption{Execution times in kcycles for multiplication}
     \label{tab:multTiming}
 \end{table}
 
 \begin{table}[H]
     \centering
+    \caption{Execution times in kcycles for encryption and decryption}
     \begin{tabular}{c|c|c||c|c|c}
         & \multicolumn{2}{c||}{Round 3} & \multicolumn{3}{c}{Round 4} \\
         WS & \texttt{reference} & \texttt{sparsemul} & \texttt{reference} & \texttt{sparsemul} & \texttt{fastmul} \\
@@ -41,12 +42,12 @@
         \hline
         x86 & 219 & 370 & 185 & 396 & 757 \\
     \end{tabular}
-    \caption{Execution times in kcycles for encryption and decryption}
     \label{tab:pkeTiming}
 \end{table}
 
 \begin{table}[H]
     \centering
+    \caption{Execution times in kcycles for encapsulation and decapsulation}
     \begin{tabular}{c|c|c||c|c|c}
         & \multicolumn{2}{c||}{Round 3} & \multicolumn{3}{c}{Round 4} \\
         WS & \texttt{reference} & \texttt{sparsemul} & \texttt{reference} & \texttt{sparsemul} & \texttt{fastmul} \\
@@ -68,6 +69,5 @@
         \hline
         x86 & 440 & 1041 & 407 & 1145 & 2041 \\
     \end{tabular}
-    \caption{Execution times in kcycles for encapsulation and decapsulation}
     \label{tab:kemTiming}
 \end{table}

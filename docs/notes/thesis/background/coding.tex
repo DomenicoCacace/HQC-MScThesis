@@ -81,7 +81,7 @@ of bits, at the cost of reduced redundancy (and thus reduced error correcting ca
 \end{definition}
 The length, dimension and minimum distance of a linear code $\mathcal{C} = [n,k,d]$ are tied by the Singleton bound~\cite{DBLP:journals/tit/Singleton64}:
 \begin{equation*}
-    d \leq n-k+1
+    d \leqslant n-k+1
 \end{equation*}
 If the equality holds, $\mathcal{C}$ is called a maximum distance separable (MDS) code, and it has desirable properties in terms of error correction.
 
@@ -94,7 +94,7 @@ If $\mathcal{C}$ is a MDS code, we can rewrite this as $\delta = \lfloor \frac{n
     Let $\mathcal{C} = [n,k]$ be a linear code. The Gilbert-Varshamov bound~\cite{gilbert1952comparison,varshamov1957estimate} 
     states that $\mathcal{C}$ can correct at least $t$ errors if its size satisfies
     \begin{equation}
-        2^k \geq \sum_{i=0}^t \binom{n}{i} \label{eq:gv_bound}
+        2^k \geqslant \sum_{i=0}^t \binom{n}{i} \label{eq:gv_bound}
     \end{equation}
 \end{definition}
 

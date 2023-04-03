@@ -1,5 +1,5 @@
-Let $a(x), b(x) \in \mathcal{R}$ be two polynomials. To calculate the product $c(x) = a(x)b(x)$ the most straightforward
-approach, also known as the \emph{schoolbook} algorithm, requires us to multiply each coefficient of the first with each polynomial of the second 
+Let $a(x), b(x) \in \mathcal{R}$ be two polynomials. To calculate the product $c(x) = a(x)\cdot b(x)$ the most straightforward
+approach, also known as the \emph{schoolbook} algorithm, consists in multiplying each monomial of the first with each monomial of the second 
 and add together the results of the same degree. With this method we can calculate the product of the polynomials with $\mathcal{O}(n^2)$ multiplications
 and $\mathcal{O}(n^2)$ additions, as the degree of the operands is at most $n-1$. Even though this approach is simple to understand and implement, 
 it does not scale well as the degree of the operands increases: for this reason, other multiplication algorithms have been proposed.
@@ -21,51 +21,51 @@ three $n/2$-degree polynomials and then calculates the product of the three poly
 Starting from $a(x)$, $b(x)$ of degree $n$ and an integer $m < n$, we can write
 \begin{equation*}
 \begin{aligned}
-    a(x) &= a_0(x) + x^m a_1(x) \\
-    b(x) &= b_0(x) + x^m b_1(x)
+    a(x) &= a_0(x) + x^m\cdot a_1(x) \\
+    b(x) &= b_0(x) + x^m\cdot b_1(x)
 \end{aligned}
 \end{equation*}
 where $a_0(x)$ and $b_0(x)$ have degree less than $m$. At this point, we can calculate the product $c(x) = a(x)\cdot b(x)$ as
 \begin{equation*}
     \begin{aligned}
-        c(x) &= a(x)b(x) \\
-             &= (a_0(x) + x^m a_1(x))(b_0(x) + x^m b_1(x)) \\
-             &= a_1(x)b_1(x)x^{2m} + (a_1(x)b_0(x) + a_0(x)b_1(x))x^m + a_0(x)b_0(x)\\
-             &= z_2(x)x^{2m} + z_1(x)x^m + z_0(x)
+        c(x) &= a(x)\cdot b(x) \\
+             &= (a_0(x) + x^m\cdot  a_1(x))\cdot (b_0(x) + x^m\cdot  b_1(x)) \\
+             &= a_1(x)\cdot b_1(x)\cdot x^{2m} + (a_1(x)\cdot b_0(x) + a_0(x)\cdot b_1(x))\cdot x^m + a_0(x)\cdot b_0(x)\\
+             &= z_2(x)\cdot x^{2m} + z_1(x)\cdot x^m + z_0(x)
     \end{aligned}
 \end{equation*}
 where
 \begin{equation*}
     \begin{aligned}
-        z_2(x) &= a_1(x)b_1(x) \\
-        z_1(x) &= a_1(x)b_0(x) + a_0(x)b_1(x) \\
-        z_0(x) &= a_0(x)b_0(x)
+        z_2(x) &= a_1(x)\cdot b_1(x) \\
+        z_1(x) &= a_1(x)\cdot b_0(x) + a_0(x)\cdot b_1(x) \\
+        z_0(x) &= a_0(x)\cdot b_0(x)
     \end{aligned}
 \end{equation*}
-Karatsuba observed that, at the cost of some few additions, we can calculate $a(x)b(x)$ with three multiplications, as we can rewrite $z_1$ as
+Karatsuba observed that, at the cost of some few additions, we can calculate $a(x)b(x)$ with three multiplications by rewriting $z_1$ as
 \begin{equation*}
-    z_1(x) = (a_0(x) + a_1(x))(b_0(x) + b_1(x)) - z_0(x) - z_2(x)
+    z_1(x) = (a_0(x) + a_1(x))\cdot (b_0(x) + b_1(x)) - z_0(x) - z_2(x)
 \end{equation*}
-\begin{example}
-From the ring of binary polynomials $\mathcal{R}$ we take $a(x) = 1 + x + x^3$ and $b(x) = x + x^2$; by taking $m=2$, we rewrite:
+\begin{example}[Karatsuba multiplication]
+From the ring of binary polynomials $\mathcal{R}$ we take $a(x) = 1 + x + x^3$ and $b(x) = x + x^2$; by choosing $m=2$, we rewrite the operands as
 \begin{equation*}
     \begin{aligned}
-        a(x) &= (1+x) + x^2(x)\\
-        b(x) &= (x) + x^2(1)
+        a(x) &= (1+x) + x^2\cdot (x)\\
+        b(x) &= (x) + x^2\cdot (1)
     \end{aligned}
 \end{equation*}
 and calculate the subproducts as
 \begin{equation*}
     \begin{aligned}
-        z_2(x) &= (1+x)(x) = x + x^2 \\
-        z_0(x) &= (x)(1) = x \\
-        z_1(x) &= (1+x + x)(x + 1) - (x) - (x+x^2) = 1 + x + x^2
+        z_2(x) &= (1+x)\cdot (x) = x + x^2 \\
+        z_0(x) &= (x)\cdot (1) = x \\
+        z_1(x) &= (1+x + x)\cdot (x + 1) - (x) - (x+x^2) = 1 + x + x^2
     \end{aligned}
 \end{equation*}
 From the above, we can calculate the full product as
 \begin{equation*}
     \begin{aligned}
-        c(x) &= (x)x^{2\cdot 2} + (1 + x + x^2)x^2 + (x+x^2) \\
+        c(x) &= (x)\cdot x^{2\cdot 2} + (1 + x + x^2)\cdot x^2 + (x+x^2) \\
              &= x^5 + x^4 + x^3 + x
     \end{aligned}
 \end{equation*}
@@ -108,7 +108,7 @@ This approach might appear slower than the schoolbook method: the sampling requi
 $\mathcal{O}(n)$ and the interpolation up to $\mathcal{O}(n^3)$ if we use a naive method such as Gaussian elimination; however, 
 with the right choice of sampling points, we can drastically reduce the operations required in all three steps.
 
-Instead of sampling at $2n$ random points, we can choose the points to be the $N$-th roots of unity, \textit{i.e.} we calculate the Discrete
+Instead of sampling at $N = 2n+1$ random points, we can choose the points to be the $N$-th roots of unity, \textit{i.e.} we calculate the Discrete
 Fourier Transform of the input polynomials:
 \begin{equation}
     \mathcal{F}(x) = \sum_{n=0}^{N} x_n e^{-\frac{i2\pi}{N}kn}
@@ -183,7 +183,7 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
         \item $s_i(v_i) = 1$, for $v_i$ in the Cantor basis
         \item the roots of $s_i(x)$ are the elements of $W_i$
     \end{itemize}
-    Note that the $W_i$s are also fields whenever $i$ is a power of two; in that case, the vanishing polynomial has the form $s_i(x) = x^{2^i}+x$.
+    Note that $W_i$ is also a field whenever $i$ is a power of two; in that case, the vanishing polynomial has the form $s_i(x) = x^{2^i}+x$.
 
     \begin{example}[Cantor basis in $\mathds{F}_{16}$]
         Recalling that $GF(16) = GF(2)[X]/\langle X^4+X+1 \rangle$ and that $v_1 = 1$, we can compute $v_i = \beta(1) + \gamma(x) + \delta(x^2) + \epsilon(x^3)$,
@@ -325,7 +325,9 @@ following the Master theorem~\cite{bentley1980general}, the computational comple
 
     \input{figures/fft-full.tex}
 
-    We can finally summarize the Frobenius Additive FFT algorithm in Algorithm~\ref{alg:fafft}.
+    \newpage
+    Similarly to other FFT-based approaches, in order to perform the multiplication of two polynomials we have to apply the FFT on the inputs, 
+    multiply the samples pointwise and then apply the inverse FFT; the summary of this procedure is shown in Algorithm~\ref{alg:fafft}.
 
     \begin{algorithm2e}[H]
         \caption{Frobenius Additive FFT Multiplication}

@@ -8,12 +8,12 @@ evaluate the impact of the memory wait states, as shown in Table~\ref{tab:waitst
 
 \begin{table}[ht]
     \centering
+    \caption{Wait states and corresponding frequencies}
     \begin{tabular}{c|c|c|c|c|c}
         Frequency (MHz) & 16 & 32 & 48 & 64 & 80 \\
         \hline 
         Wait States & 0 & 1 & 2 & 3 & 4  \\
     \end{tabular}
-    \caption{Wait states and corresponding frequencies}
     \label{tab:waitstates}
 \end{table}
 
@@ -50,6 +50,7 @@ the multiplication algorithm is crucial to achieve good performance. The executi
 are shown in Figure~\ref{fig:multTiming} and in Table~\ref{tab:multTiming}.
 
 \begin{figure}[H]
+    \caption{Multiplication execution times on ARM (left) and x86 (right)}
     \subfloat{
         \ARMtimingplotmult{\armMultTiming}
     }
@@ -59,7 +60,6 @@ are shown in Figure~\ref{fig:multTiming} and in Table~\ref{tab:multTiming}.
     \centering
     \newline
     \timingLegend
-    \caption{Multiplication execution times on ARM (left) and x86 (right)}
     \label{fig:multTiming}
 \end{figure}
 As expected, the fastest multiplication algorithm on ARM (after the Shift\&Add) is the one using the Frobenius FFT, followed by the
@@ -75,23 +75,23 @@ These results are clearly reflected in the execution times of both the PKE and K
 and in Tables \ref{tab:pkeTiming}, \ref{tab:kemTiming}.
 
 \begin{figure}[H]
-    \subfloat{
+    \caption{Encryption/decryption execution times on ARM}
+    \subfloat[Encryption]{
         \ARMtimingplot{\armEncTiming}
     }
-    \subfloat{
+    \subfloat[Decryption]{
         \ARMtimingplot{\armDecTiming}
     }
-    \caption{Encryption/decryption execution times on ARM}
     \label{fig:encdecTiming}
 \end{figure}
 \begin{figure}[H]
-    \subfloat{
+    \caption{Key encapsulation/decapsulation execution times on ARM}
+    \subfloat[Encapsulation]{
         \ARMtimingplot{\armEncapsTiming}
     }
-    \subfloat{
+    \subfloat[Decapsulation]{
         \ARMtimingplot{\armDecapsTiming}
     }
-    \caption{Key encapsulation/decapsulation execution times on ARM}
     \label{fig:encapsdecapsTiming}
 \end{figure}
 
@@ -123,19 +123,19 @@ expected ones; the executables to generate the inputs and verify the outputs are
 using the \texttt{-O3} optimization flag.\\
 
 Due to the significant amount of time required to acquire the EM traces, the populations of our TVLA contain 1000 traces each. Our tests 
-results show no significant leakage in neither the encryption nor the decryption algorithm, as shown in Figure~\ref{fig:encEM} and Figure~\ref{fig:decEM}.
+results show no significant leakage in neither the encryption nor the decryption algorithm, as shown in Figure~\ref{fig:EMtstat}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics{figures/encrypt_tstat.png}
-    \caption{Power consumption t-values, encryption}
-    \label{fig:encEM}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics{figures/decrypt_tstat.png}
-    \caption{Power consumption t-values, decryption}
-    \label{fig:decEM}
+    \caption{t-value statistics on the electromagnetic traces}
+    \subfloat[Encryption]{
+        \includegraphics{figures/encrypt_tstat.png}
+    }
+    \newline
+    \subfloat[Decryption]{
+        \includegraphics{figures/decrypt_tstat.png}
+    }
+    \label{fig:EMtstat}
 \end{figure}
 
 However, similar results are achieved as well on the non-masked version of the algorithms: since other works have proven the existence of 

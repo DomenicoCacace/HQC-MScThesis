@@ -15,7 +15,10 @@ In a timing attack, the attacker tries to infer information about a secret by me
 the idea behind this attack is that the time it takes to execute an operation depends on the input of the operation, and thus
 by measuring the execution time of the operation we can infer information about the input.
 
-\begin{example}
+\begin{example}[Unlock the vault]
+    Let us consider a simple example: we have a vault with a combination lock, and we want to unlock it. The function
+    that checks if the combination entered by the user is correct is shown in the following listing:
+
     \begin{lstlisting}[language=C, caption={A non constant-time password checker}, label={lst:nonct_pwd}]
     int check_pin(int *pin) {
         int correct_pin[4] = {3, 1, 4, 2};
@@ -28,7 +31,7 @@ by measuring the execution time of the operation we can infer information about 
         return 1;
     }
     \end{lstlisting}
-    We can think this function as a part of a bigger system, where the user enters a PIN and the system checks if it is correct.
+    
     The function simply checks if the PIN entered by the user is equal to the correct PIN, and returns 1 if it is correct and 0 otherwise.
     Being the PIN composed of decimal digits, the total amount of combinations is $10^4$, so on average we would need 5000 guesses to find
     the correct PIN; however, we can reduce the number of guesses needed to find the correct PIN by using a timing attack.
@@ -41,8 +44,9 @@ by measuring the execution time of the operation we can infer information about 
 \end{example}
 
 Even though this attack strategy may seem trivial and easy to mitigate, it can still wreck havoc: real-life examples of timing attacks include, 
-for example, Spectre~\cite{DBLP:journals/cacm/KocherHFGGHHLMP20} and Meltdown~\cite{DBLP:journals/cacm/LippSGPHHMKGYHS20}, which affected almost all modern processors and allowed
-an attacker to read the memory of any process running on the same machine.
+for example, Spectre~\cite{DBLP:journals/cacm/KocherHFGGHHLMP20} and Meltdown~\cite{DBLP:journals/cacm/LippSGPHHMKGYHS20}, which affects almost 
+all modern processors and allowed an attacker to read the memory of any process running on the same machine. Moreover, these attacks do not
+necessarily require the attacker to have physical access to the device as they can be performed remotely, as shown in~\cite{DBLP:journals/cn/BrumleyB05, DBLP:conf/esorics/BrumleyT11}.
 
 \subsection{Power attacks}
 In order to carry out operations, digital devices require to be powered: the power consumption of a device is usually not fixed, as it can fluctuate
@@ -60,6 +64,7 @@ of a digital device is affected by the operations it performs, and thus can be u
 \begin{example}[RSA Square and Multiply]
     The Rivest-Shamir-Adleman (RSA) cryptosystem is one of the most known public-key cryptosystem. In the encryption phase, RSA produces 
     the ciphertext $c$ by raising the plaintext $m$ to the power of the private key $e$ modulo $n$, as shown in the following listing:
+
     \begin{lstlisting}[language=C, caption={RSA square and multiply}, label={lst:rsa_squaremult}]
     int square_and_multiply(int ptx, int exponent, int modulus) {
         int result = 1;
@@ -73,13 +78,14 @@ of a digital device is affected by the operations it performs, and thus can be u
         return result;
     }
     \end{lstlisting}
+
     The if statement at line 4 determines the execution flow based on the bits of the secret exponent: if the current
     bit is 1 the result is multiplied by the plaintext (\textit{multiply}), otherwise it is not, and we only
     \emph{square} the plaintext.\\
     \begin{figure}[H]
+        \caption{Power consumption of the RSA Square and Multiply algorithm}
         \centering
         \includegraphics[scale=0.3]{figures/rsa_squaremult.png}
-        \caption{Power consumption of the RSA Square and Multiply algorithm}
         \label{fig:rsa_squaremult}
     \end{figure}
     As shown in the figure above, by looking at the power consumption we can clearly distinguish whether the exponent

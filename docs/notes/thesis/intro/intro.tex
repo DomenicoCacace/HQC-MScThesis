@@ -44,15 +44,16 @@ implementation, with no optimizations: as a consequence, the implementation is n
 side-channel attack presented in~\cite{DBLP:journals/tches/GuoHJLNS22}. 
 
 \subsubsection{Our Contribution}
-In this thesis we present the first fully constant-time software implementation of HQC, together witha comparative analysis
-constant-time binary polynomial multiplication techniques, tailored to Cortex-M4 microprocessors. We provide an experimental
+In this thesis we present the first fully constant-time software implementation of HQC, together with a comparative analysis
+constant-time binary polynomial multiplication techniques, tailored for Cortex-M4 microprocessors. We provide an experimental
 validation of the constant time properties via a battery of statistical t-tests, while varying the CPU frequency to highlight
 the stability of our solution across different memory access latencies. Our results show that the optimal choice for constant-time
 multiplications on the Cortex-M4 is a FFT-based approach, in contrast with classic divide-et-impera techniques (\textit{i.e.} Karatsuba)
 which provide a better performance on x86 architectures.\\
 Moreover, to counter the power attacks, we propose a masking scheme that can be applied to the entire cryptosystem, 
-and provide empirical evidence of its effectiveness.\\
- 
+and present our findings on its potential efficacy; although our empirical results are inconclusive, they offer valuable insights
+into our testing methodologies and pave the way for future research on the topic.
+
 \subsubsection*{Organization}
 The remaining of the thesis is organized as follows. In Chapter \ref{chap:background} we provide a brief introduction to the
 mathematical concepts required to understand the multiplication techniques, side-channel attacks and the inner workings of HQC.

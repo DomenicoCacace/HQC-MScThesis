@@ -4,8 +4,8 @@ details for various multiplication algorithms; moreover, we show the first fully
 against power side-channel attacks.
 
 \section{Polynomial multiplication}
-From a computational standpoint, the most expensive operations in HQC are by far the polynomial multiplication.
-In this section we will describe the various methods employed to implement polynomial multiplication in HQC.
+From a computational standpoint, the most expensive operations in HQC are by far the polynomial multiplications: for this reason,
+in order to achieve good performance, it is crucial to pick the best multiplication algorithm for the target architecture.
 
     The polynomials $v \in \mathcal{R}$ can be represented in two possible forms:
     \begin{itemize}
@@ -91,7 +91,7 @@ Due to its large memory footprint and the limited resources of the target platfo
 	% descrivere la moltiplicazione con trasformate
 
     \subsection{Frobenius Additive FFT}\label{subsec:fafft}
-        The implementation of the FAFFT is based on the work of Chen \textit{et.al.}~\cite{DBLP:journals/tches/ChenCK21}; for the sake of clarity, 
+        The implementation of the Frobenius Additive FFT is based on the work of Chen \textit{et.al.}~\cite{DBLP:journals/tches/ChenCK21}; for the sake of clarity, 
         we highlight the core ideas of this implementation.
         
         As shown in Algorithm~\ref{alg:fafft}, the FAFFT multiplication is composed of four components (with the relative inverses): basis conversion, encoding, butterflies and
@@ -111,19 +111,20 @@ Due to its large memory footprint and the limited resources of the target platfo
         dividing the input by the vanishing polynomials $s_i(x)$. Since the division by the vanishing polynomial (of largest degree possible) always produces only $h_0(x)$ and $h_1(x)$, 
         we can unroll the recursive calls and transform the algorithm in a binary circuit with only \texttt{XOR} operations; moreover, we can remove all the operations on coefficients
         of the input polynomial that we know are zero.
-        \begin{example}
+
+        \begin{example}[Monomial to novelpoly basis conversion]
             Each step splits the input into quotient and remainder, so we can represent the whole algorithm as a tree, where a node's left child is the remainder and the right child is the quotient:
             by doing so, at the last step of the recursion we can read the leaves, from left to right, as the coefficients $g_0, g_1, \cdots$ of the polynomial in the novelpoly basis.
 
-            Let's take $f(x) = x^6$ in monomial basis, and let's apply the basis conversion algorithm to it. The greatest $i$ such that $2^{2^i} \leqslant \deg(f(x))$ is $i=2$, so at the various
+            Let us take $f(x) = x^6$ in monomial basis and apply the basis conversion algorithm to it. The greatest $i$ such that $2^{2^i} \leqslant \deg(f(x))$ is $i=2$, so at the various
             levels of the tree we will divide the inputs by $s_2(x)=x^4+x$ and $s_1(x)=x^2+x$:
             \begin{figure}[H]
+                \caption{Expansion of the basis conversion algorithm for $f(x) = x^6$}
                 \begin{center}
                     \begin{forest}
                         [$x^6$[$x^3$[0[0][0]][$x+1$[1][1]]][$x^2$[$x$[0][1]][1[1][0]]]]
                     \end{forest}
                 \end{center}
-                \caption{Expansion of the basis conversion algorithm for $f(x) = x^6$}
                 \label{fig:tree}
             \end{figure}
             hence the representation of $x^6$ in novelpoly basis is $X_2(x) + X_3(x) + X_5(x) + X_6(x)$.
@@ -153,7 +154,7 @@ Due to its large memory footprint and the limited resources of the target platfo
         }
         \KwRet{$g(X) = g_0 + g_1X_1 + \cdots + g_{n^\prime-1}X_{n^\prime-1}$}
     \end{algorithm2e}
-        Since the matrix coefficient is fixed the encoding step is a linear map, hence we can generate a binary circuit
+        Since the matrix coefficient is fixed the encoding step is a linear map we can generate a binary circuit
         to carry out this step.
 
     \subsubsection{Butterflies}
@@ -185,12 +186,11 @@ Due to its large memory footprint and the limited resources of the target platfo
     \paragraph{Addition} Let us consider $\ssplit{a} = (a\oplus x, x)$ and $\ssplit{b} = (b\oplus y, y)$;
     the addition of the two share-split numbers is performed by adding the shares of the same index, getting the result
     \begin{equation*}
-        \ssplit{a+b} = (a\oplus x \oplus b\oplus y, x \oplus y) = (a\oplus b\oplus x\oplus y, x \oplus y)
+        \ssplit{a\oplus b} = (a\oplus x \oplus b\oplus y, x \oplus y) = (a\oplus b\oplus x\oplus y, x \oplus y)
     \end{equation*}
     which, once collapsed, gives the expected result $(a \oplus b \oplus x \oplus y) \oplus (x \oplus y) = a \oplus b$.\\
     In the case of an addition between a share-split number and a constant, we can simply add the constant to the first share of the
-    share-split number: in this way we are considering the constant as a share-split number with a zero mask, so the result is
-    the same as the previous case.
+    share-split number: in this way we are considering the constant as a share-split number with a zero mask, falling back to the previous case.
 
     \paragraph*{Multiplication} Let us consider $\ssplit{a} = (a\oplus x, x)$ and $b$; in our setting, all the multiplications
     involve a constant and a share-split value. The multiplication between a constant and a share-split number $\ssplit{a}\cdot b$ is performed by multiplying
