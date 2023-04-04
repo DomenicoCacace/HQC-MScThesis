@@ -331,6 +331,26 @@ nostre implementazioni con altri candidati per la standardizzazione, evidenziand
 \listofalgorithms
 \lstlistoflistings
 
+% LIST OF SYMBOLS
+\chapter*{List of Symbols} % You have to include a chapter for your list of symbols (
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ll}
+        \textbf{Symbol} & \textbf{Description}\\\hline\\[-9px]
+        $\mathds{Z}$ & Ring of integer numbers \\[2px]
+        $\mathds{F}_2$ & Galois field of order 2, GF(2) \\[2px]
+        $\mathds{F}_{2^n}$ & Galois field of order $2^n$, GF($2^n$) \\[2px]
+        $\mathcal{V}$ & Vector space of dimension $n$ over GF(2) \\[2px]
+        $\mathcal{R}$ & Ring of binary polynomials of degree less than $n$ \\[2px] 
+        $\texttt{wt}(\cdot)$ & Hamming weight of a binary string \\[2px]
+        $\clshift$ & Circular shift to the left of $n$ positions \\[2px]
+        $\ssplit{a} = (a_0,\ldots,a_{d-1})$ & Additive share splitting of $a$ in $d$ shares over $\mathcal{R}$ \\[2px]
+        $\sample$ & Uniform sampling from the right hand side of the equation \\[2px]
+        $(a+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$ & Masking of $a$ with $d-1$ masks sampled from the same field of $a$ \\[2px]
+        $\textsc{Collapse}(a, \ssplit{b})$ & Sum all shares of $b$, in order, to $a$ 
+    \end{tabular}
+\end{table}
+
 % ACKNOWLEDGEMENTS
 \chapter*{Ringraziamenti}
 Vorrei innanzitutto ringraziare il professor Barenghi ed il professor Pelosi per la pazienza, il supporto
