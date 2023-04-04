@@ -39,7 +39,9 @@ The idea at the core of \textsf{HQC.PKE} is to encode the message ($\mathbf{mG}$
 							   &= \tt{wt}(\bf{x\cdot r_2-r_1\cdot y+e}) \leqslant \delta
 	\end{aligned}
 \end{equation*}
-The \textsf{PKE} scheme has been proven to be IND-CPA secure in~\cite{DBLP:journals/tit/Aguilar-Melchor18}.
+
+The authors in~\cite{DBLP:journals/tit/Aguilar-Melchor18} show that breaking the public key encryption scheme from a theoretical point of view is equivalent to solving the 
+Decisional \textsf{SD} problem for Quasi-Cyclic codes, thus proving that the PKE is IND-CPA secure.
 
 \subsection{Key Encapsulation Mechanism}\label{sec:kem}
 In practice, public key encryption is not used to encrypt large amounts of data because of its high exectution time compared to symmetric encryption.
@@ -59,7 +61,7 @@ Let $\mathcal{E}$ an instance of \textsf{HQC.PKE} and $\mathcal{G, H}$ and $\mat
     compute $\theta^\prime = \mathcal{G}(\mathbf{m}^\prime)$ and re-encrypt to get $\mathbf{c^\prime} \leftarrow \mathcal{E}.\textsf{Encrypt}(\textsf{pk}, \mathbf{m^\prime}, \theta)$.
     If $\mathbf{c \neq c^\prime}$ or $\mathbf{d} \neq \mathcal{H}(\mathbf{m^\prime})$ return $\bot$, otherwise derive the shared key $\mathcal{K}(\mathbf{m^\prime, c^\prime})$.
 \end{itemize}
-
+\newpage
 It is important in this setting to pick different hash functions for $\mathcal{H}$ and $\mathcal{G}$: if not, we would have that $\theta = \mathcal{G}(\mathbf{m}) = \mathcal{H}(\mathbf{m}) = \mathbf{d}$, thus
 publishing the randomness used to generate $\mathbf{r}_1, \mathbf{r}_2$ and $\mathbf{e}$. In such a scenario, an eavesdropper could retrieve
 the message $\mathbf{m}$ from $\mathbf{mG + sr_2 +e}$, which is the seed for the secret shared key.
