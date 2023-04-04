@@ -32,20 +32,20 @@
                                             zerofill,
                                 },
     ]
-\addplot[fill=blue!30] table [x expr=\coordindex,y=Keygen]{\mydata};
-\addplot[fill=red!30] table [x expr=\coordindex,y=Encaps]{\mydata};
-\addplot[fill=yellow!30] table [x expr=\coordindex,y=Decaps]{\mydata};
+\addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex,y=Keygen]{\mydata};
+\addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex,y=Encaps]{\mydata};
+\addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex,y=Decaps]{\mydata};
 \end{axis}
 \end{tikzpicture}
 
 \begin{tikzpicture}
     % draw a rectangle around all
     \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (8.7, 0.4);
-    \node [draw, fill=blue!30, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+    \node [draw, preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
     \node [right=0.01cm of box1] (text1) {\small Keygen};
-    \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+    \node [draw, preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
     \node [right=0.01cm of box2] (text2) {\small Encapsulation};
-    \node [draw, fill=yellow!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+    \node [draw, preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
     \node [right=0.01cm of box3] (text3) {\small Decapsulation};
 \end{tikzpicture}
 \caption{Comparison of execution time for the McEliece, BIKE, and HQC KEMs}

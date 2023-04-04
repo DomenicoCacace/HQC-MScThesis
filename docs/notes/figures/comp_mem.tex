@@ -35,20 +35,20 @@ HQC, 2249, 40, 4481
                     font=\footnotesize,
                     }
     ]
-\addplot[fill=blue!30] table [x expr=\coordindex,y=pk]{\memorytable};
-\addplot[fill=red!30] table [x expr=\coordindex,y=sk]{\memorytable};
-\addplot[fill=yellow!30] table [x expr=\coordindex,y=ctx]{\memorytable};
+\addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex,y=pk]{\memorytable};
+\addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex,y=sk]{\memorytable};
+\addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex,y=ctx]{\memorytable};
 \end{axis}
     \end{tikzpicture}
 
     \begin{tikzpicture}
         % draw a rectangle around all
         \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (8.4, 0.4);
-        \node [draw, fill=blue!30, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+        \node [draw, preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
         \node [right=0.01cm of box1] (text1) {\small Public key};
-        \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+        \node [draw, preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
         \node [right=0.01cm of box2] (text2) {\small Secret Key};
-        \node [draw, fill=yellow!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+        \node [draw, preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
         \node [right=0.01cm of box3] (text3) {\small Ciphertext};
     \end{tikzpicture}
     \caption{Memory usage comparison of McEliece, BIKE and HQC}

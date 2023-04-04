@@ -12,10 +12,10 @@
             xtick=data,
             xticklabels from table={#1}{Label},
         ]
-        \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
-        \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot[fill=yellow!30] table [x expr=\coordindex, y=sparsemul (R4)]{#1};
-        \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1}; 
+        \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex, y=sparsemul (R4)]{#1};
+        \addplot[preaction={fill=green!30}, pattern=crosshatch, pattern color=green!40!black] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
     \end{tikzpicture}
 }
@@ -38,10 +38,10 @@
                         font=\footnotesize,
                         }
         ]
-        \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
-        \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot[fill=yellow!30] table [x expr=\coordindex, y=sparsemul]{#1};
-        \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1};
+        \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex, y=sparsemul]{#1};
+        \addplot[preaction={fill=green!30}, pattern=crosshatch, pattern color=green!40!black] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
     \end{tikzpicture}
 }
@@ -62,10 +62,10 @@
             xtick=data,
             xticklabels={\phantom{X}},
         ]        
-        \addplot[fill=blue!30] table [x expr=\coordindex, y=reference (R3)]{#1};
-        \addplot[fill=red!30] table [x expr=\coordindex, y=reference (R4)]{#1};
-        \addplot[fill=yellow!30] table [x expr=\coordindex, y=sparsemul]{#1};
-        \addplot[fill=green!30] table [x expr=\coordindex, y=fastmul]{#1};
+        \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex, y=sparsemul]{#1};
+        \addplot[preaction={fill=green!30}, pattern=crosshatch, pattern color=green!40!black] table [x expr=\coordindex, y=fastmul]{#1};
         \end{axis}
     \end{tikzpicture}
 }
@@ -74,13 +74,13 @@
     \begin{tikzpicture}
         % draw a rectangle around all
         \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (12.7, 0.4);
-        \node [draw, fill=blue!30, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+        \node [draw, preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
         \node [right=0.01cm of box1] (text1) {\small Shift\&Add};
-        \node [draw, fill=red!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+        \node [draw, preaction={fill=red!30}, pattern=crosshatch, pattern color=purple!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
         \node [right=0.01cm of box2] (text2) {\small Karatsuba$^{\dagger}$};
-        \node [draw, fill=yellow!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+        \node [draw, preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
         \node [right=0.01cm of box3] (text3) {\small CT Shift\&Add$^{\dagger}$};
-        \node [draw, fill=green!30, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text3] (box4) {};
+        \node [draw, preaction={fill=green!30}, pattern=crosshatch, pattern color=green!40!black, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text3] (box4) {};
         \node [right=0.01cm of box4] (text4) {\small Frobenius FFT};
     \end{tikzpicture}
 }
