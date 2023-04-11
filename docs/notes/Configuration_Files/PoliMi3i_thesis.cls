@@ -110,7 +110,7 @@
 			\vfill
 			%\begin{minipage}{0.95\textwidth}
 			\begin{minipage}{0.95\textwidth}
-            \includegraphics[trim={1.2cm 0 0 0},clip, width=0.7\textwidth]{Images/02_ING_IND_INFORMAZIONE_COL_POSITIVO.eps}
+            \includegraphics[trim={1.2cm 0 0 0},clip, width=0.7\textwidth]{Configuration_Files/Images/02_ING_IND_INFORMAZIONE_COL_POSITIVO.eps}
             \hfill
             \\
 			\vspace{2.5cm}
