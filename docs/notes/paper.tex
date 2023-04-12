@@ -1,0 +1,105 @@
+\documentclass[runningheads]{llncs}
+%
+%-------------------------------------------------------------------------------
+%
+\input{paper/packages_macros}
+%\usetikzlibrary{external}
+%\tikzexternalize[prefix=tikzplots/output,mode=list and make,optimize command away=\includepdf]
+%\tikzexternalize[prefix=tikzplots/output,optimize command away=\includepdf]
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+%
+%-------------------------------------------------------------------------------
+%
+\newcommand{\SM}[1]{\textcolor{blue}{#1}}
+\newcommand{\RS}[1]{\textcolor{orange}{#1}}
+\newcommand{\AB}[1]{{\color{red} #1}}
+%
+%-------------------------------------------------------------------------------
+%
+\title{A Compact and Constant Time HQC Realization on Cortex-M4}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+\titlerunning{A Compact and Constant Time HQC Realization on Cortex-M4}
+%
+%-------------------------------------------------------------------------------
+%
+\author{Omitted for blind review}
+\institute{Omitted for blind review}
+%
+%
+%
+%
+%
+%-------------------------------------------------------------------------------
+%
+\begin{document}
+%
+%-------------------------------------------------------------------------------
+%
+\maketitle              % typeset the header of the contribution
+%
+%-------------------------------------------------------------------------------
+%
+\begin{abstract}
+    In this paper we show the first constant-time implementation of HQC
+    targeting Cortex-M4 microcontrollers. We demostrate the efficiency
+    of our implementation and its constant-time behavior empirically,
+    proving that HQC is a viable candidate for the PQC standardization.\\
+    We then compare the performance of our implementations with
+    other post-quantum schemes, showing the efficiency of our approach.s
+Key point: first Cortex-M4 optimized implementation of HQC, fully constant time
+\keywords{Post-quantum cryptography, code-based cryptosystems, constant time
+implementation, HQC}
+\end{abstract}
+%
+%-------------------------------------------------------------------------------
+%
+\section{Introduction}\label{sec:intro}
+\input{paper/intro.tex}
+%
+%-------------------------------------------------------------------------------
+%
+%\section{Related Work}\label{sec:relatedWork}
+%\input{related_work.tex}
+%
+%-------------------------------------------------------------------------------
+%
+\section{Background}\label{sec:background}
+\input{paper/background.tex}
+%
+%-------------------------------------------------------------------------------
+%
+\section{Constant time, High Efficiency HQC}\label{sec:implem}
+\input{paper/implementation.tex}
+%
+%-------------------------------------------------------------------------------
+%
+\section{Experimental Evaluation}\label{sec:expres}
+\input{paper/expres.tex}
+%
+%-------------------------------------------------------------------------------
+%
+%\section{Analysis of Viable Countermeasures}\label{sec:counters}
+%\input{counters.tex}
+%
+%-------------------------------------------------------------------------------
+%
+\section{Concluding Remarks}\label{sec:conc}
+\input{paper/conc.tex}
+%
+%-------------------------------------------------------------------------------
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+
+%\clearpage
+\bibliographystyle{splncs04}
+\bibliography{refs.bib}
+%
+%
+\end{document}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
