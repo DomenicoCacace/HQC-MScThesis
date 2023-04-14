@@ -1,14 +1,41 @@
+In this section we lay the theoretical foundations required to understand our work. 
+We begin by recalling basic concepts of abstract algebra, used to describe the polynomial multiplication algorithms and the 
+fundamentals of coding theory; we then explain what are side channels attacks, highlighting how they can be used to exfiltrate
+information and how to mitigate them. Finally we describe Hamming Quasi-Cyclic, our target cryptosystem.
 \section{Abstract Algebra}
 \input{thesis/background/algebra.tex}
-\newpage
+
 \section{Polynomial multplication}
 \input{thesis/background/polymul.tex}
 \newpage
 \section{Coding Theory}
 \input{thesis/background/coding.tex}
-\newpage
+
 \section{Side Channel Attacks}
 \input{thesis/background/sidechannel.tex}
 \newpage
 \section{Hamming Quasi-Cyclic}
 \input{thesis/background/hqc.tex}
+\newpage
+\section{Related Work}
+Given the sound security record of HQC, much attention has been devoted to its side-channel resistance. Most of the 
+independent analyses focus on extracting infromation from electromagnetic and power traces~\cite{DBLP:conf/cardis/SchambergerRSW20, DBLP:conf/pqcrypto/SchambergerHRWS22, DBLP:conf/pqcrypto/GoyLG22},
+whilst at the end of Round 2 of the NIST contest the authors in~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} and~\cite{DBLP:conf/sacrypt/PaivaT19}
+proposed a timing attack that takes advantage of the non constant-time implementation of the BCH decoder and the dependence
+between the decoding time and the amount of errors to correct; these attacks are no longer relevant starting from Round 3, 
+as the authors of HQC swapped the BCH code with a Reed-Muller Reed-Solomon concatenated code, implementing a constant-time decoder. Nonetheless,
+in~\cite{DBLP:journals/tches/GuoHJLNS22}, the authors propose a new timing attack based on a weakness in the \emph{rejection sampling} procedure
+employed to generate random sparse polynomials in the keygen and encryption steps of the PKE scheme; as a countermeasure, a more careful implementation of the rejection sampling
+step has been proposed in the Round 4 submission, fixing the issue.\\
+We also note that most of the literature on side-channel attacks on HQC aims at key retrieval, while it is
+also possible to carry out a message-recovery attack if the operations in the encryption algorithm, such as polynomial
+multiplication, are not constant-time; the requirement of a constant-time execution is further strenghtened by the fact 
+that the encryption primitive is used as a subroutine in the KEM scheme.
+
+To date, no dedicated constant-time implementation of HQC targeting embedded systems hass been proposed, despite the 
+fact that timing attacks are easier to carry out on these platforms. The current state of software implementations of HQC
+tailored for the ARM Cortex-M4 microcontroller, chosen by the NIST as the reference platform for microcontroller benchmarks,
+includes only the one in PQM4~\cite{PQM4}, a third-party public software project that collects the implementations of the NIST
+Round 4 candidates tailored for Cortex M4. The latest version of HQC in PQM4 is directly derived from the Round 3 reference 
+implementation, with no optimizations: as a consequence, the implementation is not constant-time and vulnerable to the timing
+side-channel attack presented in~\cite{DBLP:journals/tches/GuoHJLNS22}.

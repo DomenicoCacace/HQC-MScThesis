@@ -61,7 +61,7 @@ A high rank code can correct more errors with fewer parity-check equations, but 
     Let $\mathcal{C} = [n,k]$ be a code, $\mathbf{H}$ its parity matrix and $\mathbf{v} \in \mathds{F}_2^n$ a word. 
     The syndrome of $\mathbf{v}$ is defined as
     \begin{equation*}
-        \sigma(\mathbf{v}) = \mathbf{Hv}^\top
+        \mathbf{S}(\mathbf{v}) = \mathbf{Hv}^\top
     \end{equation*}
     From this definition,  a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
 \end{definition}
@@ -163,10 +163,10 @@ In this section we will describe some of the most common code families and the p
     Reed-Solomon codes~\cite{reed1960polynomial} are a subclass of Reed-Muller codes and they are usually 
     referred to as \textsf{RS}$(n, k)$, where $n$ and $k$ are the lenght and dimension of the code respectively.
 
-\newpage
 \subsection{Difficult problems for cryptography}
 The problems we are interested in are all variants of the \textit{decoding problem}, which requires to find 
-the closest codeword to a given word with respect to a certain metric (the Hamming weight in our case).\\
+the closest codeword to a given word with respect to a certain metric; in our case we consider as metric the Hamming
+weight, denoted as \texttt{wt}($\mathbf{v}$), which is the amount of non-zero coordinates of the vector $\mathbf{v}$.
 In the case of linear codes we have shown that the decoding problem stays the same whether one is given 
 the syndrome of the received vector or the vector itself; for this reason, we will only consider 
 the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
@@ -175,13 +175,13 @@ the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
     Given $n,k,w \in \mathds{N}$, the distribution $\textsf{SD}(n, k, w)$ randomly samples a parity-check matrix 
     $\mathbf{H} \xleftarrow{\mathdollar} \mathds{F}_2^{(n-k)\times n}$, a vector 
     $\mathbf{x} \xleftarrow{\mathdollar} \mathds{F}_2^n$ such that $\texttt{wt}(\mathbf{x}) = w$ 
-    and returns ($\mathbf{H}, \sigma(\mathbf{x})$).
+    and returns ($\mathbf{H}, \mathbf{S}(\mathbf{x})$).
 \end{definition}
 
 \begin{definition}[\textsf{SD} Problem]
     Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$ from the $\textsf{SD}(n, k, w)$ 
     distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
-    $\sigma(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
+    $\mathbf{S}(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
 \end{definition}
 This problem has been proven to be NP-complete in~\cite{DBLP:journals/tit/BerlekampMT78}.
 

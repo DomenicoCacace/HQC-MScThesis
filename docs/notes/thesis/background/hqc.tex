@@ -23,7 +23,7 @@ The \textsf{HQC.PKE} defines the four algorithms of an encryption scheme as foll
 \begin{itemize}
     \item \textsf{Setup}$(1^\lambda)$: generates the set of parameters \textsf{param} = $(n, k, \delta, \omega, \omega_r, \omega_e)$
     \item \textsf{Keygen(param)}: samples $\mathbf{h} \xleftarrow{\mathdollar} \mathcal{R}$ and 
-    $(\mathbf{x}, \mathbf{y}) \xleftarrow{\mathdollar} \mathcal{R} \times \mathcal{R}$ such that $\texttt{wt}(\mathbf{x}) = \texttt{wt}(\mathbf{y}) = \omega$;
+    $(\mathbf{x}, \mathbf{y}) \xleftarrow{\mathdollar} \mathcal{R} \times \mathcal{R}$ such that $\texttt{wt}(\mathbf{x}) = \texttt{wt}(\mathbf{y}) =\omega$;
     the keypair is defined as \textsf{sk} = $(\mathbf{x}, \mathbf{y})$ and \textsf{pk} = $(\mathbf{h}, \mathbf{s} = \mathbf{x} + \mathbf{h\cdot y})$.
     \item \textsf{Encrypt(pk, \textbf{m}, $\theta$)}: samples $\mathbf{e} \xleftarrow{\mathdollar} \mathcal{R}$, $(\mathbf{r_1}, \mathbf{r_2}) \xleftarrow{\mathdollar} \mathcal{R} \times \mathcal{R}$ such that
      $\texttt{wt}(\mathbf{e}) = \omega_e$ and $\texttt{wt}(\mathbf{r_1}) = \texttt{wt}(\mathbf{r_2}) = \omega_e$;  the ciphertext is defined as the pair
@@ -61,7 +61,7 @@ Let $\mathcal{E}$ an instance of \textsf{HQC.PKE} and $\mathcal{G, H}$ and $\mat
     compute $\theta^\prime = \mathcal{G}(\mathbf{m}^\prime)$ and re-encrypt to get $\mathbf{c^\prime} \leftarrow \mathcal{E}.\textsf{Encrypt}(\textsf{pk}, \mathbf{m^\prime}, \theta)$.
     If $\mathbf{c \neq c^\prime}$ or $\mathbf{d} \neq \mathcal{H}(\mathbf{m^\prime})$ return $\bot$, otherwise derive the shared key $\mathcal{K}(\mathbf{m^\prime, c^\prime})$.
 \end{itemize}
-\newpage
+
 It is important in this setting to pick different hash functions for $\mathcal{H}$ and $\mathcal{G}$: if not, we would have that $\theta = \mathcal{G}(\mathbf{m}) = \mathcal{H}(\mathbf{m}) = \mathbf{d}$, thus
 publishing the randomness used to generate $\mathbf{r}_1, \mathbf{r}_2$ and $\mathbf{e}$. In such a scenario, an eavesdropper could retrieve
 the message $\mathbf{m}$ from $\mathbf{mG + sr_2 +e}$, which is the seed for the secret shared key.

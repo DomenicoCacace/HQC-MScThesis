@@ -1,50 +1,57 @@
+To avoid confusion, throughout this thesis we will use the following notation.
+    Unless otherwise specified, capital bold letters denote generic sets $(\mathbf{A}, \mathbf{B}, \cdots)$, while lowercase bold letters denote vectors; 
+    finite fields are denoted either by $GF(p^n)$ or $\mathds{F}_{p^n}$. The vector space of dimension $n$ over the binary Galois field $GF(2)$ is denoted by
+    either $\mathds{F}_2^n$ or $\mathcal{V}$ and has as canonical basis $\{1, \alpha, \cdots, \alpha^{n-1}\}$. The ring of binary polynomials of degree less than $n$ is denoted either as $\mathds{F}_2[x]/\langle x^n-1 \rangle$ or $\mathcal{R}$;
+    the value of $n$ is chosen in such a way that the algebra in the ring $\mathcal{R}$ is isomorphic to the algebra of $n\times n$ circulant matrices over $\mathds{F}_2$.
+    
 \subsection{Field theory}
 \begin{definition}[Group]
-    Let $G$ be a set. The structure $(G, \cdot)$ is a \emph{group} if it satisfies the following axioms:
+    Let $\mathbf{G}$ be a set. The structure $(\mathbf{G}, \cdot)$ is a \emph{group} if it satisfies the following axioms:
     \begin{itemize}
-        \item Closure: For all $a, b \in G$, $a \cdot b \in G$.
-        \item Associativity: For all $a, b, c \in G$, $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
-        \item Identity: There exists an element $e \in G$ such that for all $a \in G$, $e \cdot a = a \cdot e = a$.
-        \item Inverse: For all $a \in G$, there exists an element $a^{-1} \in G$ such that $a \cdot a^{-1} = a^{-1} \cdot a = e$.
+        \item Closure: For all $a, b \in \mathbf{G}$, $a \cdot b \in \mathbf{G}$.
+        \item Associativity: For all $a, b, c \in \mathbf{G}$, $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
+        \item Identity: There exists an element $e \in \mathbf{G}$ such that for all $a \in \mathbf{G}$, $e \cdot a = a \cdot e = a$.
+        \item Inverse: For all $a \in \mathbf{G}$, there exists an element $a^{-1} \in \mathbf{G}$ such that $a \cdot a^{-1} = a^{-1} \cdot a = e$.
     \end{itemize}
-    If the group also satisfies the commutative property (i.e. $a \cdot b = b \cdot a$ for all $a, b \in G$), then it is called an \emph{abelian group}.
-    We usually call $(G, +)$ the \emph{additive} group and $(G, \cdot)$ the \emph{multiplicative} group, with identity elements denoted by $0$ and $1$, respectively.
+    If the group also satisfies the commutative property (i.e. $a \cdot b = b \cdot a$ for all $a, b \in \mathbf{G}$), then it is called an \emph{abelian group}.
+    We usually call $(\mathbf{G}, +)$ the \emph{additive} group and $(\mathbf{G}, \cdot)$ the \emph{multiplicative} group, with identity elements denoted by $0$ and $1$, respectively.
 \end{definition}
 
 \begin{definition}[Ring]
-    Let $R$ be a set. The structure $(R, +, \cdot)$ is a \emph{ring} if it satisfies the following properties:
+    Let $\mathbf{R}$ be a set. The structure $(\mathbf{R}, +, \cdot)$ is a \emph{ring} if it satisfies the following properties:
     \begin{itemize}
-        \item Additive group: $(R, +)$ is an abelian group.
-        \item Associativity w.r.t. multiplication: For all $a, b, c \in R$, $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
-        \item Distributivity: For all $a, b, c \in R$, $a \cdot (b + c) = a \cdot b + a \cdot c$ and $(a + b) \cdot c = a \cdot c + b \cdot c$.
+        \item Additive group: $(\mathbf{R}, +)$ is an abelian group.
+        \item Associativity w.r.t. multiplication: For all $a, b, c \in \mathbf{R}$, $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
+        \item Distributivity: For all $a, b, c \in \mathbf{R}$, $a \cdot (b + c) = a \cdot b + a \cdot c$ and $(a + b) \cdot c = a \cdot c + b \cdot c$.
     \end{itemize}
 \end{definition}
 
 \begin{definition}[Field]
-    Let $K$ be a set. The structure $(K, +, \cdot)$ is a \emph{field} if it satisfies the following properties:
+    Let $\mathbf{K}$ be a set. The structure $(\mathbf{K}, +, \cdot)$ is a \emph{field} if it satisfies the following properties:
     \begin{itemize}
-        \item Additive group: $(K, +)$ is an abelian group.
-        \item Multiplicative group: $(K\setminus\{0\}, \cdot)$ is an abelian group.
-        \item Distributivity: For all $a, b, c \in K$, $a \cdot (b + c) = a \cdot b + a \cdot c$ and $(a + b) \cdot c = a \cdot c + b \cdot c$.
+        \item Additive group: $(\mathbf{K}, +)$ is an abelian group.
+        \item Multiplicative group: $(\mathbf{K}\setminus\{0\}, \cdot)$ is an abelian group.
+        \item Distributivity: For all $a, b, c \in \mathbf{K}$, $a \cdot (b + c) = a \cdot b + a \cdot c$ and $(a + b) \cdot c = a \cdot c + b \cdot c$.
     \end{itemize}
     Any field is also a ring, but the converse is not necessarily true.
 \end{definition}
 
 \begin{definition}[Characteristic]
-    Let $K$ be a field. The \emph{characteristic} of $K$ is the smallest positive integer $n$ such that
+    Let $\mathbf{K}$ be a field. The \emph{characteristic} of $\mathbf{K}$ is the smallest positive integer $n$ such that
     \begin{equation*}
         \underbrace{1 + \cdots + 1}_\text{$n$ times} = 0
     \end{equation*}
 \end{definition}
 
 \begin{definition}[Order]
-    Let $K$ be a field. The \emph{order} of $K$ is the amount of elements in $K$; if the order of $K$ is finite, it is also called a Galois field.
-    A Galois field of order $q$, denoted as $\mathds{F}_q$ or $GF(q)$, exists if and only if $q=p^n$ for some prime $p$; all Galois fields of order $q$ are isomorphic.
+    Let $\mathbf{K}$ be a field. The \emph{order} of $\mathbf{K}$ is the amount of elements in $\mathbf{K}$; if the order of $\mathbf{K}$ is finite, it is also called a Galois field.
+    A Galois field of order $q$, denoted as $\mathds{F}_q$ or $GF(q)$, exists if and only if $q=p^n$ for some prime $p$ and some $n \geqslant 1$. All Galois fields of the same order
+    are the same object up to an isomorphism.
 \end{definition}
 Galois fields can be constructed in two ways:
 \begin{itemize}
     \item Primitive fields: $GF(p) \cong \mathds{Z}_p$, with $p$ prime, is a field of order and characteristic $p$.
-    \item $GF(p^n) = GF(p)[X]/P(X)$ with $P(X)$ irreducible polynomial in $GF(p)[X]$ of degree $n$,
+    \item $GF(p^n) = GF(p)[x]/P(x)$ with $P(x)$ irreducible polynomial in $GF(p)[x]$ of degree $n$,
         is a field of order $p^n$ and characteristic $p$.
 \end{itemize}
 
@@ -53,18 +60,27 @@ Galois fields can be constructed in two ways:
     in other words, $a$ is a generator of the multiplicative group of $GF(q)$. Since the multiplicative group of $GF(q)$ has order $q-1$,
     primitive elements are also called $(q-1)$-th roots of unity.
 \end{definition}
+\newpage
+\begin{definition}[Vector space]
+    Let $(\mathbf{K}, +, \cdot)$ be a field. A subset $\mathbf{F} \subseteq \mathbf{K}$ with two binary operations ($+$ and $\cdot$) is a 
+    vector space if the following hold:
+    \begin{itemize}
+        \item Vector addition: for all $\mathbf{v}, \mathbf{w} \in \mathbf{V}$, $\mathbf{v} + \mathbf{w} \in \mathbf{V}$.
+        \item Scalar multiplication: for all $a$ in $\mathbf{K}$ and all $\mathbf{v} \in \mathbf{V}$, $a\mathbf{v} \in \mathbf{V}$.
+    \end{itemize}
+\end{definition}
 
 \begin{definition}[Field extension]
-    Let $K$ and $L$ be fields. If $K \subseteq L$, then we say that $K$ is a \emph{subfield} of $L$; conversely, 
-    we say that $L$ is a \emph{field extension} of $K$.
-    Given a field extension, denoted as $L/K$, the field $L$ is a vector space over $K$; the dimension of the vector space
-    defines the \emph{degree of the extension}, and is denoted by $[L:K]$. In the case of finite fields, 
+    Let $\mathbf{K}$ and $\mathbf{L}$ be fields. If $\mathbf{K} \subseteq \mathbf{L}$, then we say that $\mathbf{K}$ is a \emph{subfield} of $\mathbf{L}$; conversely, 
+    we say that $\mathbf{L}$ is a \emph{field extension} of $\mathbf{K}$.
+    Given a field extension, denoted as $\mathbf{L}/\mathbf{K}$, the field $\mathbf{L}$ is a vector space over $\mathbf{K}$; the dimension of the vector space
+    defines the \emph{degree of the extension}, and is denoted by $[\mathbf{L}:\mathbf{K}]$. In the case of finite fields, 
     $[GF(p^n):GF(p)] = n$.
 \end{definition}
 
 \begin{example}[Binary fields]
     The smallest Galois field is $GF(2)$, which is isomorphic to $\mathds{Z}_2 = \{0,1\}$.
-    We can build $\mathds{F}_8 = GF(2^3)$ as $GF(2)[X]/\langle X^3+X+1\rangle$.
+    We can build $\mathds{F}_8 = GF(2^3)$ as $GF(2)[x]/\langle X^3+X+1\rangle$.
     The elements of $\mathds{F}_8$ are then the binary polynomials of degree strictly less than $n=3$; to avoid confusion, 
     the elements are written as polynomials in the variable $\alpha$, where $P(\alpha) = 0$.\\
     We have that $\mathds{F}_8 = \{0, 1, \alpha, 1+\alpha, \alpha^2, 1+\alpha^2, \alpha + \alpha^2, 1+\alpha+\alpha^2\}$, so the order of the field is $8$.
@@ -77,32 +93,24 @@ Galois fields can be constructed in two ways:
     \begin{definition}[Frobenius map]
     Let $\mathds{F}_2$ be the binary field. The Frobenius map is the automorphism defined as:
     \begin{equation}
-        \phi_2 : \mathds{F}_2 \rightarrow \mathds{F}_2, \quad \phi_2(x) = x^2
+        \phi : \mathds{F}_2 \rightarrow \mathds{F}_2, \quad \phi(x) = x^2
     \end{equation}
     \end{definition}
-    Let $\Sigma$ be a set; with the notation $\phi_2(\Sigma)$ we denote the set built as $\{\phi_2(x) \mid x \in \Sigma\}$;
-    moreover, with the notation $\phi_2^{\circ j}$ we denote the function applying the Frobenius map $j$ times.
+    Let $\mathbf{S}$ be a set of field elements for some binary field $GF(2^n)$; with the notation $\phi(\mathbf{S})$ we denote the set built as $\{\phi(x) \mid x \in \mathbf{S}\}$;
+    moreover, with the notation $\phi^{\circ j}$ we denote the function applying the Frobenius map $j$ times.
 
-    \begin{definition}[Order of $\phi_2$]
-        Let $\Sigma$ be a set. The order of $\phi_2$ on $\Sigma$, denoted as $Ord_{\phi_2}(\Sigma)$ is the smallest positive integer $j$ such that $\phi_2^{\circ j}(\Sigma) = \Sigma$.
+    \begin{definition}[Order of $\phi$]
+        Let $\mathbf{S}$ be a set. The order of $\phi$ on $\mathbf{S}$, denoted as $Ord_{\phi}(\mathbf{S})$ is the smallest positive integer $j$ such that $\phi^{\circ j}(\mathbf{S}) = \mathbf{S}$.
     \end{definition}
-
+    \newpage
     \begin{definition}[Frobenius partition]
-        Given the sets $\Sigma, \Omega$ such that $Ord_{\phi_2}(\Sigma)=j$, we say that $\Sigma$ is a Frobenius partition
-        of $\Omega$ if
+        Given the sets $\mathbf{S}, \mathbf{O}$ such that $Ord_{\phi}(\mathbf{S})=j$, we say that $\mathbf{S}$ is a Frobenius partition
+        of $\mathbf{O}$ if
         \begin{equation}
-            \Omega = \Sigma \cup \phi_2(\Sigma) \cup \cdots \cup \phi_2^{\circ (j-1)}(\Sigma)
+            \mathbf{O} = \mathbf{S} \cup \phi(\mathbf{S}) \cup \cdots \cup \phi^{\circ (j-1)}(\mathbf{S})
         \end{equation}
-        and all the sets $\phi_2^{\circ i}(\Sigma)$ are pairwise disjoint.
-    \end{definition}
+        and all the sets $\phi^{\circ i}(\mathbf{S})$ are pairwise disjoint.
 
-\subsection{Notation}
-Throughout this document, we will use the following algebraic notation:
-\begin{itemize}
-    \item $\mathds{Z}$: the ring of integers.
-    \item $\mathds{F}_2$: the binary Galois field $GF(2)$.
-    \item $\mathds{F}_{2^n}$: the Galois field $GF(2^n)$.
-    \item $\mathcal{V} = \mathds{F}_2^n$: the vector space of dimension $n$ over $GF(2)$, with canonical basis $\{1, \alpha, \cdots, \alpha^{n-1}\}$.
-    \item $\mathcal{R} = \mathds{F}_2[X]/\langle X^n-1\rangle$: the ring of binary polynomials of degree less than $n$.
-    \item $\texttt{wt}(\cdot)$: the Hamming weight of a vector \textit{i.e.} the number of its non-zero coordinates.
-\end{itemize}
+        In other words, the Frobenius partition $\mathbf{S}$ splits the set $\mathbf{O}$ into disjoint sets, where the equivalence relation is determined
+        by the $j$-application of the Frobenius map $\phi^j$.
+    \end{definition}
