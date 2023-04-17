@@ -2,15 +2,47 @@
     \begin{tikzpicture}
         \centering
         \begin{axis}[
-            height=65mm, width=90mm,
+            height=65mm, width=82mm,
             bar width=0.2,
             ybar=0pt,
             enlarge x limits={abs=0.5},
             ymode=log,
+            log basis y=10,
             ytick={},
-            yticklabels={},
+            yticklabel style={font=\footnotesize},
+            xlabel={Wait States},
+            ylabel={Execution time (kcycles)},
             xtick=data,
             xticklabels from table={#1}{Label},
+            grid style={line width=.2pt, draw=gray!20},
+            grid=minor,
+        ]
+        \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
+        \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};
+        \addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex, y=sparsemul (R4)]{#1};
+        \addplot[preaction={fill=green!30}, pattern=crosshatch, pattern color=green!40!black] table [x expr=\coordindex, y=fastmul]{#1};
+        \end{axis}
+    \end{tikzpicture}
+}
+
+\newcommand{\ARMtimingplotNoY}[1]{
+    \begin{tikzpicture}
+        \centering
+        \begin{axis}[
+            height=65mm, width=82mm,
+            bar width=0.2,
+            ybar=0pt,
+            enlarge x limits={abs=0.5},
+            ymode=log,
+            log basis y=10,
+            ytick={},
+            yticklabel pos = right,
+            yticklabel style={font=\footnotesize},
+            xlabel={Wait States},
+            xtick=data,
+            xticklabels from table={#1}{Label},
+            grid style={line width=.2pt, draw=gray!20},
+            grid=minor,
         ]
         \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
         \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};
@@ -29,14 +61,14 @@
             ybar=0pt,
             enlarge x limits={abs=0.5},
             ymode=log,
+            log basis y=10,
             yticklabel style={font=\small},
-            yticklabel=\pgfmathprintnumber{\tick},
             xlabel={Wait States},
+            ylabel={Execution time (kcycles)},
             xtick=data,
-            legend style={legend pos=north east,
-                        cells={anchor=west},
-                        font=\footnotesize,
-                        }
+            point meta=rawy,
+            grid style={line width=.2pt, draw=gray!20},
+            grid=minor,
         ]
         \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
         \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};
@@ -55,12 +87,15 @@
             ybar=0pt,
             enlarge x limits={abs=0.5},
             ymode=log,
+            log basis y=10,
             yticklabel style={font=\small},
             yticklabel pos = right,
-            yticklabel=\pgfmathprintnumber{\tick},
+            %yticklabel=\pgfmathprintnumber{\tick},
             xlabel={\phantom{X}},
             xtick=data,
             xticklabels={\phantom{X}},
+            grid style={line width=.2pt, draw=gray!20},            
+            ymajorgrids=true,
         ]        
         \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex, y=reference (R3)]{#1};
         \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex, y=reference (R4)]{#1};

@@ -1,12 +1,13 @@
 \begin{table}[H]
     \centering
     \caption{t-values for the multiplication algorithms}
-    \begin{tabular}{c|c|c|c|c}
-        & Shift\&Add & Karatsuba & CT Shift\&Add & Frobenius FFT \\
-        \hline
-        \texttt{ARM} & 55.748 & 0 & 0 & 0 \\
-
-        \texttt{x86} & 20.936 & 3.644 & 3.371 & 1.232
+    \begin{tabular}{c|cccc}
+        \toprule
+        & \textbf{Shift\&Add} & \textbf{Karatsuba} & \textbf{CT Shift\&Add} & \textbf{Frobenius FFT} \\
+        \midrule
+        \texttt{ARM} & 55.748 & 0.000 & 0.000 & 0.000 \\
+        \texttt{x86} & 20.936 & 3.644 & 3.371 & 1.232\\
+        \bottomrule
     \end{tabular}
     \label{tab:ctmult}
 \end{table}

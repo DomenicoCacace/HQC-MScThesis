@@ -9,10 +9,12 @@ evaluate the impact of the memory wait states, as shown in Table~\ref{tab:waitst
 \begin{table}[ht]
     \centering
     \caption{Wait states and corresponding frequencies}
-    \begin{tabular}{c|c|c|c|c|c}
+    \begin{tabular}{c|c c c c c}
+        \toprule
         Frequency (MHz) & 16 & 32 & 48 & 64 & 80 \\
-        \hline 
+        \midrule
         Wait States & 0 & 1 & 2 & 3 & 4  \\
+        \bottomrule
     \end{tabular}
     \label{tab:waitstates}
 \end{table}
@@ -24,14 +26,16 @@ We run the same experiments on a x86 machine, equipped with an AMD Ryzen 25000U,
 \subsubsection{Welch's t-test}
 To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA)~\cite{DBLP:journals/jce/SchneiderM16},
 based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
-populations differ; the t-test statistic is computed as follows:\
+populations differ; the t-test statistic is computed as follows:
+\vspace{-10pt}
 \begin{equation}
     t = \frac{\mu_0 - \mu_1}{\sqrt{\frac{s_0^2}{n_0} + \frac{s_1^2}{n_1}}}
 \end{equation}  
+\vspace{-2pt}
 where $\mu, s^2$ and $n$ are the mean, variance and number of samples of the two populations, respectively.
 Small $t$ values give evidence to accept the null hypothesis that the two populations have the same mean; 
 usually, for the sake of simplicity, a threshold of $|t| > 4.5$ is defined to reject the null hypothesis with
-a confidence level of $99,999\%$.\\
+a confidence level of $99,999\%$.
 
 
 \section{Execution time}
@@ -50,8 +54,8 @@ As already mentioned, the multiplication operation is the most time-consuming op
 the multiplication algorithm is crucial to achieve good performance. The execution times of the various multiplication algorithms
 are shown in Figure~\ref{fig:multTiming} and in Table~\ref{tab:multTiming}.
 
-\begin{figure}[H]
-    \caption{Multiplication execution times on ARM (left) and x86 (right)}
+\begin{figure}[!t]
+    \hspace{-10pt}
     \subfloat{
         \ARMtimingplotmult{\armMultTiming}
     }
@@ -61,39 +65,40 @@ are shown in Figure~\ref{fig:multTiming} and in Table~\ref{tab:multTiming}.
     \centering
     \newline
     \timingLegend
+    \caption{Multiplication execution times on ARM (left) and x86 (right) in kcycles}
     \label{fig:multTiming}
 \end{figure}
 As expected, the fastest multiplication algorithm on ARM (after the Shift\&Add) is the one using the Frobenius FFT, followed by the
 constant-time version of Shift\&Add. In the graph we can also see how the execution time for the Frobenius FFT is the only one
 that is significantly impacted by the amount of memory wait states: as explained in Section~\ref{subsec:fafft} this algorithm heavily
 relies on precomputed tables, requiring a higher amount of memory accesses and thus up to 92\% more clock cycles; finally, 
-we can see that the Karatsuba algorithm takes the longest amount of time.
+we can see that the Karatsuba algorithm takes the longest amount of time.\\
 Things change dramatically on x86: on this architecture we can take advantage of AVX instructions, which allow us to carry out
 operations with 256-bit vectors in a single clock cycle: this benefits the Karatsuba algorithm, which is the fastest one by a large margin,
 while the Frobenius FFT becomes the slowest one.
 
 These results are clearly reflected in the execution times of both the PKE and KEM schemes, as shown in Figures~\ref{fig:encdecTiming},~\ref{fig:encapsdecapsTiming}.
-and in Tables \ref{tab:pkeTiming}, \ref{tab:kemTiming}.
+and in Tables \ref{tab:encTiming}, \ref{tab:decTiming}, \ref{tab:encapsTiming} and \ref{tab:decapsTiming}.
 
 \begin{figure}[H]
-    \caption{Public Key Encryption execution times on ARM}
     \subfloat[Encryption]{
         \ARMtimingplot{\armEncTiming}
     }
     \subfloat[Decryption]{
-        \ARMtimingplot{\armDecTiming}
+        \ARMtimingplotNoY{\armDecTiming}
     }
+    \caption{Public Key Encryption execution times on ARM (kcycles)}
     \label{fig:encdecTiming}
 \end{figure}
 
 \begin{figure}[H]
-    \caption{Key Encapsulation Mechanism execution times on ARM}
     \subfloat[Encapsulation]{
         \ARMtimingplot{\armEncapsTiming}
-    }
+        }
     \subfloat[Decapsulation]{
-        \ARMtimingplot{\armDecapsTiming}
+        \ARMtimingplotNoY{\armDecapsTiming}
     }
+    \caption{Key Encapsulation Mechanism execution times on ARM (kcycles)}
     \label{fig:encapsdecapsTiming}
 \end{figure}
 
@@ -112,7 +117,7 @@ with a fixed Hamming weight is not constant-time and can be exploited to fully r
 on the Round 3 version, and it has been fixed in the subsequent round. We therefore run the TVLA on the PKE and KEM schemes with
 the same settings as before, and find the results reported in Table~\ref{tab:ct}.
 \input{figures/tabct.tex}
-
+\vspace{-15pt}
 We can see that, even with a constant-time multiplication algorithm, the Round 3 version is not constant-time, while the Round 4 version
 runs in constant time with all the multiplication algorithms. 
 

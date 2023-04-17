@@ -9,7 +9,7 @@ HQC, 2249, 40, 4481
     \begin{tikzpicture}
     \centering
     \begin{axis}[
-        height=80mm, width=170mm,
+        height=80mm, width=150mm,
 %
         bar width=0.22,
         ybar=0pt,
@@ -23,6 +23,8 @@ HQC, 2249, 40, 4481
         %xlabel={Cryptosystem},
         xtick=data,
         xticklabels from table={\memorytable}{Label},
+        grid style={line width=.2pt, draw=gray!20},            
+        ymajorgrids=true,
 %
         nodes near coords,
         nodes near coords style={font=\tiny,

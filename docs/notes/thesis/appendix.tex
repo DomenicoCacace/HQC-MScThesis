@@ -3,71 +3,99 @@
 \begin{table}[H]
     \centering
     \caption{Execution times in kcycles for multiplication}
-    \begin{tabular}{c|c|c|c|c}
-        WS  & Shift\&Add & Karatsuba & CT Shift\&Add & FAFFT\\
-        \hline
+    \begin{tabular}{c|cccc}
+        \toprule
+        \textbf{WS}  & \textbf{Shift\&Add} & \textbf{Karatsuba} & \textbf{CT Shift\&Add} & \textbf{FAFFT} \\
+        \midrule
         0 & 848 & 66777 & 7791 & 3062 \\
         1 & 848 & 67747 & 7791 & 3688 \\
         2 & 851 & 69653 & 7791 & 4404 \\
         3 & 856 & 72537 & 7791 & 5146 \\
         4 & 862 & 76345 & 7791 & 5892 \\
-        \hline
-        \hline
-        x86 & 39  &  34  &  246  &  530
+        \midrule
+        \textbf{\texttt{x86}} & 39  &  34  &  246  &  530 \\
+        \bottomrule
     \end{tabular}
     \label{tab:multTiming}
 \end{table}
 
 \begin{table}[H]
     \centering
-    \caption{Execution times in kcycles for encryption and decryption}
-    \begin{tabular}{c|c|c||c|c|c}
-        & \multicolumn{2}{c||}{Round 3} & \multicolumn{3}{c}{Round 4} \\
-        WS & \texttt{reference} & \texttt{sparsemul} & \texttt{reference} & \texttt{sparsemul} & \texttt{fastmul} \\
-        \hline
+    \caption{Encryption execution times (kcycles)}
+    \begin{tabular}{c|cc|ccc}
+        \toprule
+        & \multicolumn{2}{c|}{\textbf{Round 3}} & \multicolumn{3}{c}{\textbf{Round 4}} \\
+        \textbf{WS} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{fastmul}} \\
+        \midrule
         0 & 2726 & 18920 & 136262 & 18965 & 8834 \\
         1 & 2748 & 18937 & 138227 & 18991 & 10107 \\
         2 & 2799 & 18986 & 142093 & 19049 & 11595 \\
         3 & 2886 & 19064 & 147971 & 19154 & 13189 \\
         4 & 3035 & 19196 & 155762 & 19324 & 14856 \\
-        \hline
-        x86 & 148 & 604 & 157 & 667 & 1212 \\
-        \hline
-        \hline
+        \midrule
+        \textbf{\texttt{x86}} & 148 & 604 & 157 & 667 & 1212 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:encTiming}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Decryption execution times (kcycles)}
+    \begin{tabular}{c|cc|ccc}
+        \toprule
+        & \multicolumn{2}{c|}{\textbf{Round 3}} & \multicolumn{3}{c}{\textbf{Round 4}} \\
+        \textbf{WS} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{fastmul}} \\
+        \midrule
         0 & 1942 & 9010 & 68750 & 8915 & 5043 \\
         1 & 1950 & 9018 & 69733 & 8926 & 5677 \\
         2 & 1965 & 9027 & 71657 & 8941 & 6409 \\
         3 & 1989 & 9045 & 74568 & 8958 & 7176 \\
         4 & 2024 & 9071 & 78415 & 8998 & 7958 \\
-        \hline
-        x86 & 219 & 370 & 185 & 396 & 757 \\
+        \midrule
+        \textbf{\texttt{x86}} & 219 & 370 & 185 & 396 & 757 \\
+        \bottomrule
     \end{tabular}
-    \label{tab:pkeTiming}
+    \label{tab:decTiming}
 \end{table}
 
 \begin{table}[H]
     \centering
-    \caption{Execution times in kcycles for encapsulation and decapsulation}
-    \begin{tabular}{c|c|c||c|c|c}
-        & \multicolumn{2}{c||}{Round 3} & \multicolumn{3}{c}{Round 4} \\
-        WS & \texttt{reference} & \texttt{sparsemul} & \texttt{reference} & \texttt{sparsemul} & \texttt{fastmul} \\
-        \hline
+    \caption{Encapsulation execution times (kcycles)}
+    \begin{tabular}{c|cc|ccc}
+        \toprule
+        & \multicolumn{2}{c|}{\textbf{Round 3}} & \multicolumn{3}{c}{\textbf{Round 4}} \\
+        \textbf{WS} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{fastmul}} \\
+        \midrule
         0 & 3913 & 20105 & 137873 & 20571 & 10441 \\
         1 & 3958 & 20148 & 139835 & 20643 & 11763 \\
         2 & 4079 & 20261 & 143631 & 20783 & 13333 \\
         3 & 4289 & 20461 & 149685 & 21051 & 15087 \\
         4 & 4626 & 20787 & 157722 & 21473 & 16994 \\
-        \hline
-        x86 & 216 & 667 & 220 & 727 & 1278 \\
-        \hline
-        \hline
+        \midrule
+        \textbf{\texttt{x86}} & 216 & 667 & 220 & 727 & 1278 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:encapsTiming}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Decapsulation execution times (kcycles)}
+    \begin{tabular}{c|cc|ccc}
+        \toprule
+        & \multicolumn{2}{c|}{\textbf{Round 3}} & \multicolumn{3}{c}{\textbf{Round 4}} \\
+        \textbf{WS} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{reference}} & \texttt{\textbf{sparsemul}} & \texttt{\textbf{fastmul}} \\
+        \midrule
         0 & 5923 & 29182 & 206691 & 29557 & 15546 \\
         1 & 5974 & 29230 & 209618 & 29634 & 17504 \\
         2 & 6110 & 29361 & 215263 & 29795 & 19804 \\
         3 & 6341 & 29578 & 224238 & 30084 & 22326 \\
         4 & 6724 & 29926 & 236118 & 30540 & 25015 \\
-        \hline
-        x86 & 440 & 1041 & 407 & 1145 & 2041 \\
+        \midrule
+        \textbf{\texttt{x86}} & 440 & 1041 & 407 & 1145 & 2041 \\
+        \bottomrule
     \end{tabular}
-    \label{tab:kemTiming}
+    \label{tab:decapsTiming}
 \end{table}
+
