@@ -1,0 +1,192 @@
+% A LaTeX template for EXECUTIVE SUMMARY of the MSc Thesis submissions to 
+% Politecnico di Milano (PoliMi) - School of Industrial and Information Engineering
+%
+% S. Bonetti, A. Gruttadauria, G. Mescolini, A. Zingaro
+% e-mail: template-tesi-ingind@polimi.it
+%
+% Last Revision: October 2021
+%
+% Copyright 2021 Politecnico di Milano, Italy. NC-BY
+
+\documentclass[11pt,a4paper,twocolumn]{article}
+
+%------------------------------------------------------------------------------
+%	REQUIRED PACKAGES AND  CONFIGURATIONS
+%------------------------------------------------------------------------------
+% PACKAGES FOR TITLES
+\usepackage{titlesec}
+\usepackage{color}
+
+% PACKAGES FOR LANGUAGE AND FONT
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc} % Font encoding
+
+% PACKAGES FOR IMAGES
+\usepackage{graphicx}
+\graphicspath{{Configuration_Files/Images/}} % Path for images' folder
+\usepackage{eso-pic} % For the background picture on the title page
+\usepackage{subfig} % Numbered and caption subfigures using \subfloat
+\usepackage{caption} % Coloured captions
+\usepackage{transparent}
+
+% STANDARD MATH PACKAGES
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage[overload]{empheq}  % For braced-style systems of equations
+
+% PACKAGES FOR TABLES
+\usepackage{tabularx}
+\usepackage{longtable} % tables that can span several pages
+\usepackage{colortbl}
+
+% PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% PACKAGES FOR REFERENCES & BIBLIOGRAPHY
+\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
+\usepackage{cleveref}
+\usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
+\bibliographystyle{plain} % You may use a different style adapted to your field
+
+% PACKAGES FOR THE APPENDIX
+\usepackage{appendix}
+
+% PACKAGES FOR ITEMIZE & ENUMERATES 
+\usepackage{enumitem}
+
+% OTHER PACKAGES
+\usepackage{amsthm,thmtools,xcolor} % Coloured "Theorem"
+\usepackage{comment} % Comment part of code
+\usepackage{fancyhdr} % Fancy headers and footers
+\usepackage{lipsum} % Insert dummy text
+\usepackage{tcolorbox} % Create coloured boxes (e.g. the one for the key-words)
+\usepackage{stfloats} % Correct position of the tables
+
+%-------------------------------------------------------------------------
+%	NEW COMMANDS DEFINED
+%-------------------------------------------------------------------------
+% EXAMPLES OF NEW COMMANDS -> here you see how to define new commands
+\newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
+\newcommand{\eea}{\end{eqnarray}}
+\newcommand{\e}[1]{\times 10^{#1}}  % Powers of 10 notation
+\newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}} % From mathbbm.sty
+\newcommand{\pdev}[2]{\frac{\partial#1}{\partial#2}}
+% NB: you can also override some existing commands with the keyword \renewcommand
+
+%----------------------------------------------------------------------------
+%	ADD YOUR PACKAGES (be careful of package interaction)
+%----------------------------------------------------------------------------
+
+
+%----------------------------------------------------------------------------
+%	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
+%----------------------------------------------------------------------------
+
+
+% Do not change Configuration_files/config.tex file unless you really know what you are doing. 
+% This file ends the configuration procedures (e.g. customizing commands, definition of new commands)
+\input{Configuration_Files/config_summary}
+
+% Insert here the info that will be displayed into your Title page 
+% -> title of your work
+\renewcommand{\title}{Towards fast and side-channel resistant implementations of \\Hamming Quasi-Cyclic: a case study on ARM Cortex-M4 devices}
+% -> author name and surname
+\renewcommand{\author}{Domenico Cacace}
+% -> MSc course
+\newcommand{\course}{Computer Engineering - Ingegneria Informatica}
+% -> advisor name and surname
+\newcommand{\advisor}{Prof. Alessandro Barenghi}
+% IF AND ONLY IF you need to modify the co-supervisors you also have to modify the file Configuration_files/title_page.tex (ONLY where it is marked)
+\newcommand{\firstcoadvisor}{Prof. Gerardo Pelosi} % insert if any otherwise comment
+%\newcommand{\secondcoadvisor}{Name Surname} % insert if any otherwise comment
+% -> academic year
+\newcommand{\YEAR}{2022-2023}
+
+%-------------------------------------------------------------------------
+%	BEGIN OF YOUR DOCUMENT
+%-------------------------------------------------------------------------
+\begin{document}
+
+%-----------------------------------------------------------------------------
+% TITLE PAGE
+%-----------------------------------------------------------------------------
+% Do not change Configuration_files/TitlePage.tex (Modify it IF AND ONLY IF you need to add or delete the Co-advisors)
+% This file creates the Title Page of the document
+\input{Configuration_Files/title_page}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%     THESIS MAIN TEXT     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%-----------------------------------------------------------------------------
+% INTRODUCTION
+%-----------------------------------------------------------------------------
+\section{Introduction}
+\label{sec:introduction}
+The advancements in quantum computing threaten the \emph{status quo} in 
+the cryptography field: a quantum computer with a sufficient amount of
+qubits is able, thanks to Shor's algorithm,
+to break most of the current public key cryptosystems in polynomial time.\\
+For this reason in 2016 the National Institute of Standards and Technologies (NIST)
+launched a competition with the aim of developing and standardizing one or more
+quantum-resistant cryptosystems. After three rounds CRYSTALS-Kyber, a lattice-based
+cryptosystem, was selected as standardization candidate; however, in the event of a potentially
+disruptive attack on lattice-based cryptosystems, NIST decided to further extend the competition
+selecting four more candidates that rely on different hard problems. Excluding SIKE, the remaining
+candidates, namely BIKE~\cite{BIKE}, HQC~\cite{melchor2018hamming} and Classic McEliece~\cite{ClassicMcEliece}
+are all based on the hardness of the syndrome decoding problem.\\
+The object of this work is HQC, a code-based cryptosystem whose
+security relies on the syndrome decoding problem for quasi-cyclic codes. HQC comprises both a Public Key
+Encryption (PKE) scheme and a Key Encapsulation Mechanism (KEM), obtained by applying the HHK Fujisaki-Okamoto 
+transformation on the former.
+
+\paragraph{Related work} Given the sound security record of HQC, much attention has been devoted to its side-channel
+resistance. Most of the independent analyses focus on extracting information from electromagnetic and power traces,
+whilst at the end of Round 2 of the NIST contest the authors in~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} and~\cite{DBLP:conf/sacrypt/PaivaT19}
+proposed a timing attack that takes advantage of the non constant-time implementation of the BCH decoder; these attacks are no longer relevant,
+as the authors of HQC swapped the BCH code with a Reed-Muller Reed-Solomon concatenated code, implementing a constant-time decoder.
+Nontheless, in~\cite{DBLP:journals/tches/GuoHJLNS22} the authors propose a new timing attack, based on a weakness in the
+\emph{rejection sampling} procedure, employed to generate random sparse polynomials; as a countermeasure, a more care careful implementation
+of the rejection sampling procedure has been implemented in Round 4, fixing the issue.\\
+To date, no dedicated constant-time implementation of HQC targeting embedded systems has been proposed, despite the fact that side channel attacks
+are easier to carry on such platforms. The current state of software implementations of HQC tailored for the ARM Cortex-M4 microcontroller, chosen
+by the NIST as the reference platform for microcontroller benchmarks, includes only the one in PQM4~\cite{PQM4}, a third-party
+public project that collects the implementations of NIST Round 4 candidates tailored for Cortex-M4. The latest version of HQC in PQM4 is directly
+derived from the Round 3 reference implementation, with no optimizations: as a consequence, this implementation is not constant-time and 
+vulnerable to the timing attack presented in~\cite{DBLP:journals/tches/GuoHJLNS22}.
+
+\paragraph{Our contribution} In this work we present the first fully constant-time
+software implementation of HQC, together with a comparative analysis of constant-time
+binary polynomial multiplication techniques, both tailored for ARM Cortex-M4 microprocessors.
+We provide an experimental validation of the constant-time properties via a battery of statistical
+t-tests, while varying the CPU frequency to highlight the stability of our solution across
+different memory access latencies. Our results show that the optimal solution for the target 
+platform is a FFT-based approach, in contrast with classic divide-et-impera techniques
+(\emph{i.e.} Karatsuba) which provide better performance on x86 architectures.\\
+Moreover, to counter power attacks, we propose a masking scheme that can be applied to the
+entire cryptosystem, presenting our results on its potential efficacy.
+Finally, we compare our work with the latest implementations available of
+BIKE and Classic McEliece, showing the high efficiency of our approaches.
+
+\section{Background}
+\label{sec:background}
+
+\section{Implementation}
+\label{sec:impl}
+
+\section{Experimental results}
+\label{sec:expres}
+
+\section{Conclusions}
+A final section containing the main conclusions of your research/study have to be inserted here.
+
+%---------------------------------------------------------------------------
+%  BIBLIOGRAPHY
+%---------------------------------------------------------------------------
+% Remember to insert here only the essential bibliography of your work
+\bibliography{refs.bib} % automatically inserted and ordered with this command 
+
+\end{document}
