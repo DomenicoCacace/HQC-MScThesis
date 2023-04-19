@@ -34,6 +34,7 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{bm}
+\usepackage{dsfont}
 \usepackage[overload]{empheq}  % For braced-style systems of equations
 
 % PACKAGES FOR TABLES
@@ -43,7 +44,7 @@
 
 % PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
 \usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage[linesnumbered,ruled,noend,algo2e]{algorithm2e}
 
 % PACKAGES FOR REFERENCES & BIBLIOGRAPHY
 \usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
@@ -76,6 +77,11 @@
 \newcommand{\pdev}[2]{\frac{\partial#1}{\partial#2}}
 % NB: you can also override some existing commands with the keyword \renewcommand
 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
+\newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
+\newcommand{\sample}{\ensuremath{ \stackrel{\$}{\gets} }}
 %----------------------------------------------------------------------------
 %	ADD YOUR PACKAGES (be careful of package interaction)
 %----------------------------------------------------------------------------
@@ -173,6 +179,293 @@ BIKE and Classic McEliece, showing the high efficiency of our approaches.
 
 \section{Background}
 \label{sec:background}
+In this section we lay the theoretical foundations required to understand our work.
+To avoid confusion, throughout this work we will use the following notation, unless specified otherwise.
+Capital bold letters ($\mathbf{A}, \mathbf{B}, \cdots$) denote generic sets, while lowercase
+bold letters ($\mathbf{v}, \mathbf{w}, \cdots$) denote vectors. Binary Galois fields of dimension $n$ are denoted
+by $\mathds{F}_{2^n}$ or $GF(2^n)$, while the vector space of dimension $n$ over the field $GF(2)$ is denoted by
+either $\mathds{F}_2^n$ or $\mathcal{V}$. The ring of binary polynomials modulo $(x^n-1)$ is denoted by $\mathcal{R}$; 
+the value of $n$ is chosen in such a way that the algebra in the ring $\mathcal{R}$ is isomorphic to the algebra
+of binary $n\times n$ circulant matrices.
+
+\subsection{Polynomial multiplication}
+The most expensive operation in terms of execution time in our cryptosystem is, by far, the polynomial multiplication:
+it is thus essential to choose a fast algorithm in order to increase the overall performance.
+
+\subsubsection{Karatsuba Multiplication}
+One of the most known fast multiplication algorithms is Karatsuba. This is a divide-et-impera algorithm, which
+splits the $n$-degree input polynomials into smaller $m$-degree ones:
+\begin{equation*}
+    a(x) = a_0(x) +x^m\cdot a_1(x)
+\end{equation*}
+With the operands in this form, it is possible to rewrite the product of two polynomials as
+\begin{equation*}
+    c(x) = z_2(x)\cdot x^{2m}+z_1(x)\cdot x^m + z_0(x)
+\end{equation*}
+with
+\begin{equation*}
+    \begin{aligned}
+        z_2(x) &= a_1(x)b_1(x)\\
+        z_1(x) &= a_1(x)b_0(x) + a_0(x)b_1(x)\\
+        z_0(x) &= a_0(x)b_0(x)
+    \end{aligned}
+\end{equation*}
+Karatsuba observed that, at the cost of a few more additions, it is possible to calculate
+the product using only three multiplications by rewriting $z_1$ as
+\begin{equation*}
+    (a_0(x)+a_1(x))(b_0(x)+b_1(x))-z_0(x)-z_2(x)
+\end{equation*}
+This trick allows to calculate the product, under the assumption that $m = \lceil n/2 \rceil$, 
+with $\mathcal{O}(n^{\log_2 3})$ operations.
+
+\subsubsection{Frobenius Additive FFT}
+Instead of multiplying two polynomials (of degree less than $n$) directly, we can:
+\begin{itemize}
+    \item Sample the polynomials at $2n+1$ distinct points ($a(i), b(i)$)
+    \item Perform the pointwise multiplication of the samples ($c(i) = a(i)b(i)$)
+    \item Interpolate the points to get the product of the original polynomials
+\end{itemize}
+This approach may appear slower than the schoolbook method, as the sampling requires $\mathcal{O}(n^2)$ operations,
+the pointwise product $\mathcal{O}(n)$ and the interpolation up to $\mathcal{O}(n^3)$ with the Gauss elimination method. 
+However, by recursively splitting the operands and by picking a set of \emph{special} point, such as the $n$-th roots of unity in $\mathds{C}$, 
+the sampling and interpolation steps can be performed with the Discrete Fourier Transform and its inverse:
+algorithms that perform this procedure are commonly called Fast Fourier Transforms (FFTs), and can achieve a
+complexity of $\mathcal{O}(n \log{n})$ operations.
+
+Fields of characteristic two usually do not admit non-trivial roots of unity; nontheless, we can apply the same
+principle by picking as evaluation points the powers of a primitive element of the field: these algorithms are called
+Additive FFTs.
+An example of Additive FFT is the Lin-Chung-Han (LCH) FFT~\cite{DBLP:conf/focs/LinCH14} which, for polynomials of degree
+$n=2^m$, calculates the product in $\mathcal{O}(n\log{n})$.
+
+\paragraph{New polynomial basis} In~\cite{DBLP:journals/tit/GaoM10} Gao and Mateer use a special basis to
+represent the polynomials for their FFT. For polynomials of degree $n=2^m$, the Cantor basis $\mathbf{v} = (v_1, \cdots, v_m)$
+of $\mathds{F}_2^m$ follows the structure:
+\begin{equation*}
+    v_1 = 1, \qquad v_i^2+v_i = v_{i-1} \text{  for } i > 1
+\end{equation*}
+With respect to this basis we can define a sequence of \emph{nested} subspaces:
+\begin{equation*}
+    \mathbf{W}_i := span\{v_0, \cdots, v_{i-1}\}, \quad \mathbf{W}_0 \subset \cdots \subset \mathds{F}_2^m
+\end{equation*}
+and, for each subspace, its vanishing polynomial:
+\begin{equation*}
+    s_i(x) = \prod_{a \in \mathbf{W}_i}(x-a)
+\end{equation*}
+For the LCH FFT we first need to represent the polynomials in a different basis, built onto the vanishing polynomials;
+this basis ($X_1, \cdots, X_{n-1}$) is called \emph{novelpoly basis}, and is defined as:
+\begin{equation*}
+    X_k(x) = \prod(s_i(x))^{b_i} \quad \text{ with } k=\sum_{i=0}^{\log_2 n}b_i2^i
+\end{equation*}
+
+\paragraph{The butterflies}
+As with other FFT, in the LCH FFT we recursively split the input polynomial into two halves; we also split the 
+set of evaulation points $\mathbf{W}_k$ into two disjoint sets, $\mathbf{W}_{k-1}$ and $\mathbf{W}_k \setminus \mathbf{W_{k-1}} = \{x+v_k|x\in \mathbf{W}_{k-1}\}$.
+Because of the linearity of the vanishing polynomial ($s_i(x+y) = s_i(x)+s_i(y)$), the evaluations of the input polynomial at
+$\mathbf{W}_k \setminus \mathbf{W_{k-1}}$ can be quickly computed from the evaluations at $\mathbf{W}_{k-1}$ with the \textit{butterfly} operation,
+shown at lines \ref{line:h0} and \ref{line:h1} in Algorithm~\ref{alg:fft}
+
+\begin{algorithm2e}
+    \caption{Lin-Chung-Han FFT}
+    \label{alg:fft}
+    \KwIn{$f(x)$, in novelpoly basis,\newline
+            $\alpha \in \mathds{F}_{2^m}$, a generic field element}
+    \KwOut{$\{f(x) | x \in \mathbf{W}_m\}$}
+    \SetKwFunction{fft}{\textsc{FFT}}
+    \SetKwProg{Fn}{Function}{}{}
+
+    \Fn{\fft{$f(x), \alpha$}}{
+        \If{$\deg(f(x))$}{
+            \KwRet{$[g_0]$}\;
+        }
+        $k \gets \max{i} \text{ s.t. } 2^i \leq \deg(f(x))$\;
+        $g(X) \gets p_0(X) + X_{2^k}\cdot p_1(X)$\;
+        $h_0(X) \gets p_0(X) + s_k(\alpha)\cdot p_1(X)$\;\label{line:h0}
+        $h_1(X) \gets h_0(X) + s_k(v_k)\cdot p_1(X)$\;\label{line:h1}
+        \KwRet{\fft{$h_0(X), \alpha$}, \fft{$h_1(X), v_{k}+\alpha$}}\;
+    }
+\end{algorithm2e}
+Notice that the butterfly carries out two field additions but only one field multiplication,
+because $s_k(v_k)=1$ in Cantor basis (\cite{DBLP:journals/corr/abs-1708-09746}, Appendix A).
+The output of this algorithm is the set of evaluation points of the input polynomial; these can be multiplied
+with the evaluations of a second polynomial and, by performing the FFT and basis conversion backwards, we can
+obtain the product of the two.
+
+\paragraph{Frobenius partition}
+In~\cite{DBLP:conf/issac/HoevenL17} the authors showed that, by applying the Frobenius map ($\phi: x \mapsto x^2$),
+it is possible to derive more values of a polynomial from less evaluation points: 
+given a polynomial $f(x)$ of degree at most $n$, we can design a set of points
+$\mathbf{S} \subset \mathds{F}_{2^m}$ for $m$ power of 2 such that we can derive $n$ evaluations
+of $f$ from $\mathbf{S}$. In~\cite{DBLP:conf/issac/LiCKCY18} the authors suggest to pick $\mathbf{S}$ as:
+\begin{equation*}
+    \mathbf{S} := v_{l+m/2}+\mathbf{W}_l = \{v_{l+m/2}+x | x \in \mathbf{W}_l\}
+\end{equation*}
+with $l = \log_2 n - \log_2 m$ and size $n^\prime = |\mathbf{S}| = |\mathbf{W}_l| = 2^l = n/m$.
+As explained by the authors, this construction allows to reach $n$ points in $\mathds{F}_{2^m}$ by applying
+the Frobenius map, which also ensures that the evaluation function
+\begin{equation*} 
+    E_\mathbf{S}: f(x) \mapsto f(\mathbf{S}) = \{f(v_{l+m/2+w}) | w \in \mathbf{W}_l\}
+\end{equation*}
+will be invertible.
+
+\subsection{Side-channel attacks}
+Even though a cryptographic primitive may be secure from a theoretical point of view, 
+its implementation may not. It is possible that a device exposes some \emph{side channels}, 
+observable aspects of a system that may reveal information about the internal state of the system;
+these side channels, if the device runs a cryptosystem, be exploited to \emph{leak} secret information, such
+as a message or the keys employed to decrypt it.
+
+Two of the most common side-channel attacks, especially on embedded devices, are:
+\begin{itemize}
+    \item \textbf{Timing attacks}: the execution time of an operation may depend on the values of its inputs, allowing
+    an attacker to retrieve information by measuring the execution time
+    \item \textbf{Power attacks}: the amount of power required by the CPU varies based on the workload, which directly
+    depends on the operations being run and their inputs
+\end{itemize}
+
+The presence of a side channel does not necessarily mean that an attack is possible,
+as the leaked information may not be sufficient to succesfully exfiltrate information.
+If this is not the case, there are various countermeasures to mitigate the risk of a successful attack,
+such as:
+
+\begin{itemize}
+    \item Constant-time algorithms: running an operation takes always the same amount of time, regardless of the
+    input (\emph{e.g.} substitute branching instructions depending on the inputs)
+    \item Masking: randomize the inputs of an algorithm without affecting the outputs; this can be achieved by
+    splitting sensitive data $x$ into $d+1$ \emph{shares}, such that $x = x_0 \oplus \cdots \oplus x_d$,
+    making the sensitive value indistinguishable from random noise.
+\end{itemize}
+
+
+
+\subsection{Coding theory}
+To better understand how HQC works, we now give the basic concepts of coding theory.
+\begin{definition}[Circulant matrix]
+    Let $\mathbf{v} = (v_0, \cdots, v_{n-1}) \in \mathcal{V}$. The circulant matrix induced by $\mathbf{v}$ is defined as
+    a matrix whose $i$-th row is the vector $\mathbf{v}$ shifted by $i$ positions to the right:
+    \begin{equation*}
+        \mathbf{circ(v)} = \begin{pmatrix}
+            v_0 & v_1 & \cdots & v_{n-1} \\
+            v_{n-1} & v_0 & \cdots & v_{n-2} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            v_1 & v_2 & \cdots & v_0
+            \end{pmatrix} \in \mathds{F}_2^{n\times n}
+    \end{equation*}
+\end{definition}
+The algebra of $n\times n$ circulant matrices over $\mathds{F}_2$ is isomorphic to the algebra of polynomials
+in the ring $\mathcal{R}$
+
+
+\begin{definition}[Linear Codes]
+    A linear code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathcal{V}$ 
+    of dimension $k$; the elements of $\mathcal{C}$ are called \textit{codewords}.\\
+    Due to the linearity of $\mathcal{V}$, any linear combination of two codewords is also a codeword.
+\end{definition}
+
+\begin{definition}[Generator Matrix]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The matrix $\mathbf{G} \in \mathds{F}_2^{k\times n}$ is called the generator 
+    matrix of $\mathcal{C}$ if
+    \begin{equation*}
+        \mathcal{C} = \{\mathbf{mG}, \text{ for } \mathbf{m}\in \mathds{F}_2^k\}
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Parity-Check Matrix]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The matrix $\mathbf{H} \in \mathds{F}_2^{(n-k)\times n}$ is called the 
+    parity-check matrix of $\mathcal{C}$ if
+    \begin{equation*}
+        \mathcal{C} = \{\mathbf{v} \in \mathds{F}_2^n \text{ such that } \mathbf{Hv}^\top = 0\}
+    \end{equation*}
+    In other words, $\mathbf{H}$ is the generator matrix of the dual code $\mathcal{C}^\perp$.
+\end{definition}
+
+\begin{definition}[Syndrome]
+    Let $\mathcal{C} = [n,k]$ be a code, $\mathbf{H}$ its parity matrix and $\mathbf{v} \in \mathds{F}_2^n$ a word. 
+    The syndrome of $\mathbf{v}$ is defined as
+    \begin{equation*}
+        \mathbf{S}(\mathbf{v}) = \mathbf{Hv}^\top
+    \end{equation*}
+    From this definition,  a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
+\end{definition}
+
+\begin{definition}[Quasi-Cyclic Codes]
+    Let $\mathbf{c} = (\mathbf{c}_0, \cdots, \mathbf{c}_{s-1}) \in \mathds{F}_2^{sn}$ be a vector, where we consider 
+    each $\mathbf{c}_i$ as a vector in $\mathds{F}_2^n$.
+    A linear code $\mathcal{C} = [sn,k]$ is Quasi-Cyclic of index $s$ if, for any $\mathbf{c} \in \mathcal{C}$, 
+    the vector obtained by applying a circular shift to every block $\mathbf{c}_i$ simultaneously is also a codeword.
+\end{definition}
+
+\subsubsection{Hard problems for cryptography}
+The problems we are interested in are all variants of the \textit{decoding problem}, which requires to find 
+the closest codeword to a given word with respect to a certain metric; in our case we consider as metric the Hamming
+weight, denoted as \texttt{wt}($\mathbf{v}$), which is the amount of non-zero coordinates of the vector $\mathbf{v}$.
+In the case of linear codes we have shown that the decoding problem stays the same whether one is given 
+the syndrome of the received vector or the vector itself; for this reason, we will only consider 
+the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
+
+\begin{definition}[\textsf{SD} Distribution]
+    Given $n,k,w \in \mathds{N}$, the distribution $\textsf{SD}(n, k, w)$ randomly samples a parity-check matrix 
+    $\mathbf{H} \xleftarrow{\mathdollar} \mathds{F}_2^{(n-k)\times n}$, a vector 
+    $\mathbf{x} \xleftarrow{\mathdollar} \mathds{F}_2^n$ such that $\texttt{wt}(\mathbf{x}) = w$ 
+    and returns ($\mathbf{H}, \mathbf{S}(\mathbf{x})$).
+\end{definition}
+
+\begin{definition}[\textsf{SD} Problem]
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$ from the $\textsf{SD}(n, k, w)$ 
+    distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
+    $\mathbf{S}(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
+\end{definition}
+This problem has been proven to be NP-complete in~\cite{DBLP:journals/tit/BerlekampMT78}.
+
+\subsection{Hamming Quasi-Cyclic}
+    Hamming Quasi-Cyclic is a code-based cryptosystem, that includes both a public-key
+    encryption scheme and a key encapsulation mechanism. The KEM is built by applying the HHK
+    transformation on the PKE, hence we will focus on the latter.
+    HQC employs two different codes:
+    \begin{itemize}
+        \item A public decodable code $\mathcal{C}$ generated by $\mathbf{G}$ which can correct
+        up to $\delta$ errors efficiently with $\mathcal{C}$.\textsf{Decode}().
+        \item A random code with parity-check matrix $\mathbf{H} = [\mathbf{I}_n, \mathbf{circ}(\mathbf{h})]$
+    \end{itemize}
+    The idea at the core of the PKE is to encode the message and add random errors
+    ($\mathbf{r_1, r_2, e}$), sparse polynomials with a certain Hamming weight
+    that can be removed only by knowing the secret key: in this way the code $\mathcal{C}$
+    can decode the ciphertext only if these errors are removed. The authors showed that breaking
+    the PKE scheme from a theoretical point of view is equivalent to solving the decisional version 
+    of the \textsf{SD} problem for quasi-cyclic codes, thus proving that the PKE is IND-CPA secure.
+\begin{algorithm2e}
+    \caption{HQC PKE}
+    \label{alg:pke}
+    \SetKwFunction{keygen}{\textsc{Keygen}}
+    \SetKwFunction{enc}{\textsc{Encrypt}}
+    \SetKwFunction{dec}{\textsc{Decrypt}}
+
+    \KwData{$\mathcal{R}_\alpha := \{x \in \mathcal{R} | \texttt{wt}(x) = \alpha\}$, \newline
+    $\sample$: uniform sampling from r.h.s}
+
+    \SetKwProg{Fn}{Function}{}{}
+
+    \Fn{\keygen{}}{
+        $\mathbf{h} \sample \mathcal{R}$\;
+        $(\mathbf{x}, \mathbf{y}) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
+        $\mathbf{s} \gets \mathbf{x}+\mathbf{hy}$\;
+        $\kpri \gets (\mathbf{x}, \mathbf{y})$\;
+        $\kpub \gets (\mathbf{h}, \mathbf{s})$\;
+        \KwRet{($\kpri, \kpub$)}
+    }
+
+    \Fn{\enc{$\kpub, \mathbf{m}$}}{
+        $\mathbf{e} \sample \mathcal{R}_{\omega_e}$\;
+        $(\mathbf{r}_1, \mathbf{r}_2) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
+        $\mathbf{u} \gets \mathbf{r}_1+\mathbf{hr}_2$\;
+        $\mathbf{v} \gets \mathbf{mG}+\mathbf{sr}_2+\mathbf{e}$\;
+        \KwRet{$\mathbf{c} = (\mathbf{u}, \mathbf{v}$)}
+    }
+
+    \Fn{\dec{$\kpri, \mathbf{c}$}}{
+        \KwRet{$\mathcal{C}$.\textsf{Decode}($\mathbf{v}-\mathbf{uy}$)}
+    }
+\end{algorithm2e}
 
 \section{Implementation}
 \label{sec:impl}
