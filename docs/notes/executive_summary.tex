@@ -76,12 +76,27 @@
 \newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}} % From mathbbm.sty
 \newcommand{\pdev}[2]{\frac{\partial#1}{\partial#2}}
 % NB: you can also override some existing commands with the keyword \renewcommand
-
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 \newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
 \newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
 \newcommand{\sample}{\ensuremath{ \stackrel{\$}{\gets} }}
+\newcommand{\ssplit}[1]{\ensuremath{ \llbracket #1 \rrbracket }}
+\newcommand{\clshift}{\ensuremath{\lll_n}}
+
+
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.16}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns}
+\usepackage{stmaryrd}
+\usepackage{multicol} % To write in multiple columns (executive summary)
+\usepackage{multirow}
+
 %----------------------------------------------------------------------------
 %	ADD YOUR PACKAGES (be careful of package interaction)
 %----------------------------------------------------------------------------
@@ -142,24 +157,23 @@ quantum-resistant cryptosystems. After three rounds CRYSTALS-Kyber, a lattice-ba
 cryptosystem, was selected as standardization candidate; however, in the event of a potentially
 disruptive attack on lattice-based cryptosystems, NIST decided to further extend the competition
 selecting four more candidates that rely on different hard problems. Excluding SIKE, the remaining
-candidates, namely BIKE~\cite{BIKE}, HQC~\cite{melchor2018hamming} and Classic McEliece~\cite{ClassicMcEliece}
+candidates, namely BIKE, HQC and Classic McEliece
 are all based on the hardness of the syndrome decoding problem.\\
-The object of this work is HQC, a code-based cryptosystem whose
+The object of this work is HQC~\cite{melchor2018hamming}, a code-based cryptosystem whose
 security relies on the syndrome decoding problem for quasi-cyclic codes. HQC comprises both a Public Key
 Encryption (PKE) scheme and a Key Encapsulation Mechanism (KEM), obtained by applying the HHK Fujisaki-Okamoto 
 transformation on the former.
 
 \paragraph{Related work} Given the sound security record of HQC, much attention has been devoted to its side-channel
 resistance. Most of the independent analyses focus on extracting information from electromagnetic and power traces,
-whilst at the end of Round 2 of the NIST contest the authors in~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} and~\cite{DBLP:conf/sacrypt/PaivaT19}
-proposed a timing attack that takes advantage of the non constant-time implementation of the BCH decoder; these attacks are no longer relevant,
+whilst at the end of Round 2 of the NIST contest two timing attack that takes advantage of the non constant-time implementation of the BCH decoder have been shown; these attacks are no longer relevant,
 as the authors of HQC swapped the BCH code with a Reed-Muller Reed-Solomon concatenated code, implementing a constant-time decoder.
-Nontheless, in~\cite{DBLP:journals/tches/GuoHJLNS22} the authors propose a new timing attack, based on a weakness in the
+Nontheless a new timing attack has been discovered, which exploits a weakness in the
 \emph{rejection sampling} procedure, employed to generate random sparse polynomials; as a countermeasure, a more care careful implementation
 of the rejection sampling procedure has been implemented in Round 4, fixing the issue.\\
 To date, no dedicated constant-time implementation of HQC targeting embedded systems has been proposed, despite the fact that side channel attacks
 are easier to carry on such platforms. The current state of software implementations of HQC tailored for the ARM Cortex-M4 microcontroller, chosen
-by the NIST as the reference platform for microcontroller benchmarks, includes only the one in PQM4~\cite{PQM4}, a third-party
+by the NIST as the reference platform for microcontroller benchmarks, includes only the one in PQM4, a third-party
 public project that collects the implementations of NIST Round 4 candidates tailored for Cortex-M4. The latest version of HQC in PQM4 is directly
 derived from the Round 3 reference implementation, with no optimizations: as a consequence, this implementation is not constant-time and 
 vulnerable to the timing attack presented in~\cite{DBLP:journals/tches/GuoHJLNS22}.
@@ -235,7 +249,7 @@ complexity of $\mathcal{O}(n \log{n})$ operations.
 Fields of characteristic two usually do not admit non-trivial roots of unity; nontheless, we can apply the same
 principle by picking as evaluation points the powers of a primitive element of the field: these algorithms are called
 Additive FFTs.
-An example of Additive FFT is the Lin-Chung-Han (LCH) FFT~\cite{DBLP:conf/focs/LinCH14} which, for polynomials of degree
+An example of Additive FFT is the Lin-Chung-Han (LCH) FFT which, for polynomials of degree
 $n=2^m$, calculates the product in $\mathcal{O}(n\log{n})$.
 
 \paragraph{New polynomial basis} In~\cite{DBLP:journals/tit/GaoM10} Gao and Mateer use a special basis to
@@ -297,9 +311,10 @@ it is possible to derive more values of a polynomial from less evaluation points
 given a polynomial $f(x)$ of degree at most $n$, we can design a set of points
 $\mathbf{S} \subset \mathds{F}_{2^m}$ for $m$ power of 2 such that we can derive $n$ evaluations
 of $f$ from $\mathbf{S}$. In~\cite{DBLP:conf/issac/LiCKCY18} the authors suggest to pick $\mathbf{S}$ as:
-\begin{equation*}
+\begin{equation}
     \mathbf{S} := v_{l+m/2}+\mathbf{W}_l = \{v_{l+m/2}+x | x \in \mathbf{W}_l\}
-\end{equation*}
+    \label{eq:frobpart}
+\end{equation}
 with $l = \log_2 n - \log_2 m$ and size $n^\prime = |\mathbf{S}| = |\mathbf{W}_l| = 2^l = n/m$.
 As explained by the authors, this construction allows to reach $n$ points in $\mathds{F}_{2^m}$ by applying
 the Frobenius map, which also ensures that the evaluation function
@@ -415,7 +430,7 @@ the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
     distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
     $\mathbf{S}(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
 \end{definition}
-This problem has been proven to be NP-complete in~\cite{DBLP:journals/tit/BerlekampMT78}.
+This problem has been proven to be NP-complete.
 
 \subsection{Hamming Quasi-Cyclic}
     Hamming Quasi-Cyclic is a code-based cryptosystem, that includes both a public-key
@@ -446,35 +461,441 @@ This problem has been proven to be NP-complete in~\cite{DBLP:journals/tit/Berlek
     \SetKwProg{Fn}{Function}{}{}
 
     \Fn{\keygen{}}{
-        $\mathbf{h} \sample \mathcal{R}$\;
-        $(\mathbf{x}, \mathbf{y}) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
-        $\mathbf{s} \gets \mathbf{x}+\mathbf{hy}$\;
-        $\kpri \gets (\mathbf{x}, \mathbf{y})$\;
-        $\kpub \gets (\mathbf{h}, \mathbf{s})$\;
+        ${h} \sample \mathcal{R}$\;
+        $({x}, {y}) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
+        ${s} \gets {x}+{hy}$\;
+        $\kpri \gets ({x}, {y})$\;
+        $\kpub \gets ({h}, {s})$\;
         \KwRet{($\kpri, \kpub$)}
     }
 
-    \Fn{\enc{$\kpub, \mathbf{m}$}}{
-        $\mathbf{e} \sample \mathcal{R}_{\omega_e}$\;
-        $(\mathbf{r}_1, \mathbf{r}_2) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
-        $\mathbf{u} \gets \mathbf{r}_1+\mathbf{hr}_2$\;
-        $\mathbf{v} \gets \mathbf{mG}+\mathbf{sr}_2+\mathbf{e}$\;
-        \KwRet{$\mathbf{c} = (\mathbf{u}, \mathbf{v}$)}
+    \Fn{\enc{$\kpub, {m}$}}{
+        ${e} \sample \mathcal{R}_{\omega_e}$\;
+        $({r}_1, {r}_2) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
+        ${u} \gets {r}_1+{hr}_2$\;
+        ${v} \gets m\mathbf{G}+{sr}_2+{e}$\;
+        \KwRet{${c} = ({u}, {v}$)}
     }
 
-    \Fn{\dec{$\kpri, \mathbf{c}$}}{
-        \KwRet{$\mathcal{C}$.\textsf{Decode}($\mathbf{v}-\mathbf{uy}$)}
+    \Fn{\dec{$\kpri, {c}$}}{
+        \KwRet{$\mathcal{C}$.\textsf{Decode}(${v}-{uy}$)}
     }
 \end{algorithm2e}
+\paragraph*{Parameters} HQC has three different parameters sets for categry 1, 3 and 5 respectively; 
+the parameters are summarized in Table~\ref{tab:params}.
+\begin{table}[H]\small
+    \centering
+    \caption{Parameters of HQC}
+    % as wide as the page
+    \begin{tabular}{c|ccc|cc}
+        \toprule
+        \textbf{Instance} & $\mathbf{n_1}$ & $\mathbf{n_2}$ & $\mathbf{n}$ & $\mathbf{\omega}$ & $\mathbf{\omega_r = \omega_e}$ \\
+        \midrule
+        \texttt{hqc-128} & 46 & 384 & 17669 & 66 & 75   \\
+        \texttt{hqc-192} & 56 & 640 & 35851 & 100 & 114 \\
+        \texttt{hqc-256} & 90 & 640 & 57637 & 131 & 149 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:params}
+\end{table}
 
 \section{Implementation}
 \label{sec:impl}
+At the time of writing there are no publicly available implementations of HQC specifically targeting microcontrollers.
+In this section we describe our implementation of HQC for Cortex-M4 microcontrollers, showing the implementative
+detail of various multiplication algorithms and the details of our masking scheme.
+Due to its rather large memory footprint, our work focuses on the \texttt{hqc-128} version.
+
+\subsection{Polynomial multiplication}
+The polynomials $v \in \mathcal{R}$ can be represented in tow possible forms:
+\begin{itemize}
+    \item sparse, as a vector of $\omega$ coefficients, $\omega = \texttt{wt}(v)$, with each entry corresponding to the degree of a non-zero coefficient
+    \item dense, as a vector of size $\lceil \frac{n}{\texttt{ws}} \rceil$, with \texttt{ws} size of a memory word.
+\end{itemize}
+One of the operands in the multiplications in HQC has always a very low Hamming weight (75) compared to the
+maximum degree (17669): can we exploit this property to get fast polynomial multiplications?
+
+\paragraph{Shift\&Add}
+The Round 3 reference implementation of HQC implements polynomial multiplication with the \emph{shift and add} (S\&A) method:
+multiplication in $\mathcal{R}$ of a polynomial by a monomial of degree $i$ can be achieved with a circular
+shift to the left of $i$ positions (\clshift $i$) on the polynomial; by fixing the dense input and repeating this procedure for each non-null coefficient
+of the sparse one and by summing up the partial results we get the product of the two inputs.
+The low weight of the sparse polynomial causes this approach to be extremely fast; however, this performance
+is counterbalanced by the non-constant time execution, which is a major drawback.
+
+\paragraph{Constant-Time S\&A} We would like to exploit the low weight of the sparse operand by implementing
+a constant-time version of S\&A; such an algorithm is implemented in LEDAcrypt and it is based on \emph{shifts with conditional commitment}:
+we calculate the shifts for each bit $\beta_i$ required to represent the degree of the monomial, but we sum it to the final
+result only if that bit is 1.
+\begin{algorithm2e}[h]
+    \caption{Constant-time S\&A}
+    $c(x) \gets b(x) \clshift (a \mod \texttt{ws})$\;
+    \For{$i \gets \log_2(\texttt{ws})$ \KwTo $(m-1)$} {
+        $\texttt{tmp}(x) \gets b(x) \clshift i$\;
+        $c(x) \gets c(x) + \texttt{tmp}$\;
+        $\texttt{cond} \gets (\beta_{i} = 1)$\;
+        $\texttt{mask} \gets 0 - (\texttt{WORD})(\texttt{cond})$\;
+        $c(x) \gets c(x) + ((c(x) \wedge \texttt{mask}) \vee (\texttt{tmp}(x) \wedge \texttt{mask}))$\;
+    }
+    \KwRet $c(x)$\;
+\end{algorithm2e}
+
+\paragraph{Frobenius FFT}
+Our implementation of the FAFFT follows the same principles of~\cite{DBLP:journals/tches/ChenCK21}. Our
+target is a 32-bit CPU, hence we pick $m=32$; moreover, since the maximum degree of the operands is 17669, 
+we choose $n$ to be the greatest power of 2 greater than $2\cdot 17669$, hence $n=65536$. Recalling Equation
+\ref{eq:frobpart}, the optimal Frobenius partition is $\mathbf{S} = v_{27}+\mathbf{W}_{11}$.
+Since the degree of the operands is fixed, we can perform a variety of optimizations:
+\begin{itemize}
+    \item Basis conversion: the recursive operations can be unrolled, generating a circuit with only \texttt{XOR}
+    operations where we can discard inputs that we are sure to be zero due to the padding.
+    \item Pointwise multiplication: we can perform the $n/m=2048$ multiplications in $\mathds{F}_{2^{32}}$ by
+    applying Karatsuba, so that the results can nicely fit into the general purpose registers.
+    \item Encoding: the first $\log_2 m$ layers of the butterfly step can be rewritten as a vector-matrix
+    product which, similarly to the basis conversion, can be carried out with a binary circuit
+\end{itemize}
+
+\subsection{Masking}
+A peculiarity of HQC is that, if we consider the keys as constants, the whole scheme is linear in all of it operations,
+making its primitives easy to mask. By denoting with $\ssplit{x}$ the splitting of $x$ into $d$ shares and with
+$(x+\sum \texttt{rnd}_i)$ the masking of $x$ with $d-1$ random values, we can summarize the masked implementation
+of the PKE as in Algorithm~\ref{alg:pkemaskd}
+
+\begin{algorithm2e}
+    \caption{HQC PKE, masked}
+    \label{alg:pkemaskd}
+    \SetKwFunction{keygen}{\textsc{Keygen}}
+    \SetKwFunction{enc}{\textsc{Encrypt}}
+    \SetKwFunction{dec}{\textsc{Decrypt}}
+    \SetKwFunction{coll}{\textsc{Collapse}}
+
+
+    \SetKwProg{Fn}{Function}{}{}
+
+    \Fn{\keygen{}}{
+        $h \sample \mathcal{R}$\;
+        $(x, y) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
+        $\ssplit{y} \gets (y+\sum \texttt{rnd}_i)$\;
+        $\ssplit{s} \gets {h}\ssplit{y}$\;
+        $\ssplit{s} \gets {x} + \ssplit{s}$\;
+        $\kpri \gets (x, y)$\;
+        $\kpub \gets (\coll{\ssplit{{h}}}, s)$\;
+        \KwRet{($\kpri, \kpub$)}
+    }
+
+    \Fn{\enc{$\kpub, {m}$}}{
+        $e \sample \mathcal{R}_{\omega_e}$\;
+        $(r_1,r_2) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
+        $\ssplit{r_1} \gets (r_1+\sum \mathtt{rnd}_i)$\;
+        $\ssplit{r_2} \gets (r_2+\sum \mathtt{rnd}_i)$\;
+        $\ssplit{u} \gets \ssplit{r_1} + h\ssplit{r_2}$\;
+        $\ssplit{m} \gets (m+\sum \mathtt{rnd}_i) $\;
+        $\ssplit{v} \gets \ssplit{m}\mathbf{G} + s \ssplit{r_2} + e $\;
+        \KwRet{$(\coll{\ssplit{u}}, \coll{\ssplit{v}})$}
+    }
+
+    \Fn{\dec{$\kpri, {c}$}}{
+        $\ssplit{y} \gets (y+\sum \mathtt{rnd}_i)$\;
+        $\ssplit{uy} \gets u \ssplit{y}$\;
+        $\ssplit{\bar{m}} \sample (\{0,1\}^k)^d$\;
+        $\ssplit{\bar{c}} \gets \ssplit{\bar{m}}\mathbf{G}$\; 
+        $a \gets \coll{(v ,\ssplit{\bar{c}})}$\;
+        $m \gets \text{\sc Decode}(\coll{(a,\ssplit{uy})})$\;
+        \KwRet $\coll{m ,\ssplit{\bar{m}}}$\;
+    }
+\end{algorithm2e}
+In the keygen and encryption algorithms we simply mask the secret values, summing 
+them in order to avoid leakage; in the decryption we exploit the linearity of the correctable code: after masking $y$ and multiplying by $u$, we 
+generate a random codeword $\ssplit{\bar{m}}$ and encode it into \ssplit{\bar{c}} to protect $v-uy$ during the decoding.
+After the decoding we can collapse $\ssplit{\bar{m}}$ and the decoded message: since the code is linear, the final result
+is the original message, as if we had performed the decoding on $v-uy$ directly.
 
 \section{Experimental results}
 \label{sec:expres}
+We choose the STM32L476RG Nucleo board as our benchmarking platform, featuring 96KB of RAM, 1MB of Flash memory,
+a 32-bit ARM Cortex M4 which can be clocked up to 80MHz and a true random number generator.
+We use \texttt{libopencm3} 1.0.0 as firmware library and compile the project with \texttt{gcc-arm-none-eabi} 7.2.1
+using the \texttt{-O3} optimization flag. The board is clocked at a range of frequencies between 16 and 80 MHz to
+evaluate the impact of the memory wait states.
+We run the same experiments on a x86 machine, equipped with an AMD Ryzen 25000U, 8GB of DDR4 DRAM and running ArchLinux 6.2; the executables are compiled with
+\texttt{gcc} 12.2.1 using the \texttt{-O3} optimization flag and, for AVX implementations (marked with a `$\dagger$'), the \texttt{-march=native} flag. 
+
+\paragraph{Welch's t-test}
+To evaluate the existence of an eventual side-channel vulnerability we use the Test Vector Leakage Assessment (TVLA),
+based on Welch's t-test. The aim of the test is to provide a quantitative measure of how much the means of two
+populations differ; the t-test statistic is computed as follows:
+\vspace{-10pt}
+\begin{equation}
+    t = \frac{\mu_0 - \mu_1}{\sqrt{\frac{s_0^2}{n_0} + \frac{s_1^2}{n_1}}}
+\end{equation}  
+\vspace{-2pt}
+where $\mu, s^2$ and $n$ are the mean, variance and number of samples of the two populations, respectively.
+Small $t$ values give evidence to accept the null hypothesis that the two populations have the same mean; 
+usually, for the sake of simplicity, a threshold of $|t| > 4.5$ is defined to reject the null hypothesis with
+a confidence level of $99,999\%$.
+
+
+\subsection{Execution time}
+\input{figures/plotting.tex}
+\input{figures/arm_timing.tex}  % contains data for the plots
+\input{figures/x86_timing.tex}  % contains data for the plots
+
+To measure the execution times on ARM we use the Data Watchpoint and Trace Cycle Count Register (\texttt{DWT\_CYCCNT}),
+a 32-bit register that counts the number of clock cycles elapsed since its last reset with a resolution
+of one clock cycle; to avoid overflows, we reset the register after all the measurements of a single round.
+As for the x86 machine, we use the \texttt{rdtsc} instruction, that returns the current value of the processor's time stamp counter;
+to get accurate measurements, we lock the frequency of all cores to 2.0GHz using \texttt{cpupower} and disable
+the Turbo Boost feature.
+In both cases, in order to reduce uncertainty, we run the experiments 1000 times and average the results.
+
+As already mentioned, the multiplication operation is the most time-consuming operation for all primitives, hence the choice of
+the multiplication algorithm is crucial to achieve good performance. The execution times of the various multiplication algorithms
+are shown in Figure~\ref{fig:multTiming}.
+
+\begin{figure*}
+    \hspace{-10pt}
+    \subfloat{
+        \ARMtimingplotmult{\armMultTiming}
+    }
+    \subfloat{
+        \xtimingplotmult{\xMultTiming}
+    }
+    \centering
+    \newline
+    \timingLegend
+    \caption{Multiplication execution times on ARM (left) and x86 (right) in kcycles}
+    \label{fig:multTiming}
+\end{figure*}
+
+As expected, the fastest multiplication algorithm on ARM (after the Shift\&Add) is the one using the Frobenius FFT, followed by the
+constant-time version of Shift\&Add. In the graph we can also see how the execution time for the Frobenius FFT is the only one
+that is significantly impacted by the amount of memory wait states, as it relies on precomputed tables, requiring a higher amount 
+of memory accesses and thus up to 92\% more clock cycles.\\
+Things change dramatically on x86: on this architecture we can take advantage of AVX instructions, which allow us to carry out
+operations with 256-bit vectors in a single clock cycle: this benefits the Karatsuba algorithm, which is the fastest one by a large margin,
+while the Frobenius FFT becomes the slowest one.
+
+\subsection{Constant-time execution}
+As stated by the NIST, the constant-time execution is an important property for a standardization candidate, as it increases
+its security against side-channel attacks: it is hence important to assess the presence of timing leaks in our multiplication implementations
+before using them in the PKE and KEM schemes. As already mentioned we employ the TVLA and take as populations the execution times
+of the algorithm under test, running it with variable and fixed inputs; both populations are sampled 1000 times and, for ARM,
+the frequency is set to 80MHz. The results of the tests are reported in Table~\ref{tab:ctmult}.
+\begin{table}\small
+    \centering
+    \caption{t-values for the multiplication algorithms}
+    \begin{tabular}{c|cccc}
+        \toprule
+        & \textbf{S\&A} & \textbf{Karatsuba} & \textbf{CT S\&A} & \textbf{FAFFT} \\
+        \midrule
+        \texttt{ARM} & 55.748 & 0.000 & 0.000 & 0.000 \\
+        \texttt{x86} & 20.936 & 3.644 & 3.371 & 1.232\\
+        \bottomrule
+    \end{tabular}
+    \label{tab:ctmult}
+\end{table}
+
+As expected, the schoolbook Shift\&Add does not run in constant time while the other algorithms do, as they perform always the same
+operations regardless of the inputs; the constant-time behavior of a part of the system however does not guarantee that the whole
+system runs in constant time. In~\cite{DBLP:journals/tches/GuoHJLNS22}, the authors show that the algorithm employed in HQC and BIKE to sample polynomials
+with a fixed Hamming weight is not constant-time and can be exploited to fully recover the secret key; this vulnerability was discovered
+on the Round 3 version, and it has been fixed in the subsequent round. We therefore run the TVLA on the PKE and KEM schemes with
+the same settings as before, and find the results reported in Table~\ref{tab:ct}.
+
+\begin{table*}[ht]\small
+    \centering
+    \caption{t-values for the PKE and KEM algorithms}
+    \begin{tabular}{c | c c | c c | c c | c c | c c }
+        \toprule
+        &  & &  \multicolumn{2}{c|}{\textbf{Encrypt}} & \multicolumn{2}{c|}{\textbf{Decrypt}} &  \multicolumn{2}{c|}{\textbf{Encaps}} & \multicolumn{2}{c}{\textbf{Decaps}}\\
+        \textbf{Round} & \textbf{Mul} & \textbf{CT?} & \texttt{x86} & \texttt{ARM} & \texttt{x86} & \texttt{ARM} & \texttt{x86} & \texttt{ARM} & \texttt{x86} & \texttt{ARM} \\
+        \midrule
+        \multirow{2}{*}{3}
+        & Shift\&Add & $\circ$ & 10.65 & 29.19 & 5.59 & 39.23 & 58.42 & 28.65 & 20.71 & 18.44\\
+        & CT Shift\&Add$^\dagger$ & $\bullet$ & 9.38 & 23.12 & 7.59 & 49.56 & 6.75 & 14.29 & 5.81 & 23.70 \\
+        \midrule
+        \multirow{3}{*}{4}
+        & Karatsuba$^\dagger$ & $\bullet$ & 1.27 & 1.04 & 0.97 & 0.30 & 3.77 & 4.01 & 4.56 & 0.26\\
+        & CT Shift\&Add$^\dagger$ & $\bullet$ & 0.29 & 0.07 & 1.51 & 1.64 & 1.58 & 2.17 & 1.04 & 0.22 \\
+        & Frobenius FFT & $\bullet$ & 3.36 & 0.56 & 1.70 & 1.99 & 4.31 & 4.25 & 2.41 & 0.53 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:ct}
+\end{table*}
+
+We can see that, even with a constant-time multiplication algorithm, the Round 3 version is not constant-time, while the Round 4 version
+runs in constant time with all the multiplication algorithms. 
+
+\subsection{Power measurements}
+Our power measuring setup employs the PicoScope 5244D oscilloscope sampling at 500MS/s, two Agilent INA-10386 amplifiers in a cascade
+configuration achieving a 52dB gain and a H-probe, placed on top of the STM32L476RG package. The EM traces are recorded and analyzed on a 
+computer equipped with an AMD A8-6600K CPU, 16GB of DDR3 DRAM running Debian 10. To ensure that the encryption/decryption process runs
+correctly, we generate the inputs on the same machine, send them to the target via the USART1 interface and compare the outputs with the
+expected ones; the executables to generate the inputs and verify the outputs are compiled with \texttt{gcc} (9.3.0) on the same machine,
+using the \texttt{-O3} optimization flag.
+
+Due to the significant amount of time required to acquire the EM traces, the populations of our TVLA contain 1000 traces each. Our tests 
+results show no significant leakage, as shown in Figure~\ref{fig:EMtstat}.
+\vspace{-10pt}
+\begin{figure}[H]
+    \centering
+    \caption{t-value statistics on the electromagnetic traces (decryption)}
+    \includegraphics[scale=0.45]{figures/decrypt_tstat.png}
+    \label{fig:EMtstat}
+\end{figure}
+
+However, similar results are achieved as well on the non-masked version of the algorithms: since other works have proven the existence of 
+a power side-channel attack on the RMRS decoder, we conclude that 
+further measurements are required to assess the security of the masking scheme.
+
+\subsection{Comparison with other schemes}
+    Similarly to the NIST Round 3 report, we can compare the performance of our implementation with the other Round 4 candidates; 
+    it is interesting to note that all three candidates are code-based cryptosystems and that they all have a Cortex-M4 implementation.
+    In the graphs below we can see the different amount of time required by our implementations, BIKE
+    and McEliece to perform the different operations; for consistency, we consider only 
+    the optimized implementations for Cortex M4 with level 1 parameters. For HQC, we consider the results
+    obtained with zero memory wait states, as the authors of the other implementations did.
+        
+    \begin{figure*}
+        \centering
+    \pgfplotstableread[col sep=comma]{ % data 
+        Label,     Keygen, Encaps, Decaps
+        McEliece, 2146932, 582, 2706
+        BIKE, 24935, 3253, 49911
+        HQC, 4934, 10441, 15546
+        HQC (masked), 8228, 17050, 25522
+            }\mydata
+        \begin{tikzpicture}
+        \centering
+        \begin{axis}[
+            height=80mm, width=170mm,
+    %
+            bar width=0.22,
+            ybar=0pt,
+            enlarge x limits={abs=0.5},
+            ymin=0,
+            ymax=55000,
+            ytick distance=10000,
+            yticklabel style={font=\small},
+            yticklabel=\pgfmathprintnumber{\tick},
+            ylabel={Execution time (kcycles)},
+            %xlabel={Cryptosystem},
+            xtick=data,
+            xticklabels from table={\mydata}{Label},
+            grid style={line width=.2pt, draw=gray!20},            
+            ymajorgrids=true,
+    %
+            nodes near coords,
+            nodes near coords style={font=\tiny,
+                                    /pgf/number format/.cd,
+                                                precision=0,
+                                                zerofill,
+                                    },
+        ]
+    \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex,y=Keygen]{\mydata};
+    \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex,y=Encaps]{\mydata};
+    \addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex,y=Decaps]{\mydata};
+    \end{axis}
+    \end{tikzpicture}
+    
+    \begin{tikzpicture}
+        % draw a rectangle around all
+        \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (8.7, 0.4);
+        \node [draw, preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+        \node [right=0.01cm of box1] (text1) {\small Keygen};
+        \node [draw, preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+        \node [right=0.01cm of box2] (text2) {\small Encapsulation};
+        \node [draw, preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+        \node [right=0.01cm of box3] (text3) {\small Decapsulation};
+    \end{tikzpicture}
+    \caption{Comparison of execution time for the McEliece, BIKE, and HQC KEMs}
+    \label{fig:time}
+    \end{figure*}
+
+    We can see how the McEliece cryptosystem is the fastest one in terms of encapsulation and decapsulation, but 
+    requires $2\cdot 10^{12}$ cycles to generate the keypair. With respect to BIKE, the most promising
+    candidate in this round, we can see how HQC outperforms it in terms of key generation and decapsulation,
+    not only in the fast implementation but also in the masked one.
+
+
+    In terms of size, we can see how McEliece is prohibitively large in terms of keysize (over 250KB for the public key only).
+    With respect to BIKE, we can see that HQC ciphertext and public keys are larger by a factor of $2.9$ and $1.5$ respectively.
+
+    \begin{figure*}
+        \centering
+    \pgfplotstableread[col sep=comma]{ % data 
+    Label,     pk, sk, ctx
+    McEliece, 261120, 6492, 128
+    BIKE, 1540, 280, 1572
+    HQC, 2249, 40, 4481
+        }\memorytable
+        \begin{tikzpicture}
+        \centering
+        \begin{axis}[
+            height=80mm, width=150mm,
+    %
+            bar width=0.22,
+            ybar=0pt,
+            enlarge x limits={abs=0.5},
+            ymin=0,
+            ymax=8000,
+            ytick distance=1000,
+            yticklabel style={font=\small},
+            yticklabel=\pgfmathprintnumber{\tick},
+            ylabel={Memory usage (Bytes)},
+            %xlabel={Cryptosystem},
+            xtick=data,
+            xticklabels from table={\memorytable}{Label},
+            grid style={line width=.2pt, draw=gray!20},            
+            ymajorgrids=true,
+    %
+            nodes near coords,
+            nodes near coords style={font=\tiny,
+                                    /pgf/number format/.cd,
+                                                precision=0,
+                                                zerofill,
+                                    },
+            legend style={legend pos=north east,
+                        cells={anchor=west},
+                        font=\footnotesize,
+                        }
+        ]
+    \addplot[preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black] table [x expr=\coordindex,y=pk]{\memorytable};
+    \addplot[preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70] table [x expr=\coordindex,y=sk]{\memorytable};
+    \addplot[preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70] table [x expr=\coordindex,y=ctx]{\memorytable};
+    \end{axis}
+        \end{tikzpicture}
+    
+        \begin{tikzpicture}
+            % draw a rectangle around all
+            \draw[fill=white, draw=black] (-0.5, -0.4) rectangle (8.4, 0.4);
+            \node [draw, preaction={fill=blue!30}, pattern=north west lines, pattern color=blue!50!black, rectangle, minimum width=0.3cm, minimum height=0.3cm] (box1) {};
+            \node [right=0.01cm of box1] (text1) {\small Public key};
+            \node [draw, preaction={fill=red!30}, pattern=crosshatch dots, pattern color=purple!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text1] (box2) {};
+            \node [right=0.01cm of box2] (text2) {\small Secret Key};
+            \node [draw, preaction={fill=yellow!30}, pattern=north east lines, pattern color=orange!70, rectangle, minimum width=0.3cm, minimum height=0.3cm, right=0.5cm of text2] (box3) {};
+            \node [right=0.01cm of box3] (text3) {\small Ciphertext};
+        \end{tikzpicture}
+        \caption{Memory usage comparison of McEliece, BIKE and HQC}
+        \label{fig:memory}
+    \end{figure*}
 
 \section{Conclusions}
-A final section containing the main conclusions of your research/study have to be inserted here.
+In this thesis we provided the first constant-time implementation of HQC and the
+first masked implementation of HQC's public key encryption scheme.
+
+To do so, we evaluated different multiplication methods in terms of both performance and constant-time behavior, 
+crowning the Frobenius Additive FFT as the best one on the ARM Cortex-M4 and the Karatsuba algorithm on x86 architectures;
+moreover, we implemented a masking scheme for the key generation, encryption and decryption primitives
+of HQC's public key encryption scheme.
+
+We provided a comparative analysis of the Round 4 NIST PQC candidates, showing how both our constant-time and masked implementations 
+of HQC offer a good trade-off in terms of memory consumption and execution time, being faster than the (unmasked) BIKE implementation
+and thus making them suitable for standardization.
+
+As future work, it could be possible to run more accurate tests in order to evaluate the efficacy of our masking scheme against power attacks.
+Since our masking scheme targets the PKE only, it could also be possible to extend the masking scheme to 
+the SHAKE functions and make the whole KEM secure against power attacks.
 
 %---------------------------------------------------------------------------
 %  BIBLIOGRAPHY
