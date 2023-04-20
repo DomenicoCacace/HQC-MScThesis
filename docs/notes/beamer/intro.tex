@@ -76,10 +76,29 @@
     \begin{block}{Fourth Round candidates}
         \begin{itemize}
             \item \st{\textbf{S}upersingular \textbf{I}sogeny \textbf{K}ey \textbf{E}ncapsulation}
-            \item \textbf{B}it Fl\textbf{i}pping \textbf{K}ey \textbf{E}ncapsulation
-            \item \textbf{H}amming \textbf{Q}uasi-\textbf{C}yclic
-            \item Classic McEliece
+            \item \textbf{B}it Fl\textbf{i}pping \textbf{K}ey \textbf{E}ncapsulation~\cite{BIKE}
+            \item \textbf{H}amming \textbf{Q}uasi-\textbf{C}yclic~\cite{melchor2018hamming}
+            \item Classic McEliece~\cite{ClassicMcEliece}
         \end{itemize}
     \end{block}  
     BIKE, Classic McEliece and HQC are all code-based cryptosystems.
+\end{frame}
+
+\begin{frame}{Overview}
+    The target of this thesis is Hamming Quasi-Cyclic
+    \begin{block}{Goals}
+        \begin{itemize}
+            \item High performance implementation for Cortex-M4
+            \item Protection against timing attacks~\cite{DBLP:journals/tches/GuoHJLNS22,DBLP:journals/amco/Wafo-TapaBBGM22}
+            \item Protection against power attacks~\cite{DBLP:conf/cardis/SchambergerRSW20, DBLP:conf/pqcrypto/SchambergerHRWS22}
+        \end{itemize}
+    \end{block}
+    \begin{block}{Roadmap}
+        \begin{itemize}
+            \item Evaluate various polynomial multiplication algorithms
+            \item Assess the constant-time behavior of all components
+            \item Implement a masking scheme for the PKE primitives
+            \item Compare the performance with the other Round 4 candidates
+        \end{itemize}        
+    \end{block}
 \end{frame}
