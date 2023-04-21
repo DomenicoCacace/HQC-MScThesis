@@ -1,0 +1,293 @@
+\subsection{Polynomial Multplication}
+
+\begin{frame}{Polynomial multiplication 101}
+    \begin{block}{}
+        \begin{equation*}
+            \begin{aligned}
+                a(x) &= a_0 + a_1x + a_2x^2 + \cdots + a_nx^n \\
+                b(x) &= b_0 + b_1x + b_2x^2 + \cdots + b_nx^n
+            \end{aligned}
+        \end{equation*}
+    \end{block}
+    \begin{block}{}
+        Our goal: calculate:
+        \begin{equation*}
+            c(x) = a(x) \cdot b(x) = c_0 + c_1x + c_2x^2 + \cdots + c_{2n}x^{2n}
+        \end{equation*}
+    \end{block}
+    \begin{block}{}
+        \begin{itemize}
+            \item Schoolbook multiplication
+            \item Karatsuba algorithm
+            \item FFT-based approach
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Schoolbook multiplication}
+    Multiply each coefficient of $a(x)$ with each coefficient of $b(x)$
+    \begin{block}{}
+        \begin{equation*}
+            \begin{aligned}
+                c(x) = & a(x) \cdot b(x) \\
+                = & a_0\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) + \\
+                  & + a_1x\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) + \\
+                  & + \cdots + \\
+                  & + a_nx^n\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) \\
+            \end{aligned}power
+        \end{equation*}
+    \end{block}
+    \begin{block}{}
+        \begin{itemize}
+            \item $n^2$ multiplications
+            \item $n^2$ additions
+        \end{itemize}
+        Overall complexity: $\mathcal{O}(n^2)$
+    \end{block}
+\end{frame}
+
+\begin{frame}{Karatsuba multiplication}
+    Recursively split $a(x)$ and $b(x)$ into two halves
+    \begin{equation*}
+        \begin{aligned}
+            a(x) &= a_0(x) + x^ma_1(x) \qquad
+            b(x) &= b_0(x) + x^mb_1(x)
+        \end{aligned}
+    \end{equation*}
+    \begin{block}{}
+        \begin{equation*}
+            \begin{aligned}
+                c(x) &= a(x) b(x) \\
+                &= (a_0(x) + x^m  a_1(x)) (b_0(x) + x^m  b_1(x)) \\
+                &= a_1(x) b_1(x) x^{2m} + (a_1(x) b_0(x) + a_0(x) b_1(x)) x^m + a_0(x) b_0(x)\\
+                &= z_2(x) x^{2m} + z_1(x) x^m + z_0(x)
+            \end{aligned}
+        \end{equation*}
+        Trick: rewrite $z_1(x)$ as $(a_0(x) + a_1(x))(b_0(x) + b_1(x)) - z_0(x) - z_2(x)$
+    \end{block}
+    \begin{block}{}
+    Overall complexity: $\mathcal{O}(n^{\log_2 3})$ if $m \approx n/2$
+    \end{block}
+\end{frame}
+
+\begin{frame}{Sample and interpolate}
+    \begin{block}{}
+        \begin{itemize}
+            \item Sample $a(x)$ and $b(x)$ at $2n+1$ points
+            \item Multiply each pair of samples 
+            \item Interpolate the points to get $c(x)$
+        \end{itemize}
+    \end{block}
+    \begin{figure}
+        \includegraphics[width=0.8\textwidth]{beamer/images/interpolation.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{How can this be efficient?!}
+    \begin{block}{}
+        \begin{itemize}
+            \item Sampling: evaluate the polynomial at $2n+1$ points, $\mathcal{O}(n^2)$
+            \item Pointwise multiplication: $\mathcal{O}(n)$
+            \item Interpolation: up to $\mathcal{O}(n^3)$
+        \end{itemize}
+    \end{block}
+    \begin{figure}
+        \includegraphics[width=0.8\textwidth]{beamer/images/interpolation.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{The Discrete Fourier Transform (in $\mathds{C}$)}
+    \begin{block}{Sampling}
+        Evaluate the polynomial at the $N$-th roots of unity $\rightarrow$ take the DFT
+        \begin{equation*}
+            \mathcal{F}(\omega_k) = \sum_{n=0}^{N} x_ne^{-\frac{2\pi i k}{N}n}
+        \end{equation*}
+    \end{block}
+
+    \begin{block}{Interpolation}
+        Interpolate the points $\rightarrow$ take the inverse DFT
+        \begin{equation*}
+            \mathcal{F}^{-1}(X_k) = \frac{1}{N}\sum_{n=0}^{N} X_ne^{\frac{2\pi i k}{N}n}
+        \end{equation*}
+    \end{block}
+
+    Algorithms that calculate the DFT and its inverse are called Fast Fourier Transforms
+    and can achieve $\mathcal{O}(n\log n)$ complexity.
+\end{frame}
+
+\begin{frame}{FFT in finite fields}
+    \begin{block}{}
+        \begin{itemize}
+            \item $a(x)$ and $b(x)$ are polynomials in $\mathds{F}_2[x]$
+            \item Each coefficient $a_i, b_i \in \mathds{F}_2$ is a bit (0, 1)
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{}
+        Problem: Finite fields (of characteristic 2) do not admit roots of unity\\
+        Solution: use powers of a primitive element\\
+        Caveat(s):
+        \begin{itemize}
+            \item The degree must be a power of 2: $n = 2^\ell$
+            \item Polynomials require a different representation
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{}
+        Case study: the Lin-Chung-Han FFT~\cite{DBLP:conf/focs/LinCH14}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Cantor basis}
+    \begin{block}{Vector spaces and bases}
+        $\mathds{F}_2^m$: vector space of $m$-bit strings over $\mathds{F}_2$, with $m$ power of 2\\
+        Elements of $\mathds{F}_2^m$ are \emph{vectors}, linear combinations of the \emph{basis vectors}\\
+        Basis vectors: $\mathbf{v} = (v_1, \cdots, v_m)$
+    \end{block}
+    \begin{block}{Canonical basis}
+        \begin{equation*}
+            \mathbf{v}=(1, \alpha, \alpha^2, \cdots, \alpha^{m-1})
+        \end{equation*}
+    \end{block}
+
+    \begin{block}{Cantor basis}
+        \begin{equation*}
+            \mathbf{v} = (v_1, \cdots, v_m)
+        \end{equation*}
+        \begin{equation*}
+            v_1 = 1 \qquad v_i^2+v_i = v_{i-1}
+        \end{equation*}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Subspaces and vanishing polynomials}
+    \begin{equation*}
+        v_1 = 1 \qquad v_i^2+v_i = v_{i-1}
+    \end{equation*}
+
+    \begin{block}{Subspaces induced by Cantor basis}
+        \begin{equation*}
+            \mathbf{W}_0 := \{0\},\qquad \mathbf{W}_i := span\{v_0, \cdots, v_{i-1}\}
+        \end{equation*}
+        \vspace{5pt}
+        with $\mathbf{W}_0 \subset \mathbf{W}_1 \subset \cdots \subset \mathbf{W}_m = \mathds{F}_2^m$ and $\dim(\mathbf{W}_i) = i$.
+    \end{block}
+
+    \begin{block}{Vanishing polynomials}
+        \begin{equation*}
+            s_i(x) = \prod_{a \in \mathbf{W}_i} (x-a)
+        \end{equation*}
+        \vspace{5pt}
+        with $\deg(s_i(x)) = |\mathbf{W}_i| = 2^i$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Novelpoly basis}
+    \begin{block}{Properties of the vanishing polynomials}
+        \begin{itemize}
+            \item linearity: $s_i(x) + s_i(y) = s_i(x+y)$
+            \item recursivity: $s_{i+j}(x) = s_i(s_j(x))$, $s_i(v_{i+j}) = v_j$
+            \item $s_i(v_i) = 1$ for $v_i$ element of the Cantor basis (\cite{DBLP:journals/corr/abs-1708-09746})
+            \item all $v_i$ are roots of $s_{i+1}(x)$
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Novelpoly basis}
+        Cantor basis $\rightarrow$ Subspaces $\rightarrow$ Vanishing polynomials $\rightarrow$ Novelpoly basis
+        \begin{equation*}
+            X_k(x) = \prod (s_i(x))^{b_i}\qquad \text{with } k=\sum_{i=0}^{\log_2 n} b_i2^i
+        \end{equation*}
+        with $\deg(X_k(x)) = k$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Polynomial evaluation (sampling)} 
+    \begin{block}{}
+        We start from:
+        \begin{itemize}
+            \item $f(x) = g(X)$, a polynomial of degree $2^m$ in novelpoly basis
+            \item $\mathbf{W}_m = \mathds{F}_{2^m}$, the set of points to be evaluated
+        \end{itemize}
+    \end{block}
+    \begin{block}{}
+        We want to get:
+        \begin{itemize}
+            \item $\{f(x) | x \in \mathbf{W}_m\}$, the evaluation of $f(x)$ at the points in $\mathbf{W}_m$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{The LCH FFT}
+    \begin{block}{Divide et impera}
+        Recursively split:
+        \begin{itemize}
+            \item The polynomial: $f_0(X) + f_1(X)X_{2^k}$
+            \item The set of points: $\mathbf{W}_{k-1}, (\mathbf{W}_{k} \setminus \mathbf{W}_{k-1})=\{w+v_{k-1} | w \in \mathbf{W}_{k-1}\}$
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Get 2 for the price of 1}
+        Evaluate $f$ at $\mathbf{W}_{k-1}$; recall that:
+        \begin{itemize}
+            \item Elements in novelpoly basis are combinations of vanishing polynomials
+            \item Vanishing polynomials are linear: $s_i(x) + s_i(y) = s_i(x+y)$
+        \end{itemize}
+        Thus the evaluations at ($\mathbf{W}_k \setminus \mathbf{W}_{k-1}$) can be obtained starting from the evaluations at $\mathbf{W}_{k-1}$
+        with a \emph{butterfly} unit
+    \end{block}
+\end{frame}a power 
+
+\begin{frame}{LCH FFT - example}
+    Consider a polynomial $f$ in novelpoly basis of degree greater or equal than $\deg (s_k(x)) = 2^k$ and split it in half: 
+    \begin{equation*}
+        f(x) = p_0(x) + s_k(x)p_1(x)
+    \end{equation*}
+    Evaluate $p_0(x)$ and $p_1(x)$ at $\mathbf{W}_{k-1} = \{\alpha \mid \alpha \in \mathbf{W}_{k-1}\}$:
+    \begin{equation*}
+        p_0(\alpha) + s_k(\alpha)p_1(\alpha)
+    \end{equation*}
+    Evaluate $p_0(x)$ and $p_1(x)$ at $(\mathbf{W}_k \setminus \mathbf{W}_{k-1}) = \{\alpha + v_k \mid \alpha \in \mathbf{W}_{k-1}\}$
+    \begin{equation*}
+        p_0(\alpha+v_k) + s_k(\alpha+v_k)p_1(\alpha+v_k)
+    \end{equation*}
+    $p_0(x)$ and $p_1(x)$ are combinations of vanishing polynomials $s_i(x)$ with $i < k$:
+    \begin{equation*}
+       \sum s_i(\alpha + v_k) = \sum s_i(\alpha) + s_i(v_k) = \sum s_i(\alpha) + 0 = \sum s_i(\alpha)
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{LCH FFT - example}
+    From this consideration, we can observe that:
+    \begin{equation*}
+        p_0(\alpha+v_k) = p_0(\alpha), \qquad p_1(\alpha+v_k) = p_1(\alpha)
+    \end{equation*}
+    Hence we can rewrite the evaluation at $(\mathbf{W}_k \setminus \mathbf{W}_{k-1})$ as:
+    \begin{equation*}
+        p_0(\alpha+v_k) + s_k(\alpha+v_k)p_1(\alpha+v_k) = p_0(\alpha) + s_k(\alpha)p_1(\alpha) + s_k(v_k)p_1(\alpha)
+    \end{equation*}
+    and thus reuse the first evaluation to get the second one.
+    \input{figures/butterfly.tex}
+\end{frame}
+
+\begin{frame}{Frobenius map}
+    \begin{block}{}
+        We can use the Frobenius map
+        \begin{equation*}
+            \phi : \mathds{F}_2 \rightarrow \mathds{F}_2 \qquad x \mapsto x^2
+        \end{equation*}
+        to derive more values of a polynomial $f$ of degree $n$ from less evaluations.
+    \end{block}
+    \begin{block}{Frobenius partition}
+        We can build a set of points $\mathbf{S} \subset \mathds{F}_{2^m}$ as:
+        \begin{equation*}
+            \mathbf{S} := v_{l+m/2}+\mathbf{W}_l = \{v_{l+m/2} + x \mid x \in \mathbf{W}_l\}
+        \end{equation*}
+        which has size $n^\prime = |\mathbf{S}| = |\mathbf{W}_l| = n/m$.
+        By repeatedly applying $\phi$ to $\mathbf{S}$ we get
+        \begin{equation*}
+            \mathbf{S} \cup \phi(\mathbf{S}) \cup  \dots \cup \phi^{m-1}(\mathbf{S}) = \mathbf{O}
+        \end{equation*}
+        with $|\mathbf{O}| = n$.
+    \end{block}    
+\end{frame}
+
