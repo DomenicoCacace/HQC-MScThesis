@@ -24,8 +24,8 @@ args = parser.parse_args()
 
 def init_oscilloscope():
     scope = PS5422()
-    scope.set_sampling_channel("Channel_A","DC","200mV")
-    scope.set_trigger_channel("Channel_B","DC","5V")
+    scope.set_sampling_channel("Channel_A","DC","500mV")
+    scope.set_trigger_channel("Channel_B","DC","1V")
     scope.config_trigger(Sampling_config.threshold_in_mV, "Rising")
     total_samples = ctypes.c_int32()
     total_samples = scope.set_timebase_nsamples(Sampling_config.sampling_frequency,
@@ -131,6 +131,9 @@ if __name__ == "__main__":
         mean_var += delta / (batch_id + 1)
         delta2 = traces_in - mean_var
         m2_var += delta * delta2
+
+        # reset traces_in
+        traces_in = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace), dtype=np.int16 )
     
 
     # Store traces to file
@@ -168,6 +171,9 @@ if __name__ == "__main__":
         mean_fix += (delta / (batch_id + 1))
         delta2 = traces_in - mean_fix
         m2_fix += (delta * delta2)
+
+        # reset traces_in
+        traces_in = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace), dtype=np.int16 )
     
     
     # Store traces to file
