@@ -7,19 +7,28 @@
 \usepackage{dsfont}
 \usepackage{mwe}
 \usepackage{amsmath}
-\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 %\usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{mathtools}
 \usepackage{soul}
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{algorithm}
+\usepackage[ruled,noend,algo2e]{algorithm2e}
 
 \pgfplotsset{compat=1.18}
 \usetikzlibrary{positioning}
 \usetikzlibrary{calc}
 
 \setbeamercovered{transparent}
+
+\newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
+\newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
+\newcommand{\sample}{\ensuremath{ \stackrel{\$}{\gets} }}
+%\newcommand{\samplewt}[1]{\ensuremath{\stackrel{$}{\leftarrow}_{#1}}}
+\newcommand{\ssplit}[1]{\ensuremath{ \llbracket #1 \rrbracket }}
+\newcommand{\clshift}{\ensuremath{\lll_n}}
+
 
 \title{Towards fast and constant-time implementations\\ of Hamming Quasi-Cyclic}
 \subtitle{A case study on ARM Cortex-M4 devices}

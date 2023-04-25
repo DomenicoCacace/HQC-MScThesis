@@ -87,26 +87,46 @@
 \headcommand {\sectionentry {3}{Implementation}{37}{Implementation}{0}}
 \headcommand {\slideentry {3}{0}{1}{37/37}{}{0}}
 \headcommand {\beamer@framepages {37}{37}}
-\headcommand {\beamer@sectionpages {37}{37}}
 \headcommand {\beamer@subsectionpages {37}{37}}
-\headcommand {\sectionentry {4}{Experimental results}{38}{Experimental results}{0}}
-\headcommand {\slideentry {4}{0}{1}{38/38}{}{0}}
+\headcommand {\beamer@subsectionentry {0}{3}{1}{38}{Polynomial multiplication}}
+\headcommand {\slideentry {3}{1}{1}{38/38}{Polynomial multiplication}{0}}
 \headcommand {\beamer@framepages {38}{38}}
-\headcommand {\beamer@sectionpages {38}{38}}
-\headcommand {\beamer@subsectionpages {38}{38}}
-\headcommand {\sectionentry {5}{Conclusions}{39}{Conclusions}{0}}
-\headcommand {\slideentry {5}{0}{1}{39/39}{}{0}}
+\headcommand {\slideentry {3}{1}{2}{39/39}{Polynomial multiplication}{0}}
 \headcommand {\beamer@framepages {39}{39}}
-\headcommand {\slideentry {5}{0}{1}{39/40}{}{0}}
-\headcommand {\beamer@framepages {39}{40}}
-\headcommand {\slideentry {5}{0}{1}{39/41}{}{0}}
-\headcommand {\beamer@framepages {39}{41}}
-\headcommand {\slideentry {5}{0}{1}{39/42}{}{0}}
-\headcommand {\beamer@framepages {39}{42}}
-\headcommand {\slideentry {5}{0}{1}{39/43}{}{0}}
-\headcommand {\beamer@framepages {39}{43}}
-\headcommand {\beamer@partpages {1}{43}}
-\headcommand {\beamer@subsectionpages {39}{43}}
-\headcommand {\beamer@sectionpages {39}{43}}
-\headcommand {\beamer@documentpages {43}}
-\headcommand {\gdef \inserttotalframenumber {42}}
+\headcommand {\slideentry {3}{1}{3}{40/40}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {40}{40}}
+\headcommand {\slideentry {3}{1}{4}{41/41}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {41}{41}}
+\headcommand {\slideentry {3}{1}{5}{42/42}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {42}{42}}
+\headcommand {\slideentry {3}{1}{6}{43/43}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {43}{43}}
+\headcommand {\slideentry {3}{1}{7}{44/44}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {44}{44}}
+\headcommand {\slideentry {3}{1}{8}{45/45}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {45}{45}}
+\headcommand {\slideentry {3}{1}{9}{46/46}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {46}{46}}
+\headcommand {\beamer@sectionpages {37}{46}}
+\headcommand {\beamer@subsectionpages {38}{46}}
+\headcommand {\sectionentry {4}{Experimental results}{47}{Experimental results}{0}}
+\headcommand {\slideentry {4}{0}{1}{47/47}{}{0}}
+\headcommand {\beamer@framepages {47}{47}}
+\headcommand {\beamer@sectionpages {47}{47}}
+\headcommand {\beamer@subsectionpages {47}{47}}
+\headcommand {\sectionentry {5}{Conclusions}{48}{Conclusions}{0}}
+\headcommand {\slideentry {5}{0}{1}{48/48}{}{0}}
+\headcommand {\beamer@framepages {48}{48}}
+\headcommand {\slideentry {5}{0}{1}{48/49}{}{0}}
+\headcommand {\beamer@framepages {48}{49}}
+\headcommand {\slideentry {5}{0}{1}{48/50}{}{0}}
+\headcommand {\beamer@framepages {48}{50}}
+\headcommand {\slideentry {5}{0}{1}{48/51}{}{0}}
+\headcommand {\beamer@framepages {48}{51}}
+\headcommand {\slideentry {5}{0}{1}{48/52}{}{0}}
+\headcommand {\beamer@framepages {48}{52}}
+\headcommand {\beamer@partpages {1}{52}}
+\headcommand {\beamer@subsectionpages {48}{52}}
+\headcommand {\beamer@sectionpages {48}{52}}
+\headcommand {\beamer@documentpages {52}}
+\headcommand {\gdef \inserttotalframenumber {51}}
