@@ -471,3 +471,46 @@
     \end{block}
 \end{frame}
 
+\subsection{Side channel attacks}
+
+\begin{frame}{Side channel attacks}
+    \begin{block}{}
+        Devices running cryptosystems may expose secrets through \emph{side channels}
+        Observable aspects of the system from which information can be extracted
+    \end{block}
+    \begin{figure}
+        \includegraphics[width=0.8\textwidth]{beamer/images/sca.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Timing attacks}
+    \begin{block}{}
+        Execution time may vary based on the inputs
+        \begin{itemize}
+            \item Loops iterating over the input
+            \item Branches based on the input
+        \end{itemize}
+    \end{block}
+    \begin{block}{Countermeasures}
+        Don't use sensitive inputs in branching instructions
+        \begin{itemize}
+            \item Use constant time algorithms
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Power attacks}
+    \begin{block}{}
+        Different operations require different amounts of power\\
+        Applies to both power and EM attacks
+    \end{block}
+    \begin{figure}
+        \includegraphics[width=0.6\textwidth]{figures/rsa_squaremult.png}
+    \end{figure}
+    \begin{block}{Countermeasures}
+        Mask sensitive data with random values
+        \begin{itemize}
+            \item Makes the power consumption fluctuate randomly
+        \end{itemize}
+    \end{block}
+\end{frame}
