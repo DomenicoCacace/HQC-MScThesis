@@ -43,7 +43,7 @@ def output_csv(data, pathname):
     fp.close()
     return 
 
-def save_file(data, fname, size=Sampling_config.samples_per_capture):
+def save_file(data, fname, size):
     outfile = dat_tracereader.dat_tracereader()
     outfile.create(fname, size, 'f')
     outfile.write_traces(data)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     m2_var = np.ma.zeros( (Sampling_config.captures_per_batch,samples_per_trace),
                         dtype=np.float )
 
-    t_trend = np.ma.zeros((Sampling_config.captures_per_batch, 1), dtype=np.float)
+    t_trend = np.ma.zeros((1, Sampling_config.batches_to_capture), dtype=np.float)
 
     # Initialize board
     board_serial = "303637324646353335373532383737"
@@ -146,18 +146,18 @@ if __name__ == "__main__":
         if batch_id > 0:
             tstat = mean_var-mean_fix
             tstat = tstat / np.sqrt((m2_var/batch_id + m2_fix/batch_id)/(batch_id+1))
-            t_trend[batch_id] = np.max(np.abs(tstat))
+            t_trend[0][batch_id] = np.max(np.abs(tstat))
 
 
     # Store traces to file
     m2_var = (m2_var / (num_traces - 1))
     m2_fix = (m2_fix / (num_traces - 1))
 
-    save_file(mean_var, f"{output_pathname}_var_mean")
-    save_file(m2_var, f"{output_pathname}_var_m2")
-    save_file(mean_fix, f"{output_pathname}_fix_mean")
-    save_file(m2_fix, f"{output_pathname}_fix_m2")
-    save_file(tstat, f"{output_pathname}_tstat.npy")
-    save_file(t_trend, f"{output_pathname}_ttrend.npy", size=num_traces)
-
+    save_file(mean_var, f"{output_pathname}_var_mean", samples_per_capture)
+    save_file(m2_var, f"{output_pathname}_var_m2", samples_per_capture)
+    save_file(mean_fix, f"{output_pathname}_fix_mean", samples_per_capture)
+    save_file(m2_fix, f"{output_pathname}_fix_m2", samples_per_capture)
+    save_file(tstat, f"{output_pathname}_tstat.npy", samples_per_capture)
+    save_file(t_trend, f"{output_pathname}_ttrend.npy", num_traces)
+    
     myboard.remove_files()
