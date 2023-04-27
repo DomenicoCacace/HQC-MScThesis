@@ -371,8 +371,12 @@ class PS5422(Scope):
             print(f"Fetched {fetched_samples},expected {expected_samples}")        
         else:
             print("Samples transferred, lifting to desired numpy type")
+            samples_per_capture = len(traces[0])
+            chunk_size = 100000
             for i in range(number_of_captures):
-                traces[i] = np.ctypeslib.as_array(self.buffer_list[i][:samples_per_capture])
+                for i in range(0, samples_per_capture-chunk_size, chunk_size):
+                    chunk = self.buffer_list[0][i:i+chunk_size]
+                    traces[0][i:i+chunk_size] = np.array(chunk)
                 print("lifting done")
         return
         
