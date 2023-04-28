@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+from sys import path
+
+path.append("../config")
 import numpy as np
 from scope.PS5422 import PS5422 
 from board.nucleo_HQC import nucleo_HQC

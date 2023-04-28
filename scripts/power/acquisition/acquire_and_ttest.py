@@ -3,6 +3,7 @@ import numpy as np
 from sys import path
 from os import system
 
+path.append("../config")
 import data_formats.dat_tracereader as dat_tracereader
 from scope.PS5422 import PS5422 
 import ctypes
