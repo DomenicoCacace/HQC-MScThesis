@@ -7,7 +7,15 @@
  * @brief Header file of board_utils.c
 */
 
+#include <libopencm3/stm32/flash.h>
+#include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/pwr.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/rng.h>
+#include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/usart.h>
+#include <stdarg.h>
+#include <string.h>
 
 #include "architecture_detect.h"
 
@@ -16,6 +24,7 @@
 
 #define USART USART2
 #define RCC_USART RCC_USART2
+#define USART_GPIO GPIO2 | GPIO3
 
 #elif USART2_COMM
 /* Enables USART 2
@@ -25,6 +34,8 @@
 * other column of pins of the same connector */
 #define USART USART1
 #define RCC_USART RCC_USART1
+#define USART_GPIO GPIO9 | GPIO10
+
 #else
 #warning "No communication method defined"
 #endif
@@ -34,6 +45,8 @@ void setup_board(void);
 void trigger_set(void);
 
 void trigger_reset(void);
+
+void pulse(void);
 
 void debug(const char *str, ...);
 

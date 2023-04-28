@@ -3,18 +3,9 @@
  * @brief Tools to set up and operate the board
  */
 
-#include <libopencm3/stm32/flash.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/pwr.h>
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/rng.h>
-#include <libopencm3/stm32/timer.h>
-#include <libopencm3/stm32/usart.h>
 #include <math.h>
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "board_utils.h"
 
@@ -153,6 +144,7 @@ void setup_clock(const struct rcc_clock_scale *clock) {
     rcc_set_ppre1(clock->ppre1);
     rcc_set_ppre2(clock->ppre2);
 
+    /* Set the flash wait states */
    /* Configure flash settings. */
     if (clock->flash_config & FLASH_ACR_DCEN) {
             flash_dcache_enable();
@@ -198,49 +190,48 @@ void setup_clock(const struct rcc_clock_scale *clock) {
  * place board with stlink on top, left morpho (male pin-header)
  * inner column of pins, third from top, with GND as fifth from top */
 void setup_gpio(void) {
-    // Prepare the USART1
     rcc_periph_clock_enable(RCC_GPIOA);
-    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO9 | GPIO10);
-    gpio_set_af(GPIOA, GPIO_AF7, GPIO9 | GPIO10);
     rcc_periph_clock_enable(RCC_GPIOB);
+
+    // Prepare the USART GPIO
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, USART_GPIO);
+    gpio_set_af(GPIOA, GPIO_AF7, USART_GPIO);
 
     rcc_periph_clock_enable(RCC_GPIOA);
     gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO0 | GPIO1);
     gpio_set_af(GPIOA, GPIO_AF7, GPIO0 | GPIO1);
 
     // Prepare the Trigger GPIO
-    rcc_periph_clock_enable(RCC_GPIOB);
-    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO9);
-    gpio_clear(GPIOB, GPIO9);
+    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO8 | GPIO9);
+    gpio_clear(GPIOB, GPIO8 | GPIO9);
 
     // Prepare the LED GPIO
-    rcc_periph_clock_enable(RCC_GPIOA);
-    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, GPIO5);
-
-    // Prepare the UART GPIO
-    rcc_periph_clock_enable(RCC_GPIOA);
-    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2);
-    gpio_set_af(GPIOA, GPIO_AF7, GPIO2);
-
+    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5);
 }
 
 void setup_usart(void) {
-    // Enable the UART clock
+// Enable the UART clock
     rcc_periph_clock_enable(RCC_USART);
-    // We need a brief delay before we can access UART config registers
+// We need a brief delay before we can access UART config registers
     __asm__ volatile ("nop;nop;nop;nop;nop;":: : "memory");
-    // Disable the UART while we mess with its settings
+// Disable the UART while we mess with its settings
     usart_disable(USART);
-    // Set communication parameters
-    usart_set_baudrate(USART, 9600);
+// Configure the UART clock source as precision internal oscillator
+// usart_clock_from_piosc();
+// Set communication parameters
+    usart_set_baudrate(USART, 115200);
     usart_set_databits(USART, 8);
     usart_set_parity(USART, USART_PARITY_NONE);
     usart_set_mode(USART, USART_MODE_TX_RX);
     usart_set_stopbits(USART, USART_STOPBITS_1);
-    // Disable RTC and CTS lines
+// Disable RTC and CTS lines
     usart_set_flow_control(USART, USART_FLOWCONTROL_NONE);
-    // Now that we're done messing with the settings, enable the UART
+// Now that we're done messing with the settings, enable the UART
     usart_enable(USART);
+    // usart_disable_error_interrupt(USART1);
+    // usart_disable_idle_interrupt(USART1);
+    // usart_disable_rx_interrupt(USART1);
+    // usart_disable_tx_interrupt(USART1);
 }
 
 void setup_systick(void) {
@@ -273,6 +264,11 @@ void trigger_set(void) {
 void trigger_reset(void) {
     gpio_clear(GPIOB, GPIO9);
     gpio_clear(GPIOA, GPIO5);
+}
+
+void pulse(void) {
+    gpio_set(GPIOB, GPIO8);
+    gpio_clear(GPIOB, GPIO8);
 }
 
 void debug(const char *str, ...) {
