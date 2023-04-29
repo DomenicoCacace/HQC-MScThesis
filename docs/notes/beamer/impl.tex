@@ -2,12 +2,17 @@
 
 \begin{frame}{Parameters}
     Our target: \texttt{hqc-128} on ARM Cortex-M4
-    \begin{block}{Cryptosystem parameters}
+    \uncover<2->{
+    \begin{block}{Multiplication parameters}
         \begin{itemize}
             \item Maximum polynomial degree: $n = 17669$
             \item Hamming weight of sparse polynomials: $\omega = 75$
         \end{itemize}
     \end{block}
+    }
+    \uncover<3->{
+    \begin{columns}
+    \begin{column}{0.45\textwidth}
     \begin{block}{Target board}
         STM32L476RG
         \begin{itemize}
@@ -15,9 +20,16 @@
             \item 80 MHz
             \item 128 KB RAM
             \item 1 MB Flash
-        \end{itemize}
-        
+        \end{itemize}   
     \end{block}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+        \begin{figure}
+            \visible<3->{\includegraphics[scale=0.15]{beamer/images/board.jpg}}
+        \end{figure}
+    \end{column}
+    \end{columns}
+    }
 \end{frame}
 
 \begin{frame}{Polynomial representation}
@@ -25,64 +37,78 @@
     \begin{block}{}
         We have two ways of representing binary polynomials:
         \begin{itemize}
-            \item sparse: a vector of indexes, every index is a non-null coefficient
-            \item dense: a vector of coefficients, every entry is a coefficient
+            \uncover<2->{\item sparse: a vector of indexes, every index is a non-null coefficient}
+            \uncover<3->{\item dense: a vector of coefficients, every entry is a coefficient}
         \end{itemize}
     \end{block}
+    \uncover<4->{
     \begin{block}{Example}
         The polynomial $f(x) = x^{15}+x^{13}+x^8+x^6+x+1$ can be represented as:
         \begin{itemize}
-            \item sparse: $[15,13,8,6,1,0]$
-            \item dense: $[1,0,0,0,0,0,1,0,1,0,0,0,1,0,1,1]$
+            \uncover<5->{\item sparse: $[15,13,8,6,1,0]$}
+            \uncover<6->{\item dense: $[1,0,0,0,0,0,1,0,1,0,0,0,1,0,1,1]$}
         \end{itemize}
     \end{block}
+    }
+    \uncover<7->{
     \begin{block}{Memory usage - 32 bit architectures}
         \begin{itemize}
             \item sparse: one integer per coefficient (\emph{i.e.} 4 bytes per coefficient)
             \item dense: one bit per coefficient (\emph{i.e.}  0.25 bytes per coefficient)
         \end{itemize}
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{Shift\&Add}
     \begin{block}{}
         Multiplying a dense polynomial by $x^i$ is equivalent to a circular shift ($\clshift$) of $i$ positions to the left:
         \begin{itemize}
+            \uncover<2->{
             \item $a(x)$ in dense representation
             \item $b(x) = [b_0, \cdots, b_{\omega-1}]$ in sparse representation
-            \item Calculate $c_i(x) \gets a(x) \clshift b_i$
-            \item Sum the partial results $c(x) = \sum_{i=0}^{\omega-1} c_i(x)$
+            }
+            \uncover<3->{\item Calculate $c_i(x) \gets a(x) \clshift b_i$}
+            \uncover<4->{\item Sum the partial results $c(x) = \sum_{i=0}^{\omega-1} c_i(x)$}
         \end{itemize}
     \end{block}
+    \uncover<5->{
     \begin{block}{Pros and cons}
         \begin{itemize}
             \item Extremely fast for $\omega \ll n$
             \item Non constant-time execution
         \end{itemize}
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{Constant time S\&A}
     Calculate all the shifts, but only sum the ones that are needed:
+    \uncover<2->{
     \begin{block}{Monomial-Polynomial multiplication}
         Let $a(x)$ be a dense polynomial and $x^b$ a monomial, with $b = (\beta_{m-1}\beta_{m-2}\cdots\beta_0)_{\texttt{bin}}$.
         For each bit $i \in \{0, \cdots, m-1\}$, we have:
         \begin{itemize}
-            \item $tmp(x) \gets a(x) \clshift i$
-            \item if $\beta_i = 1$ then \texttt{mask} = $[111\cdots11]_n$, otherwise \texttt{mask} = $[000\cdots00]_n$
-            \item $c(x) \gets c(x) + ((tmp(x) \wedge \texttt{mask}))$
+            \uncover<3->{\item $tmp(x) \gets a(x) \clshift i$}
+            \uncover<4->{\item if $\beta_i = 1$ then \texttt{mask} = $[111\cdots11]_n$, otherwise \texttt{mask} = $[000\cdots00]_n$}
+            \uncover<5->{\item $c(x) \gets c(x) + ((tmp(x) \wedge \texttt{mask}))$}
+            \uncover<6->{
             \begin{itemize}
                 \item $\beta_i = 1$: $c(x) \gets c(x) + tmp(x)$
                 \item $\beta_i = 0$: $c(x) \gets c(x) + [000\cdots00]_n$ 
             \end{itemize}
+            }
         \end{itemize}        
     \end{block}
+    }
+    \uncover<7->{
     \begin{block}{Pros and cons}
         \begin{itemize}
             \item Constant-time execution
             \item Slower than plain S\&A
         \end{itemize} 
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{Frobenius Additive FFT}
@@ -107,6 +133,7 @@
 
 \begin{frame}{Basis conversion}
     Recursively split the polynomial into halves by dividing by $s_i(x)$\\
+    \uncover<2->{
     No actual division required, just XORs:
     \begin{figure}[H]
         \begin{center}
@@ -170,32 +197,40 @@
             \end{tikzpicture}
         \end{center}
     \end{figure}
+    }
+    \uncover<3->{
     Also, skip the (padded) null coefficients
+    }
 \end{frame}
 
 \begin{frame}{Evaluation with the FFT}
     \begin{block}{Frobenius partition}
         Polynomial degree $2\cdot 17669 \rightarrow n = 65536$\\
         32-bit words $\rightarrow m = 32$\\
+        \uncover<2->{
         Optimal Frobenius partition:
         \begin{equation*}
             \mathbf{S} = v_{l+m/2} + \mathbf{W}_l  = v_{27} + \mathbf{W}_{11}
         \end{equation*}
         with $l = \log_2(n/m)$
+        }
     \end{block}
+    \uncover<3->{
     \begin{block}{Encoding}
         The first $\log_2(m)$ layers of the FFT use multipliers depending only on $m$
         \begin{itemize}
-            \item Encode (truncated FFT) the first $\log_2(m)$ recursion layers
-            \item \emph{Classic} butterflies for the remaining layers
+            \uncover<4->{\item Encode (truncated FFT) the first $\log_2(m)$ recursion layers}
+            \uncover<5->{\item \emph{Classic} butterflies for the remaining layers}
         \end{itemize}
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{Encoding}
     \begin{block}{}
         The first $l_m = \log_2(m)$ layers of the FFT convert elements from
         $\mathds{F}_2^n$ to $\mathds{F}_{2^m}^{n^\prime}$.\\
+        \uncover<2->{
         The twiggle factors can be rewritten as
         \begin{equation*}
             \begin{aligned}
@@ -203,6 +238,8 @@
                 v_{m/2-1}, &\cdots, v_{m/2-l_m}
             \end{aligned}
         \end{equation*}
+        }
+        \uncover<3->{
         so the encoding can be implemented as a linear map:
         \begin{equation*}
             g_i = \sum_{j=0}^{m-1} f_{j\cdot n^\prime +i}\cdot r_j = \begin{bmatrix} f_{0\cdot n^\prime} & f_{1\cdot n^\prime} & \cdots &f_{(m-1)\cdot n^\prime}\end{bmatrix} \cdot \begin{bmatrix}
@@ -213,7 +250,7 @@
                 r_{m-1}
             \end{bmatrix}
         \end{equation*}
-
+        }
     \end{block}
 \end{frame}
 
@@ -221,20 +258,23 @@
     \begin{block}{Butterfly twiggle factors}
         Multiplication step: $\beta\cdot p_1(s_1(\beta))$, $\beta = (v+w) \in v_{l+m/2-i} + \mathbf{W}_{l-i}$\\
         \begin{itemize}
-            \item Precompute and store all the $\beta$ values
-            \item Notice that $\gamma\cdot\beta = \gamma\cdot(v+w) = \gamma\cdot v + \gamma\cdot w$
+            \uncover<2->{\item Precompute and store all the $\beta$ values}
+            \uncover<3->{\item Notice that $\gamma\cdot\beta = \gamma\cdot(v+w) = \gamma\cdot v + \gamma\cdot w$}
+            \uncover<4->{
             \begin{itemize}
                 \item $\gamma\cdot v$ can be computed with a binary circuit ($v$ are fixed)
                 \item $\gamma\cdot w$ can be computed in a subfield to reduce the number of bits
             \end{itemize}
+            }
         \end{itemize}
     \end{block}
-
+    \uncover<5->{
     \begin{block}{Pointwise multiplications}
     The resulting evaluation points are, by construction, in $\mathds{F}_{2^{32}}$.\\
     Apply Karatsuba (only once) to operate in $\mathds{F}_{2^{16}}$ and have the results
     fit in the 32-bit CPU registers.
     \end{block}
+    }
 \end{frame}
 
 \subsection{Masking}
@@ -242,10 +282,13 @@
 \begin{frame}{Masking HQC}
     \begin{block}{}
     HQC operations are linear $\rightarrow$ boolean masking of the entire scheme
+    \uncover<2->{
     \begin{equation*}
         a \mapsto \ssplit{a} = (a_1, \cdots, a_{d}) \text{ such that } \bigoplus_{i=1}^d a_i = a
     \end{equation*}
+    }
     \end{block}
+    \uncover<3->{
     \begin{block}{Our implementation}
         More shares $\rightarrow$ slower performance, higher security\\
         We chose $d = 2$ shares:
@@ -257,6 +300,7 @@
             \item $x$ is a random value (from the TRNG)
         \end{itemize}
     \end{block}
+    }
 \end{frame}
 
 \begin{frame}{Keygen}
@@ -332,10 +376,12 @@
             \end{block}
         \end{column}
     \end{columns}
+    \uncover<2->{
     \begin{block}{Linearity of the RMRS code}
         \begin{equation*}
             \textsc{Encode}(m_1 + m_2) = \textsc{Encode}(m_1) + \textsc{Encode}(m_2)
         \end{equation*}
     \end{block}
+    }
     
 \end{frame}

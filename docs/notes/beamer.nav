@@ -87,115 +87,115 @@
 \headcommand {\beamer@framepages {123}{123}}
 \headcommand {\beamer@subsectionpages {123}{123}}
 \headcommand {\beamer@subsectionentry {0}{3}{1}{124}{Polynomial multiplication}}
-\headcommand {\slideentry {3}{1}{1}{124/124}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {124}{124}}
-\headcommand {\slideentry {3}{1}{2}{125/125}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {125}{125}}
-\headcommand {\slideentry {3}{1}{3}{126/126}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {126}{126}}
-\headcommand {\slideentry {3}{1}{4}{127/127}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {127}{127}}
-\headcommand {\slideentry {3}{1}{5}{128/128}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {128}{128}}
-\headcommand {\slideentry {3}{1}{6}{129/129}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {129}{129}}
-\headcommand {\slideentry {3}{1}{7}{130/130}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {130}{130}}
-\headcommand {\slideentry {3}{1}{8}{131/131}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {131}{131}}
-\headcommand {\slideentry {3}{1}{9}{132/132}{Polynomial multiplication}{0}}
-\headcommand {\beamer@framepages {132}{132}}
-\headcommand {\beamer@subsectionpages {124}{132}}
-\headcommand {\beamer@subsectionentry {0}{3}{2}{133}{Masking}}
-\headcommand {\slideentry {3}{2}{1}{133/133}{Masking}{0}}
-\headcommand {\beamer@framepages {133}{133}}
-\headcommand {\slideentry {3}{2}{2}{134/134}{Masking}{0}}
-\headcommand {\beamer@framepages {134}{134}}
-\headcommand {\slideentry {3}{2}{3}{135/135}{Masking}{0}}
-\headcommand {\beamer@framepages {135}{135}}
-\headcommand {\slideentry {3}{2}{4}{136/136}{Masking}{0}}
-\headcommand {\beamer@framepages {136}{136}}
-\headcommand {\beamer@sectionpages {123}{136}}
-\headcommand {\beamer@subsectionpages {133}{136}}
-\headcommand {\sectionentry {4}{Experimental results}{137}{Experimental results}{0}}
-\headcommand {\slideentry {4}{0}{1}{137/137}{}{0}}
-\headcommand {\beamer@framepages {137}{137}}
-\headcommand {\beamer@subsectionpages {137}{137}}
-\headcommand {\beamer@subsectionentry {0}{4}{1}{138}{Performance}}
-\headcommand {\slideentry {4}{1}{1}{138/138}{Performance}{0}}
-\headcommand {\beamer@framepages {138}{138}}
-\headcommand {\slideentry {4}{1}{2}{139/139}{Performance}{0}}
-\headcommand {\beamer@framepages {139}{139}}
-\headcommand {\beamer@subsectionpages {138}{139}}
-\headcommand {\beamer@subsectionentry {0}{4}{2}{140}{Side-channel resistance}}
-\headcommand {\slideentry {4}{2}{1}{140/140}{Side-channel resistance}{0}}
-\headcommand {\beamer@framepages {140}{140}}
-\headcommand {\slideentry {4}{2}{2}{141/141}{Side-channel resistance}{0}}
-\headcommand {\beamer@framepages {141}{141}}
-\headcommand {\slideentry {4}{2}{3}{142/142}{Side-channel resistance}{0}}
-\headcommand {\beamer@framepages {142}{142}}
-\headcommand {\slideentry {4}{2}{4}{143/143}{Side-channel resistance}{0}}
-\headcommand {\beamer@framepages {143}{143}}
-\headcommand {\slideentry {4}{2}{5}{144/144}{Side-channel resistance}{0}}
-\headcommand {\beamer@framepages {144}{144}}
-\headcommand {\slideentry {4}{2}{6}{145/145}{Side-channel resistance}{0}}
-\headcommand {\beamer@framepages {145}{145}}
-\headcommand {\beamer@subsectionpages {140}{145}}
-\headcommand {\beamer@subsectionentry {0}{4}{3}{146}{Comparison with other cryptosystems}}
-\headcommand {\slideentry {4}{3}{1}{146/146}{Comparison with other cryptosystems}{0}}
+\headcommand {\slideentry {3}{1}{1}{124/126}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {124}{126}}
+\headcommand {\slideentry {3}{1}{2}{127/133}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {127}{133}}
+\headcommand {\slideentry {3}{1}{3}{134/138}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {134}{138}}
+\headcommand {\slideentry {3}{1}{4}{139/145}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {139}{145}}
+\headcommand {\slideentry {3}{1}{5}{146/146}{Polynomial multiplication}{0}}
 \headcommand {\beamer@framepages {146}{146}}
-\headcommand {\slideentry {4}{3}{2}{147/147}{Comparison with other cryptosystems}{0}}
-\headcommand {\beamer@framepages {147}{147}}
-\headcommand {\beamer@sectionpages {137}{147}}
-\headcommand {\beamer@subsectionpages {146}{147}}
-\headcommand {\sectionentry {5}{Conclusions}{148}{Conclusions}{0}}
-\headcommand {\slideentry {5}{0}{1}{148/148}{}{0}}
-\headcommand {\beamer@framepages {148}{148}}
-\headcommand {\slideentry {5}{0}{2}{149/149}{}{0}}
-\headcommand {\beamer@framepages {149}{149}}
-\headcommand {\slideentry {5}{0}{3}{150/150}{}{0}}
-\headcommand {\beamer@framepages {150}{150}}
+\headcommand {\slideentry {3}{1}{6}{147/149}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {147}{149}}
+\headcommand {\slideentry {3}{1}{7}{150/154}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {150}{154}}
+\headcommand {\slideentry {3}{1}{8}{155/157}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {155}{157}}
+\headcommand {\slideentry {3}{1}{9}{158/162}{Polynomial multiplication}{0}}
+\headcommand {\beamer@framepages {158}{162}}
+\headcommand {\beamer@subsectionpages {124}{162}}
+\headcommand {\beamer@subsectionentry {0}{3}{2}{163}{Masking}}
+\headcommand {\slideentry {3}{2}{1}{163/165}{Masking}{0}}
+\headcommand {\beamer@framepages {163}{165}}
+\headcommand {\slideentry {3}{2}{2}{166/166}{Masking}{0}}
+\headcommand {\beamer@framepages {166}{166}}
+\headcommand {\slideentry {3}{2}{3}{167/167}{Masking}{0}}
+\headcommand {\beamer@framepages {167}{167}}
+\headcommand {\slideentry {3}{2}{4}{168/169}{Masking}{0}}
+\headcommand {\beamer@framepages {168}{169}}
+\headcommand {\beamer@sectionpages {123}{169}}
+\headcommand {\beamer@subsectionpages {163}{169}}
+\headcommand {\sectionentry {4}{Experimental results}{170}{Experimental results}{0}}
+\headcommand {\slideentry {4}{0}{1}{170/170}{}{0}}
+\headcommand {\beamer@framepages {170}{170}}
+\headcommand {\beamer@subsectionpages {170}{170}}
+\headcommand {\beamer@subsectionentry {0}{4}{1}{171}{Performance}}
+\headcommand {\slideentry {4}{1}{1}{171/171}{Performance}{0}}
+\headcommand {\beamer@framepages {171}{171}}
+\headcommand {\slideentry {4}{1}{2}{172/172}{Performance}{0}}
+\headcommand {\beamer@framepages {172}{172}}
+\headcommand {\beamer@subsectionpages {171}{172}}
+\headcommand {\beamer@subsectionentry {0}{4}{2}{173}{Side-channel resistance}}
+\headcommand {\slideentry {4}{2}{1}{173/173}{Side-channel resistance}{0}}
+\headcommand {\beamer@framepages {173}{173}}
+\headcommand {\slideentry {4}{2}{2}{174/174}{Side-channel resistance}{0}}
+\headcommand {\beamer@framepages {174}{174}}
+\headcommand {\slideentry {4}{2}{3}{175/175}{Side-channel resistance}{0}}
+\headcommand {\beamer@framepages {175}{175}}
+\headcommand {\slideentry {4}{2}{4}{176/176}{Side-channel resistance}{0}}
+\headcommand {\beamer@framepages {176}{176}}
+\headcommand {\slideentry {4}{2}{5}{177/177}{Side-channel resistance}{0}}
+\headcommand {\beamer@framepages {177}{177}}
+\headcommand {\slideentry {4}{2}{6}{178/178}{Side-channel resistance}{0}}
+\headcommand {\beamer@framepages {178}{178}}
+\headcommand {\beamer@subsectionpages {173}{178}}
+\headcommand {\beamer@subsectionentry {0}{4}{3}{179}{Comparison with other cryptosystems}}
+\headcommand {\slideentry {4}{3}{1}{179/179}{Comparison with other cryptosystems}{0}}
+\headcommand {\beamer@framepages {179}{179}}
+\headcommand {\slideentry {4}{3}{2}{180/180}{Comparison with other cryptosystems}{0}}
+\headcommand {\beamer@framepages {180}{180}}
+\headcommand {\beamer@sectionpages {170}{180}}
+\headcommand {\beamer@subsectionpages {179}{180}}
+\headcommand {\sectionentry {5}{Conclusions}{181}{Conclusions}{0}}
+\headcommand {\slideentry {5}{0}{1}{181/181}{}{0}}
+\headcommand {\beamer@framepages {181}{181}}
+\headcommand {\slideentry {5}{0}{2}{182/182}{}{0}}
+\headcommand {\beamer@framepages {182}{182}}
+\headcommand {\slideentry {5}{0}{3}{183/183}{}{0}}
+\headcommand {\beamer@framepages {183}{183}}
 \headcommand {\gdef \insertmainframenumber {61}}
 \headcommand {\partentry {\translate {Appendix}}{1}}
-\headcommand {\beamer@partpages {1}{150}}
-\headcommand {\beamer@sectionpages {148}{150}}
-\headcommand {\beamer@subsectionpages {148}{150}}
-\headcommand {\beamer@appendixpages {151}}
-\headcommand {\beamer@sectionpages {151}{150}}
-\headcommand {\beamer@subsectionpages {151}{150}}
-\headcommand {\sectionentry {6}{Appendix}{151}{Appendix}{1}}
-\headcommand {\slideentry {6}{0}{1}{151/151}{}{1}}
-\headcommand {\beamer@framepages {151}{151}}
-\headcommand {\beamer@subsectionpages {151}{151}}
-\headcommand {\beamer@subsectionentry {1}{6}{1}{152}{Novelpoly basis}}
-\headcommand {\slideentry {6}{1}{1}{152/152}{Novelpoly basis}{1}}
-\headcommand {\beamer@framepages {152}{152}}
-\headcommand {\slideentry {6}{1}{2}{153/153}{Novelpoly basis}{1}}
-\headcommand {\beamer@framepages {153}{153}}
-\headcommand {\slideentry {6}{1}{3}{154/154}{Novelpoly basis}{1}}
-\headcommand {\beamer@framepages {154}{154}}
-\headcommand {\slideentry {6}{1}{4}{155/155}{Novelpoly basis}{1}}
-\headcommand {\beamer@framepages {155}{155}}
-\headcommand {\beamer@subsectionpages {152}{155}}
-\headcommand {\beamer@subsectionentry {1}{6}{2}{156}{Fujisaki-Okamoto transformation}}
-\headcommand {\slideentry {6}{2}{1}{156/156}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {156}{156}}
-\headcommand {\slideentry {6}{2}{2}{157/157}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {157}{157}}
-\headcommand {\slideentry {6}{2}{3}{158/158}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {158}{158}}
-\headcommand {\slideentry {6}{2}{4}{159/159}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {159}{159}}
-\headcommand {\slideentry {6}{2}{4}{159/160}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {159}{160}}
-\headcommand {\slideentry {6}{2}{4}{159/161}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {159}{161}}
-\headcommand {\slideentry {6}{2}{4}{159/162}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {159}{162}}
-\headcommand {\slideentry {6}{2}{4}{159/163}{Fujisaki-Okamoto transformation}{1}}
-\headcommand {\beamer@framepages {159}{163}}
-\headcommand {\beamer@partpages {151}{163}}
-\headcommand {\beamer@subsectionpages {156}{163}}
-\headcommand {\beamer@sectionpages {151}{163}}
-\headcommand {\beamer@documentpages {163}}
+\headcommand {\beamer@partpages {1}{183}}
+\headcommand {\beamer@sectionpages {181}{183}}
+\headcommand {\beamer@subsectionpages {181}{183}}
+\headcommand {\beamer@appendixpages {184}}
+\headcommand {\beamer@sectionpages {184}{183}}
+\headcommand {\beamer@subsectionpages {184}{183}}
+\headcommand {\sectionentry {6}{Appendix}{184}{Appendix}{1}}
+\headcommand {\slideentry {6}{0}{1}{184/184}{}{1}}
+\headcommand {\beamer@framepages {184}{184}}
+\headcommand {\beamer@subsectionpages {184}{184}}
+\headcommand {\beamer@subsectionentry {1}{6}{1}{185}{Novelpoly basis}}
+\headcommand {\slideentry {6}{1}{1}{185/185}{Novelpoly basis}{1}}
+\headcommand {\beamer@framepages {185}{185}}
+\headcommand {\slideentry {6}{1}{2}{186/186}{Novelpoly basis}{1}}
+\headcommand {\beamer@framepages {186}{186}}
+\headcommand {\slideentry {6}{1}{3}{187/187}{Novelpoly basis}{1}}
+\headcommand {\beamer@framepages {187}{187}}
+\headcommand {\slideentry {6}{1}{4}{188/188}{Novelpoly basis}{1}}
+\headcommand {\beamer@framepages {188}{188}}
+\headcommand {\beamer@subsectionpages {185}{188}}
+\headcommand {\beamer@subsectionentry {1}{6}{2}{189}{Fujisaki-Okamoto transformation}}
+\headcommand {\slideentry {6}{2}{1}{189/189}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {189}{189}}
+\headcommand {\slideentry {6}{2}{2}{190/190}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {190}{190}}
+\headcommand {\slideentry {6}{2}{3}{191/191}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {191}{191}}
+\headcommand {\slideentry {6}{2}{4}{192/192}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {192}{192}}
+\headcommand {\slideentry {6}{2}{4}{192/193}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {192}{193}}
+\headcommand {\slideentry {6}{2}{4}{192/194}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {192}{194}}
+\headcommand {\slideentry {6}{2}{4}{192/195}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {192}{195}}
+\headcommand {\slideentry {6}{2}{4}{192/196}{Fujisaki-Okamoto transformation}{1}}
+\headcommand {\beamer@framepages {192}{196}}
+\headcommand {\beamer@partpages {184}{196}}
+\headcommand {\beamer@subsectionpages {189}{196}}
+\headcommand {\beamer@sectionpages {184}{196}}
+\headcommand {\beamer@documentpages {196}}
 \headcommand {\gdef \inserttotalframenumber {74}}
