@@ -1,0 +1,97 @@
+
+\subsection{Novelpoly basis}
+\begin{frame}{}
+    \subsectionpage
+\end{frame}
+\begin{frame}{Cantor basis}
+    \begin{block}{Vector spaces and bases}
+        $\mathds{F}_2^m$: vector space of $m$-bit strings over $\mathds{F}_2$, with $m$ power of 2\\
+        Elements of $\mathds{F}_2^m$ are \emph{vectors}, linear combinations of the \emph{basis vectors}\\
+        Basis vectors: $\mathbf{v} = (v_1, \cdots, v_m)$
+    \end{block}
+    \begin{block}{Canonical basis}
+        \begin{equation*}
+            \mathbf{v}=(1, \alpha, \alpha^2, \cdots, \alpha^{m-1})
+        \end{equation*}
+    \end{block}
+
+    \begin{block}{Cantor basis}
+        \begin{equation*}
+            \mathbf{v} = (v_1, \cdots, v_m)
+        \end{equation*}
+        \begin{equation*}
+            v_1 = 1 \qquad v_i^2+v_i = v_{i-1}
+        \end{equation*}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Subspaces and vanishing polynomials}
+    \begin{equation*}
+        v_1 = 1 \qquad v_i^2+v_i = v_{i-1}
+    \end{equation*}
+
+    \begin{block}{Subspaces induced by Cantor basis}
+        \begin{equation*}
+            \mathbf{W}_0 := \{0\},\qquad \mathbf{W}_i := span\{v_0, \cdots, v_{i-1}\}
+        \end{equation*}
+        \vspace{5pt}
+        with $\mathbf{W}_0 \subset \mathbf{W}_1 \subset \cdots \subset \mathbf{W}_m = \mathds{F}_2^m$ and $\dim(\mathbf{W}_i) = i$.
+    \end{block}
+
+    \begin{block}{Vanishing polynomials}
+        \begin{equation*}
+            s_i(x) = \prod_{a \in \mathbf{W}_i} (x-a)
+        \end{equation*}
+        \vspace{5pt}
+        with $\deg(s_i(x)) = |\mathbf{W}_i| = 2^i$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Novelpoly basis}
+    \begin{block}{Properties of the vanishing polynomials}
+        \begin{itemize}
+            \item linearity: $s_i(x) + s_i(y) = s_i(x+y)$
+            \item recursivity: $s_{i+j}(x) = s_i(s_j(x))$, $s_i(v_{i+j}) = v_j$
+            \item $s_i(v_i) = 1$ for $v_i$ element of the Cantor basis (\cite{DBLP:journals/corr/abs-1708-09746})
+            \item all $v_i$ are roots of $s_{i+1}(x)$
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Novelpoly basis}
+        Cantor basis $\rightarrow$ Subspaces $\rightarrow$ Vanishing polynomials $\rightarrow$ Novelpoly basis
+        \begin{equation*}
+            X_k(x) = \prod (s_i(x))^{b_i}\qquad \text{with } k=\sum_{i=0}^{\log_2 n} b_i2^i
+        \end{equation*}
+        with $\deg(X_k(x)) = k$.
+    \end{block}
+\end{frame}
+
+\subsection{Fujisaki-Okamoto transformation}
+\begin{frame}{}
+    \subsectionpage
+\end{frame}
+
+\begin{frame}{Key Encapsulation Mechanism}
+    Let $\mathcal{G, H, K}$ be hash functions and $\mathcal{E}$ an instance of \textsf{HQC.PKE}
+    \begin{block}{Encapsulation}
+        \begin{itemize}
+            \item Generate the seed $\mathbf{m} \xleftarrow{\$} \mathds{F}_2^k$ and the randomness $\theta \leftarrow \mathcal{G}(\mathbf{m})$
+            \item Generate the ciphertext $\mathbf{c} \leftarrow (\mathbf{u, v}) = \mathcal{E}.\textsf{Encrypt}(\textsf{pk}, \mathbf{m}, \theta)$
+            \item Derive the symmetric key $K = \mathcal{K}(\mathbf{m, c})$
+            \item Calculate $\mathbf{d} \leftarrow \mathcal{H}(\mathbf{m})$
+            \item Send the pair $(\mathbf{c, d})$
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Key Encapsulation Mechanism}
+    Let $\mathcal{G, H, K}$ be hash functions and $\mathcal{E}$ an instance of \textsf{HQC.PKE}
+    \begin{block}{Decapsulation}
+        \begin{itemize}
+            \item Decrypt $\mathbf{m}^{'} \leftarrow \mathcal{E}.\textsf{Decrypt}(\textsf{sk}, \mathbf{c})$
+            \item Compute $\theta^{'} \leftarrow \mathcal{G}(\mathbf{m}^{'})$ and $\mathbf{c}^{'} \leftarrow \mathcal{E}.\textsf{Encrypt}(\textsf{pk}, \mathbf{m}^{'}, \theta^{'})$
+            \item Check that $\mathbf{c = c^{'}}$ and $\mathbf{d} = \mathcal{H}(\mathbf{m}^{'})$
+            \item Derive the shared key $K \leftarrow \mathcal{K}(\mathbf{m, c})$
+        \end{itemize}
+    \end{block}
+\end{frame}
