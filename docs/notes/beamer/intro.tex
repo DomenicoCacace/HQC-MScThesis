@@ -5,22 +5,30 @@
     
     \begin{columns}
         \begin{column}{0.45\textwidth}
+            \uncover<2->{
             \begin{block}{Symmetric encryption}
-            \begin{figure}
-                \centering
-                \includegraphics[scale=0.3]{beamer/images/symmetric-encryption.png}
-            \end{figure}
-            Key: a $n$-bit string
-        \end{block}
+                \visible<2->{
+                \begin{figure}
+                    \centering
+                    \includegraphics[scale=0.3]{beamer/images/symmetric-encryption.png}
+                \end{figure}
+                }
+                Key: a $n$-bit string
+            \end{block}
+        }
         \end{column}
         \begin{column}{0.45\textwidth}
+            \uncover<3->{
             \begin{block}{Asymmetric encryption}
-            \begin{figure}
-                \centering
-                \includegraphics[scale=0.3]{beamer/images/asymmetric-encryption.png}
-            \end{figure}
-            Key: the product of two prime numbers, \emph{i.e.} $n=p\cdot q$
-        \end{block}
+                \visible<3->{
+                \begin{figure}
+                    \centering
+                    \includegraphics[scale=0.3]{beamer/images/asymmetric-encryption.png}
+                \end{figure}
+                    }
+                Key: the product of two prime numbers, \emph{i.e.} $n=p\cdot q$
+            \end{block}
+            }
         \end{column}
     \end{columns}
 \end{frame}
@@ -30,36 +38,39 @@
     What are the best attacks on modern cryptosystems?
     \begin{block}{On Classical Computers}
         \begin{itemize}
-            \item Symmetric: exhaustive search, $\mathcal{O}(2^n)$
-            \item Asymmetric: General Number Field Sieve, $\approx \mathcal{O}(2^{n-\epsilon})$
+            \uncover<1->{\item Symmetric: exhaustive search, $\mathcal{O}(2^n)$}
+            \uncover<2->{\item Asymmetric: General Number Field Sieve, $\approx \mathcal{O}(2^{n-\epsilon})$}
         \end{itemize}
     \end{block}
 
     \begin{block}{On Quantum Computers}
         \begin{itemize}
-            \item Symmetric: Grover's algorithm, $\mathcal{O}(\sqrt{2^n})$
-            \item Asymmetric: Shor's algorithm, $\approx \mathcal{O}((\log{n})^2)$
+            \uncover<3->{\item Symmetric: Grover's algorithm, $\mathcal{O}(\sqrt{2^n})$}
+            \uncover<4->{\item Asymmetric: Shor's algorithm, $\approx \mathcal{O}((\log{n})^2)$}
         \end{itemize}
     \end{block}
-    Shor's algorithm can break asymmetric cryptosystems in polynomial time!
+    \uncover<5->{Shor's algorithm can break asymmetric cryptosystems in polynomial time!}
 \end{frame}
 
 \begin{frame}{The Computational Complexity Zoo}
+    \vspace{15pt}
     \begin{figure}
         \centering
-        \includegraphics[scale=0.35]{beamer/images/bqp.png}
+        \only<1>{\includegraphics[scale=0.35]{beamer/images/bqp1.png}}
+        \only<2>{\includegraphics[scale=0.35]{beamer/images/bqp2.png}}
+        \only<3>{\includegraphics[scale=0.35]{beamer/images/bqp3.png}}
     \end{figure}
 \end{frame}
 
 \begin{frame}{NIST Post-Quantum Cryptography Standardization}
     \begin{block}{Timeline}
         \begin{itemize}
-            \item 26/02/16: Announcement of NIST's call for submissions
-            \item 21/12/17: Announcement of the first round candidates (69)
+            \uncover<1->{\item 26/02/16: Announcement of NIST's call for submissions}
+            \uncover<2->{\item 21/12/17: Announcement of the first round candidates (69)
             \item 30/01/19: Announcement of the second round candidates (26)
-            \item 22/07/20: Announcement of the third round candidates\\ (7 finalists, 8 alternatives)
-            \item 05/07/22: Announcement of the fourth round candidates (4)
-            \item 2022-2024: Publication of the standard drafts
+            \item 22/07/20: Announcement of the third round candidates\\ (7 finalists, 8 alternatives)}
+            \uncover<3->{\item 05/07/22: Announcement of the fourth round candidates (4)
+            \item 2022-2024: Publication of the standard drafts}
         \end{itemize}
     \end{block}
 \end{frame}
@@ -70,9 +81,10 @@
             \item CRYSTALS-Kyber: lattice-based
         \end{itemize}
     \end{block}
-
+    \uncover<2->{
     NIST decided to standardize at least another PQC scheme, in case lattice-based crypto fails
-
+    }
+    \uncover<3->{
     \begin{block}{Fourth Round candidates}
         \begin{itemize}
             \item \st{\textbf{S}upersingular \textbf{I}sogeny \textbf{K}ey \textbf{E}ncapsulation}
@@ -82,23 +94,24 @@
         \end{itemize}
     \end{block}  
     BIKE, Classic McEliece and HQC are all code-based cryptosystems.
+    }
 \end{frame}
 
 \begin{frame}{Overview}
     The target of this thesis is Hamming Quasi-Cyclic
     \begin{block}{Goals}
         \begin{itemize}
-            \item High performance implementation for Cortex-M4
-            \item Protection against timing attacks~\cite{DBLP:journals/tches/GuoHJLNS22,DBLP:journals/amco/Wafo-TapaBBGM22}
-            \item Protection against power attacks~\cite{DBLP:conf/cardis/SchambergerRSW20, DBLP:conf/pqcrypto/SchambergerHRWS22}
+            \uncover<2->{\item High performance implementation for Cortex-M4}
+            \uncover<3->{\item Protection against timing attacks~\cite{DBLP:journals/tches/GuoHJLNS22,DBLP:journals/amco/Wafo-TapaBBGM22}}
+            \uncover<3->{\item Protection against power attacks~\cite{DBLP:conf/cardis/SchambergerRSW20, DBLP:conf/pqcrypto/SchambergerHRWS22}}
         \end{itemize}
     \end{block}
     \begin{block}{Roadmap}
         \begin{itemize}
-            \item Evaluate various polynomial multiplication algorithms
-            \item Assess the constant-time behavior of all components
-            \item Implement a masking scheme for the PKE primitives
-            \item Compare the performance with the other Round 4 candidates
+            \uncover<4->{\item Evaluate various polynomial multiplication algorithms}
+            \uncover<5->{\item Assess the constant-time behavior of all components}
+            \uncover<6->{\item Implement a masking scheme for the PKE primitives}
+            \uncover<7->{\item Compare the performance with the other Round 4 candidates}
         \end{itemize}        
     \end{block}
 \end{frame}
