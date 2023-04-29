@@ -13,6 +13,11 @@
 \usepackage{soul}
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.16}
+\usepackage{forest}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns}
 \usepackage{algorithm}
 \usepackage[ruled,noend,algo2e]{algorithm2e}
 
@@ -22,6 +27,9 @@
 
 \setbeamercovered{transparent}
 \usepackage{stmaryrd}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{booktabs}
 \newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
 \newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
 \newcommand{\sample}{\ensuremath{ \stackrel{\$}{\gets} }}
@@ -30,7 +38,7 @@
 \newcommand{\clshift}{\ensuremath{\lll_n}}
 
 
-\title{Towards fast and constant-time implementations\\ of Hamming Quasi-Cyclic}
+\title{Towards fast and side-channel resistant\\implementations of Hamming Quasi-Cyclic}
 \subtitle{A case study on ARM Cortex-M4 devices}
 \author{Domenico Cacace}
 \date{May 4, 2023}
