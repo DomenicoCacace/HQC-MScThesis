@@ -20,7 +20,7 @@
     \uncover<3->{
     \begin{block}{}
         \begin{itemize}
-            \item Schoolbook multiplication
+            %\item Schoolbook multiplication
             \item Karatsuba algorithm
             \item FFT-based approach
         \end{itemize}
@@ -28,32 +28,32 @@
     }
 \end{frame}
 
-\begin{frame}{Schoolbook multiplication}
-    Multiply each coefficient of $a(x)$ with each coefficient of $b(x)$
-    \uncover<1->{
-    \begin{block}{}
-        \begin{equation*}
-            \begin{aligned}
-                c(x) = & a(x) \cdot b(x) \\
-                \uncover<2->{= & a_0\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) + \\
-                  & + a_1x\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) + \\
-                  & + \cdots + \\
-                  & + a_nx^n\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) \\
-                }
-            \end{aligned}
-        \end{equation*}
-    \end{block}
-    }
-    \uncover<3->{
-    \begin{block}{}
-        \begin{itemize}
-            \item $n^2$ multiplications
-            \item $n^2$ additions
-        \end{itemize}
-        \uncover<4->{Overall complexity: $\mathcal{O}(n^2)$}
-    \end{block}
-    }
-\end{frame}
+%\begin{frame}{Schoolbook multiplication}
+%    Multiply each coefficient of $a(x)$ with each coefficient of $b(x)$
+%    \uncover<1->{
+%    \begin{block}{}
+%        \begin{equation*}
+%            \begin{aligned}
+%                c(x) = & a(x) \cdot b(x) \\
+%                \uncover<2->{= & a_0\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) + \\
+%                  & + a_1x\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) + \\
+%                  & + \cdots + \\
+%                  & + a_nx^n\cdot(b_0 + b_1x + b_2x^2 + \cdots + b_nx^n) \\
+%                }
+%            \end{aligned}
+%        \end{equation*}
+%    \end{block}
+%    }
+%    \uncover<3->{
+%    \begin{block}{}
+%        \begin{itemize}
+%            \item $n^2$ multiplications
+%            \item $n^2$ additions
+%        \end{itemize}
+%        \uncover<4->{Overall complexity: $\mathcal{O}(n^2)$}
+%    \end{block}
+%    }
+%\end{frame}
 
 \begin{frame}{Karatsuba multiplication}
     Recursively split $a(x)$ and $b(x)$ into two halves
@@ -160,6 +160,71 @@
     }
 \end{frame}
 
+\begin{frame}{Cantor basis}
+    \begin{block}{Vector spaces and bases}
+        $\mathds{F}_2^m$: vector space of $m$-bit strings over $\mathds{F}_2$, with $m$ power of 2\\
+        Elements of $\mathds{F}_2^m$ are \emph{vectors}, linear combinations of the \emph{basis vectors}\\
+        Basis vectors: $\mathbf{v} = (v_1, \cdots, v_m)$
+    \end{block}
+    \begin{block}{Canonical basis}
+        \begin{equation*}
+            \mathbf{v}=(1, \alpha, \alpha^2, \cdots, \alpha^{m-1})
+        \end{equation*}
+    \end{block}
+
+    \begin{block}{Cantor basis}
+        \begin{equation*}
+            \mathbf{v} = (v_1, \cdots, v_m)
+        \end{equation*}
+        \begin{equation*}
+            v_1 = 1 \qquad v_i^2+v_i = v_{i-1}
+        \end{equation*}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Subspaces and vanishing polynomials}
+    \begin{equation*}
+        v_1 = 1 \qquad v_i^2+v_i = v_{i-1}
+    \end{equation*}
+
+    \begin{block}{Subspaces induced by Cantor basis}
+        \begin{equation*}
+            \mathbf{W}_0 := \{0\},\qquad \mathbf{W}_i := span\{v_0, \cdots, v_{i-1}\}
+        \end{equation*}
+        \vspace{5pt}
+        with $\mathbf{W}_0 \subset \mathbf{W}_1 \subset \cdots \subset \mathbf{W}_m = \mathds{F}_2^m$ and $\dim(\mathbf{W}_i) = i$.
+    \end{block}
+    \uncover<2->{
+    \begin{block}{Vanishing polynomials}
+        \begin{equation*}
+            s_i(x) = \prod_{a \in \mathbf{W}_i} (x-a)
+        \end{equation*}
+        \vspace{5pt}
+        with $\deg(s_i(x)) = |\mathbf{W}_i| = 2^i$.
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Novelpoly basis}
+    \begin{block}{Properties of the vanishing polynomials}
+        \begin{itemize}
+            \item linearity: $s_i(x) + s_i(y) = s_i(x+y)$
+            \item recursivity: $s_{i+j}(x) = s_i(s_j(x))$, $s_i(v_{i+j}) = v_j$
+            \item $s_i(v_i) = 1$ for $v_i$ element of the Cantor basis (\cite{DBLP:journals/corr/abs-1708-09746})
+            \item all $v_i$ are roots of $s_{i+1}(x)$
+        \end{itemize}
+    \end{block}
+    \uncover<2->{
+    \begin{block}{Novelpoly basis}
+        Cantor basis $\rightarrow$ Subspaces $\rightarrow$ Vanishing polynomials $\rightarrow$ Novelpoly basis
+        \begin{equation*}
+            X_k(x) = \prod (s_i(x))^{b_i}\qquad \text{with } k=\sum_{i=0}^{\log_2 n} b_i2^i
+        \end{equation*}
+        with $\deg(X_k(x)) = k$.
+    \end{block}
+    }
+\end{frame}
+
 \begin{frame}{Polynomial evaluation (sampling)} 
     \begin{block}{}
         We start from:
@@ -203,48 +268,8 @@
     }
 \end{frame}
 
-\begin{frame}{LCH FFT - example}
-    Consider a polynomial $f$ in novelpoly basis of degree greater or equal than $\deg (s_k(x)) = 2^k$ and split it in half: 
-    \begin{equation*}
-        f(x) = p_0(x) + s_k(x)p_1(x)
-    \end{equation*}
-    \uncover<2->{
-    Evaluate $p_0(x)$ and $p_1(x)$ at $\mathbf{W}_{k-1} = \{\alpha \mid \alpha \in \mathbf{W}_{k-1}\}$:
-    \begin{equation*}
-        p_0(\alpha) + s_k(\alpha)p_1(\alpha)
-    \end{equation*}
-    }
-    \uncover<3->{
-    Evaluate $p_0(x)$ and $p_1(x)$ at $(\mathbf{W}_k \setminus \mathbf{W}_{k-1}) = \{\alpha + v_k \mid \alpha \in \mathbf{W}_{k-1}\}$
-    \begin{equation*}
-        p_0(\alpha+v_k) + s_k(\alpha+v_k)p_1(\alpha+v_k)
-    \end{equation*}
-    }
-    \uncover<4->{
-    $p_0(x)$ and $p_1(x)$ are combinations of vanishing polynomials $s_i(x)$ with $i < k$:
-    \begin{equation*}
-       \sum s_i(\alpha + v_k) = \sum s_i(\alpha) + s_i(v_k) = \sum s_i(\alpha) + 0 = \sum s_i(\alpha)
-    \end{equation*}
-    }
-\end{frame}
-
-\begin{frame}{LCH FFT - example}
-    From this consideration, we can observe that:
-    \uncover<2->{
-    \begin{equation*}
-        p_0(\alpha+v_k) = p_0(\alpha), \qquad p_1(\alpha+v_k) = p_1(\alpha)
-    \end{equation*}
-    }
-    \uncover<3->{
-    Hence we can rewrite the evaluation at $(\mathbf{W}_k \setminus \mathbf{W}_{k-1})$ as:
-    \begin{equation*}
-        p_0(\alpha+v_k) + s_k(\alpha+v_k)p_1(\alpha+v_k) = p_0(\alpha) + s_k(\alpha)p_1(\alpha) + s_k(v_k)p_1(\alpha)
-    \end{equation*}
-    and thus reuse the first evaluation to get the second one.
-    }
-    \uncover<4->{
+\begin{frame}{Butterfly unit}
     \input{figures/butterfly.tex}
-    }
 \end{frame}
 
 \begin{frame}{Frobenius map}
@@ -436,19 +461,6 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{Key Encapsulation Mechanism}
-    By applying the Fujisaki-Okamoto transformation it is possible to build a IND-CCA2 KEM.
-    Let $\mathcal{G, H, K}$ be hash functions and $\mathcal{E}$ an instance of \textsf{HQC.PKE}
-    \begin{block}{}
-        \begin{itemize}
-            \item \textbf{Setup}: generate the parameters $\lambda$ as in \textsf{HQC.PKE}, except that k will be the length of the key to be exchanged
-            \item \textbf{KeyGen}: as in \textsf{HQC.PKE}
-        \end{itemize}
-    \end{block}
-\end{frame}
-
-\subsection{Side channel attacks}
-
 \begin{frame}{Side channel attacks}
     \begin{block}{}
         Devices running cryptosystems may expose secrets through \emph{side channels}
@@ -459,38 +471,3 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}{Timing attacks}
-    \begin{block}{}
-        Execution time may vary based on the inputs
-        \begin{itemize}
-            \uncover<2->{\item Loops iterating over the input}
-            \uncover<3->{\item Branches based on the input}
-        \end{itemize}
-    \end{block}
-    \uncover<4->{
-    \begin{block}{Countermeasures}
-        Don't use sensitive inputs in branching instructions
-        \begin{itemize}
-            \item Use constant time algorithms
-        \end{itemize}
-    \end{block}
-    }
-\end{frame}
-
-\begin{frame}{Power attacks}
-    \begin{block}{}
-        Different operations require different amounts of power\\
-        Applies to both power and EM attacks
-    \end{block}
-    \begin{figure}
-        \includegraphics[width=0.6\textwidth]{figures/rsa_squaremult.png}
-    \end{figure}
-    \uncover<2->{
-    \begin{block}{Countermeasures}
-        Mask sensitive data with random values
-        \begin{itemize}
-            \item Makes the power consumption fluctuate randomly
-        \end{itemize}
-    \end{block}
-    }
-\end{frame}
