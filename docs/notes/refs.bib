@@ -1,0 +1,981 @@
+% FAFFT and mathematical background
+@inproceedings{karatsuba1962multiplication,
+  title={Multiplication of many-digital numbers by automatic computers},
+  author={Karatsuba, Anatolii Alekseevich and Ofman, Yu P},
+  booktitle={Doklady Akademii Nauk},
+  volume={145},
+  pages={293--294},
+  year={1962},
+  organization={Russian Academy of Sciences}
+}
+
+@article{cook1969minimum,
+  title={On the minimum computation time of functions},
+  author={Cook, Stephen A and Aanderaa, Stal O},
+  journal={Transactions of the American Mathematical Society},
+  volume={142},
+  pages={291--314},
+  year={1969}
+}
+
+@article{cooley1965algorithm,
+  title={An algorithm for the machine calculation of complex {F}ourier series},
+  author={Cooley, James W and Tukey, John W},
+  journal={Mathematics of computation},
+  volume={19},
+  number={90},
+  pages={297--301},
+  year={1965},
+  publisher={JSTOR}
+}
+
+@article{DBLP:journals/jsac/WangZ88,
+  author    = {Yao Wang and
+               Xuelong Zhu},
+  title     = {A fast algorithm for the Fourier transform over finite fields and
+               its {VLSI} implementation},
+  journal   = {{IEEE} J. Sel. Areas Commun.},
+  volume    = {6},
+  number    = {3},
+  pages     = {572--577},
+  year      = {1988},
+  url       = {https://doi.org/10.1109/49.1926},
+  doi       = {10.1109/49.1926},
+  timestamp = {Thu, 02 Apr 2020 08:38:42 +0200},
+  biburl    = {https://dblp.org/rec/journals/jsac/WangZ88.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/jct/Cantor89,
+  author    = {David G. Cantor},
+  title     = {On arithmetical algorithms over finite fields},
+  journal   = {J. Comb. Theory, Ser. {A}},
+  volume    = {50},
+  number    = {2},
+  pages     = {285--300},
+  year      = {1989},
+  url       = {https://doi.org/10.1016/0097-3165(89)90020-4},
+  doi       = {10.1016/0097-3165(89)90020-4},
+  timestamp = {Tue, 16 Feb 2021 14:06:25 +0100},
+  biburl    = {https://dblp.org/rec/journals/jct/Cantor89.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@article{bernstein2001multidigit,
+  title={Multidigit multiplication for mathematicians},
+  author={Bernstein, Daniel J},
+  journal={Advances in Applied Mathematics},
+  pages={1--19},
+  year={2001}
+}
+
+@article{DBLP:journals/tit/GaoM10,
+  author    = {Shuhong Gao and
+               Todd D. Mateer},
+  title     = {Additive Fast {F}ourier Transforms Over Finite Fields},
+  journal   = {{IEEE} Trans. Inf. Theory},
+  volume    = {56},
+  number    = {12},
+  pages     = {6265--6272},
+  year      = {2010},
+  url       = {https://doi.org/10.1109/TIT.2010.2079016},
+  doi       = {10.1109/TIT.2010.2079016},
+  timestamp = {Tue, 10 Mar 2020 10:43:35 +0100},
+  biburl    = {https://dblp.org/rec/journals/tit/GaoM10.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@inproceedings{DBLP:conf/focs/LinCH14,
+  author    = {Sian{-}Jheng Lin and
+               Wei{-}Ho Chung and
+               Yunghsiang S. Han},
+  title     = {Novel Polynomial Basis and Its Application to Reed-Solomon Erasure
+               Codes},
+  booktitle = {55th {IEEE} Annual Symposium on Foundations of Computer Science, {FOCS}
+               2014, Philadelphia, PA, USA, October 18-21, 2014},
+  pages     = {316--325},
+  publisher = {{IEEE} Computer Society},
+  year      = {2014},
+  url       = {https://doi.org/10.1109/FOCS.2014.41},
+  doi       = {10.1109/FOCS.2014.41},
+  timestamp = {Thu, 23 Mar 2023 23:57:54 +0100},
+  biburl    = {https://dblp.org/rec/conf/focs/LinCH14.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@book{DBLP:books/daglib/0023376,
+  author    = {Thomas H. Cormen and
+               Charles E. Leiserson and
+               Ronald L. Rivest and
+               Clifford Stein},
+  title     = {Introduction to Algorithms, 3rd Edition},
+  publisher = {{MIT} Press},
+  year      = {2009},
+  url       = {http://mitpress.mit.edu/books/introduction-algorithms},
+  isbn      = {978-0-262-03384-8},
+  timestamp = {Mon, 17 Aug 2020 11:36:12 +0200},
+  biburl    = {https://dblp.org/rec/books/daglib/0023376.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/issac/HoevenL17,
+  author    = {Joris van der Hoeven and
+               Robin Larrieu},
+  editor    = {Michael A. Burr and
+               Chee K. Yap and
+               Mohab Safey El Din},
+  title     = {The Frobenius {FFT}},
+  booktitle = {Proceedings of the 2017 {ACM} on International Symposium on Symbolic
+               and Algebraic Computation, {ISSAC} 2017, Kaiserslautern, Germany,
+               July 25-28, 2017},
+  pages     = {437--444},
+  publisher = {{ACM}},
+  year      = {2017},
+  url       = {https://doi.org/10.1145/3087604.3087633},
+  doi       = {10.1145/3087604.3087633},
+  timestamp = {Tue, 21 Mar 2023 21:00:35 +0100},
+  biburl    = {https://dblp.org/rec/conf/issac/HoevenL17.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-1708-09746,
+  author    = {Ming{-}Shing Chen and
+               Chen{-}Mou Cheng and
+               Po{-}Chun Kuo and
+               Wen{-}Ding Li and
+               Bo{-}Yin Yang},
+  title     = {Faster Multiplication for Long Binary Polynomials},
+  journal   = {CoRR},
+  volume    = {abs/1708.09746},
+  year      = {2017},
+  url       = {http://arxiv.org/abs/1708.09746},
+  eprinttype = {arXiv},
+  eprint    = {1708.09746},
+  timestamp = {Mon, 13 Aug 2018 16:46:45 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-1708-09746.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-1803-11301,
+  author    = {Ming{-}Shing Chen and
+               Chen{-}Mou Cheng and
+               Po{-}Chun Kuo and
+               Wen{-}Ding Li and
+               Bo{-}Yin Yang},
+  title     = {Multiplying boolean Polynomials with {F}robenius Partitions in Additive
+               Fast {F}ourier Transform},
+  journal   = {CoRR},
+  volume    = {abs/1803.11301},
+  year      = {2018},
+  url       = {http://arxiv.org/abs/1803.11301},
+  eprinttype = {arXiv},
+  eprint    = {1803.11301},
+  timestamp = {Mon, 13 Aug 2018 16:47:47 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-1803-11301.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@inproceedings{DBLP:conf/issac/LiCKCY18,
+  author    = {Wen{-}Ding Li and
+               Ming{-}Shing Chen and
+               Po{-}Chun Kuo and
+               Chen{-}Mou Cheng and
+               Bo{-}Yin Yang},
+  editor    = {Manuel Kauers and
+               Alexey Ovchinnikov and
+               {\'{E}}ric Schost},
+  title     = {Frobenius Additive Fast Fourier Transform},
+  booktitle = {Proceedings of the 2018 {ACM} on International Symposium on Symbolic
+               and Algebraic Computation, {ISSAC} 2018, New York, NY, USA, July 16-19,
+               2018},
+  pages     = {263--270},
+  publisher = {{ACM}},
+  year      = {2018},
+  url       = {https://doi.org/10.1145/3208976.3208998},
+  doi       = {10.1145/3208976.3208998},
+  timestamp = {Mon, 15 Jun 2020 17:05:14 +0200},
+  biburl    = {https://dblp.org/rec/conf/issac/LiCKCY18.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tches/ChenC21,
+  author    = {Ming{-}Shing Chen and
+               Tung Chou},
+  title     = {Classic McEliece on the {ARM} Cortex-M4},
+  journal   = {{IACR} Trans. Cryptogr. Hardw. Embed. Syst.},
+  volume    = {2021},
+  number    = {3},
+  pages     = {125--148},
+  year      = {2021},
+  url       = {https://doi.org/10.46586/tches.v2021.i3.125-148},
+  doi       = {10.46586/tches.v2021.i3.125-148},
+  timestamp = {Fri, 23 Jul 2021 16:41:24 +0200},
+  biburl    = {https://dblp.org/rec/journals/tches/ChenC21.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tches/ChenCK21,
+  author    = {Ming{-}Shing Chen and
+               Tung Chou and
+               Markus Krausz},
+  title     = {Optimizing {BIKE} for the Intel Haswell and {ARM} Cortex-M4},
+  journal   = {{IACR} Trans. Cryptogr. Hardw. Embed. Syst.},
+  volume    = {2021},
+  number    = {3},
+  pages     = {97--124},
+  year      = {2021},
+  url       = {https://doi.org/10.46586/tches.v2021.i3.97-124},
+  doi       = {10.46586/tches.v2021.i3.97-124},
+  timestamp = {Sat, 09 Apr 2022 12:22:10 +0200},
+  biburl    = {https://dblp.org/rec/journals/tches/ChenCK21.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+% HQC specs and relative attacks
+@article{DBLP:journals/joc/FujisakiO13,
+  author    = {Eiichiro Fujisaki and
+               Tatsuaki Okamoto},
+  title     = {Secure Integration of Asymmetric and Symmetric Encryption Schemes},
+  journal   = {J. Cryptol.},
+  volume    = {26},
+  number    = {1},
+  pages     = {80--101},
+  year      = {2013},
+  url       = {https://doi.org/10.1007/s00145-011-9114-1},
+  doi       = {10.1007/s00145-011-9114-1},
+  timestamp = {Fri, 18 Sep 2020 11:17:27 +0200},
+  biburl    = {https://dblp.org/rec/journals/joc/FujisakiO13.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/tcc/HofheinzHK17,
+  author    = {Dennis Hofheinz and
+               Kathrin H{\"{o}}velmanns and
+               Eike Kiltz},
+  editor    = {Yael Kalai and
+               Leonid Reyzin},
+  title     = {A Modular Analysis of the Fujisaki-Okamoto Transformation},
+  booktitle = {Theory of Cryptography - 15th International Conference, {TCC} 2017,
+               Baltimore, MD, USA, November 12-15, 2017, Proceedings, Part {I}},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {10677},
+  pages     = {341--371},
+  publisher = {Springer},
+  year      = {2017},
+  url       = {https://doi.org/10.1007/978-3-319-70500-2\_12},
+  doi       = {10.1007/978-3-319-70500-2\_12},
+  timestamp = {Thu, 14 Oct 2021 10:23:30 +0200},
+  biburl    = {https://dblp.org/rec/conf/tcc/HofheinzHK17.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@article{DBLP:journals/tit/Aguilar-Melchor18,
+  author    = {Carlos Aguilar Melchor and
+               Olivier Blazy and
+               Jean{-}Christophe Deneuville and
+               Philippe Gaborit and
+               Gilles Z{\'{e}}mor},
+  title     = {Efficient Encryption From Random Quasi-Cyclic Codes},
+  journal   = {{IEEE} Trans. Inf. Theory},
+  volume    = {64},
+  number    = {5},
+  pages     = {3927--3943},
+  year      = {2018},
+  url       = {https://doi.org/10.1109/TIT.2018.2804444},
+  doi       = {10.1109/TIT.2018.2804444},
+  timestamp = {Tue, 10 Mar 2020 10:46:26 +0100},
+  biburl    = {https://dblp.org/rec/journals/tit/Aguilar-Melchor18.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{melchor2018hamming,
+  title={Hamming {Q}uasi-{C}yclic ({HQC})},
+  author={Melchor, Carlos Aguilar and Aragon, Nicolas and Bettaieb, Slim and Bidoux, Lo{\i}c and Blazy, Olivier and Deneuville, Jean-Christophe and Gaborit, Philippe and Persichetti, Edoardo and Z{\'e}mor, Gilles and Bourges, IC},
+  year={2018},
+  howpublished = {\url{https://pqc-hqc.org/}},
+}
+
+@inproceedings{DBLP:conf/cardis/SchambergerRSW20,
+  author    = {Thomas Schamberger and
+               Julian Renner and
+               Georg Sigl and
+               Antonia Wachter{-}Zeh},
+  editor    = {Pierre{-}Yvan Liardet and
+               Nele Mentens},
+  title     = {{A Power Side-Channel Attack on the CCA2-Secure {HQC} {KEM}}},
+  booktitle = {Smart Card Research and Advanced Applications - 19th International
+               Conference, {CARDIS} 2020, Virtual Event, November 18-19, 2020, Revised
+               Selected Papers},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {12609},
+  pages     = {119--134},
+  publisher = {Springer},
+  year      = {2020},
+  url       = {https://doi.org/10.1007/978-3-030-68487-7\_8},
+  doi       = {10.1007/978-3-030-68487-7\_8},
+  timestamp = {Fri, 29 Jan 2021 16:30:32 +0100},
+  biburl    = {https://dblp.org/rec/conf/cardis/SchambergerRSW20.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tches/GuoHJLNS22,
+  author    = {Qian Guo and
+               Clemens Hlauschek and
+               Thomas Johansson and
+               Norman Lahr and
+               Alexander Nilsson and
+               Robin Leander Schr{\"{o}}der},
+  title     = {Don't Reject This: Key-Recovery Timing Attacks Due to Rejection-Sampling
+               in {HQC} and {BIKE}},
+  journal   = {{IACR} Trans. Cryptogr. Hardw. Embed. Syst.},
+  volume    = {2022},
+  number    = {3},
+  pages     = {223--263},
+  year      = {2022},
+  url       = {https://doi.org/10.46586/tches.v2022.i3.223-263},
+  doi       = {10.46586/tches.v2022.i3.223-263},
+  timestamp = {Wed, 27 Jul 2022 22:15:56 +0200},
+  biburl    = {https://dblp.org/rec/journals/tches/GuoHJLNS22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/pqcrypto/SchambergerHRWS22,
+  author    = {Thomas Schamberger and
+               Lukas Holzbaur and
+               Julian Renner and
+               Antonia Wachter{-}Zeh and
+               Georg Sigl},
+  editor    = {Jung Hee Cheon and
+               Thomas Johansson},
+  title     = {{A Power Side-Channel Attack on the Reed-Muller Reed-Solomon Version
+               of the {HQC} Cryptosystem}},
+  booktitle = {Post-Quantum Cryptography - 13th International Workshop, PQCrypto
+               2022, Virtual Event, September 28-30, 2022, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {13512},
+  pages     = {327--352},
+  publisher = {Springer},
+  year      = {2022},
+  url       = {https://doi.org/10.1007/978-3-031-17234-2\_16},
+  doi       = {10.1007/978-3-031-17234-2\_16},
+  timestamp = {Tue, 27 Sep 2022 17:07:26 +0200},
+  biburl    = {https://dblp.org/rec/conf/pqcrypto/SchambergerHRWS22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/amco/Wafo-TapaBBGM22,
+  author    = {Guillaume Wafo{-}Tapa and
+               Slim Bettaieb and
+               Lo{\"{\i}}c Bidoux and
+               Philippe Gaborit and
+               Etienne Marcatel},
+  title     = {{A practicable timing attack against {HQC} and its countermeasure}},
+  journal   = {Adv. Math. Commun.},
+  volume    = {16},
+  number    = {3},
+  pages     = {621--642},
+  year      = {2022},
+  url       = {https://doi.org/10.3934/amc.2020126},
+  doi       = {10.3934/amc.2020126},
+  timestamp = {Mon, 04 Jul 2022 08:26:35 +0200},
+  biburl    = {https://dblp.org/rec/journals/amco/Wafo-TapaBBGM22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{wcc22,
+ author = {Guillaume Goy and Antoine Loiseau and Philippe Gaborit}, 
+ title = {{
+Estimating the Strength of Horizontal
+Correlation Attacks in the Hamming Weight
+Leakage Model:
+A Side-Channel Analysis on HQC KEM}},
+booktitle = {WCC 2022: The Twelfth International Workshop on Coding and Cryptography
+March 7 - 11, 2022, Rostock (Germany)},
+url       = {https://www.wcc2022.uni-rostock.de/storages/uni-rostock/Tagungen/WCC2022/Papers/WCC_2022_paper_48.pdf},
+year = {2022}, 
+}
+
+@inproceedings{DBLP:conf/sacrypt/PaivaT19,
+  author    = {Thales Bandiera Paiva and
+               Routo Terada},
+  editor    = {Kenneth G. Paterson and
+               Douglas Stebila},
+  title     = {{A Timing Attack on the {HQC} Encryption Scheme}},
+  booktitle = {Selected Areas in Cryptography - {SAC} 2019 - 26th International Conference,
+               Waterloo, ON, Canada, August 12-16, 2019, Revised Selected Papers},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {11959},
+  pages     = {551--573},
+  publisher = {Springer},
+  year      = {2019},
+  url       = {https://doi.org/10.1007/978-3-030-38471-5\_22},
+  doi       = {10.1007/978-3-030-38471-5\_22},
+  timestamp = {Thu, 06 Feb 2020 18:14:47 +0100},
+  biburl    = {https://dblp.org/rec/conf/sacrypt/PaivaT19.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/pqcrypto/GoyLG22,
+  author    = {Guillaume Goy and
+               Antoine Loiseau and
+               Philippe Gaborit},
+  editor    = {Jung Hee Cheon and
+               Thomas Johansson},
+  title     = {{A New Key Recovery Side-Channel Attack on {HQC} with Chosen Ciphertext}},
+  booktitle = {Post-Quantum Cryptography - 13th International Workshop, PQCrypto
+               2022, Virtual Event, September 28-30, 2022, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {13512},
+  pages     = {353--371},
+  publisher = {Springer},
+  year      = {2022},
+  url       = {https://doi.org/10.1007/978-3-031-17234-2\_17},
+  doi       = {10.1007/978-3-031-17234-2\_17},
+  timestamp = {Tue, 27 Sep 2022 17:07:26 +0200},
+  biburl    = {https://dblp.org/rec/conf/pqcrypto/GoyLG22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+% Coding theory
+@article{gilbert1952comparison,
+  title={A comparison of signalling alphabets},
+  author={Gilbert, Edgar N},
+  journal={The Bell system technical journal},
+  volume={31},
+  number={3},
+  pages={504--522},
+  year={1952},
+  publisher={Nokia Bell Labs}
+}
+
+@article{DBLP:journals/tit/Reed54,
+  author    = {Irving S. Reed},
+  title     = {A class of multiple-error-correcting codes and the decoding scheme},
+  journal   = {Trans. {IRE} Prof. Group Inf. Theory},
+  volume    = {4},
+  pages     = {38--49},
+  year      = {1954},
+  url       = {https://doi.org/10.1109/TIT.1954.1057465},
+  doi       = {10.1109/TIT.1954.1057465},
+  timestamp = {Thu, 16 Jul 2020 16:37:52 +0200},
+  biburl    = {https://dblp.org/rec/journals/tit/Reed54.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@article{DBLP:journals/tc/Muller54,
+  author    = {David E. Muller},
+  title     = {Application of Boolean algebra to switching circuit design and to
+               error detection},
+  journal   = {Trans. {I} {R} {E} Prof. Group Electron. Comput.},
+  volume    = {3},
+  number    = {3},
+  pages     = {6--12},
+  year      = {1954},
+  url       = {https://doi.org/10.1109/IREPGELC.1954.6499441},
+  doi       = {10.1109/IREPGELC.1954.6499441},
+  timestamp = {Wed, 20 May 2020 21:32:39 +0200},
+  biburl    = {https://dblp.org/rec/journals/tc/Muller54.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{varshamov1957estimate,
+  title={Estimate of the number of signals in error correcting codes},
+  author={Varshamov, Rom Rubenovich},
+  journal={Docklady Akad. Nauk, SSSR},
+  volume={117},
+  pages={739--741},
+  year={1957}
+}
+
+@article{reed1960polynomial,
+  title={Polynomial codes over certain finite fields},
+  author={Reed, Irving S and Solomon, Gustave},
+  journal={Journal of the society for industrial and applied mathematics},
+  volume={8},
+  number={2},
+  pages={300--304},
+  year={1960},
+  publisher={SIAM}
+}
+
+@article{DBLP:journals/tit/Singleton64,
+  author    = {Richard C. Singleton},
+  title     = {Maximum distance q -nary codes},
+  journal   = {{IEEE} Trans. Inf. Theory},
+  volume    = {10},
+  number    = {2},
+  pages     = {116--118},
+  year      = {1964},
+  url       = {https://doi.org/10.1109/TIT.1964.1053661},
+  doi       = {10.1109/TIT.1964.1053661},
+  timestamp = {Tue, 10 Mar 2020 10:49:18 +0100},
+  biburl    = {https://dblp.org/rec/journals/tit/Singleton64.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{forney1965concatenated,
+  title={Concatenated codes},
+  author={Forney, G David},
+  year={1965}
+}
+
+@book{macwilliams1977theory,
+  title={The theory of error correcting codes},
+  author={MacWilliams, Florence Jessie and Sloane, Neil James Alexander},
+  volume={16},
+  year={1977},
+  publisher={Elsevier}
+}
+
+@article{DBLP:journals/tit/BerlekampMT78,
+  author    = {Elwyn R. Berlekamp and
+               Robert J. McEliece and
+               Henk C. A. van Tilborg},
+  title     = {On the inherent intractability of certain coding problems (Corresp.)},
+  journal   = {{IEEE} Trans. Inf. Theory},
+  volume    = {24},
+  number    = {3},
+  pages     = {384--386},
+  year      = {1978},
+  url       = {https://doi.org/10.1109/TIT.1978.1055873},
+  doi       = {10.1109/TIT.1978.1055873},
+  timestamp = {Tue, 10 Mar 2020 10:44:31 +0100},
+  biburl    = {https://dblp.org/rec/journals/tit/BerlekampMT78.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+% side channel attacks
+@inproceedings{DBLP:conf/crypto/Kocher96,
+  author    = {Paul C. Kocher},
+  editor    = {Neal Koblitz},
+  title     = {Timing Attacks on Implementations of Diffie-Hellman, RSA, DSS, and
+               Other Systems},
+  booktitle = {Advances in Cryptology - {CRYPTO} '96, 16th Annual International Cryptology
+               Conference, Santa Barbara, California, USA, August 18-22, 1996, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {1109},
+  pages     = {104--113},
+  publisher = {Springer},
+  year      = {1996},
+  url       = {https://doi.org/10.1007/3-540-68697-5\_9},
+  doi       = {10.1007/3-540-68697-5\_9},
+  timestamp = {Tue, 14 May 2019 10:00:48 +0200},
+  biburl    = {https://dblp.org/rec/conf/crypto/Kocher96.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/crypto/ChariJRR99,
+  author    = {Suresh Chari and
+               Charanjit S. Jutla and
+               Josyula R. Rao and
+               Pankaj Rohatgi},
+  editor    = {Michael J. Wiener},
+  title     = {Towards Sound Approaches to Counteract Power-Analysis Attacks},
+  booktitle = {Advances in Cryptology - {CRYPTO} '99, 19th Annual International Cryptology
+               Conference, Santa Barbara, California, USA, August 15-19, 1999, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {1666},
+  pages     = {398--412},
+  publisher = {Springer},
+  year      = {1999},
+  url       = {https://doi.org/10.1007/3-540-48405-1\_26},
+  doi       = {10.1007/3-540-48405-1\_26},
+  timestamp = {Tue, 14 May 2019 10:00:48 +0200},
+  biburl    = {https://dblp.org/rec/conf/crypto/ChariJRR99.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/crypto/KocherJJ99,
+  author    = {Paul C. Kocher and
+               Joshua Jaffe and
+               Benjamin Jun},
+  editor    = {Michael J. Wiener},
+  title     = {Differential Power Analysis},
+  booktitle = {Advances in Cryptology - {CRYPTO} '99, 19th Annual International Cryptology
+               Conference, Santa Barbara, California, USA, August 15-19, 1999, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {1666},
+  pages     = {388--397},
+  publisher = {Springer},
+  year      = {1999},
+  url       = {https://doi.org/10.1007/3-540-48405-1\_25},
+  doi       = {10.1007/3-540-48405-1\_25},
+  timestamp = {Tue, 14 May 2019 10:00:48 +0200},
+  biburl    = {https://dblp.org/rec/conf/crypto/KocherJJ99.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{DBLP:conf/ches/ChariRR02,
+  author    = {Suresh Chari and
+               Josyula R. Rao and
+               Pankaj Rohatgi},
+  editor    = {Burton S. Kaliski Jr. and
+               {\c{C}}etin Kaya Ko{\c{c}} and
+               Christof Paar},
+  title     = {{Template Attacks}},
+  booktitle = {Cryptographic Hardware and Embedded Systems - {CHES} 2002, 4th International
+               Workshop, Redwood Shores, CA, USA, August 13-15, 2002, Revised Papers},
+  series    = {LNCS},
+  volume    = {2523},
+  pages     = {13--28},
+  publisher = {Springer},
+  year      = {2002},
+  __url       = {https://doi.org/10.1007/3-540-36400-5\_3},
+  doi       = {10.1007/3-540-36400-5\_3},
+}
+
+
+@inproceedings{DBLP:conf/crypto/IshaiSW03,
+  author    = {Yuval Ishai and
+               Amit Sahai and
+               David A. Wagner},
+  editor    = {Dan Boneh},
+  title     = {Private Circuits: Securing Hardware against Probing Attacks},
+  booktitle = {Advances in Cryptology - {CRYPTO} 2003, 23rd Annual International
+               Cryptology Conference, Santa Barbara, California, USA, August 17-21,
+               2003, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {2729},
+  pages     = {463--481},
+  publisher = {Springer},
+  year      = {2003},
+  url       = {https://doi.org/10.1007/978-3-540-45146-4\_27},
+  doi       = {10.1007/978-3-540-45146-4\_27},
+  timestamp = {Tue, 14 May 2019 10:00:48 +0200},
+  biburl    = {https://dblp.org/rec/conf/crypto/IshaiSW03.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/cn/BrumleyB05,
+  author    = {David Brumley and
+               Dan Boneh},
+  title     = {Remote timing attacks are practical},
+  journal   = {Comput. Networks},
+  volume    = {48},
+  number    = {5},
+  pages     = {701--716},
+  year      = {2005},
+  url       = {https://doi.org/10.1016/j.comnet.2005.01.010},
+  doi       = {10.1016/j.comnet.2005.01.010},
+  timestamp = {Wed, 19 Feb 2020 16:35:34 +0100},
+  biburl    = {https://dblp.org/rec/journals/cn/BrumleyB05.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@incollection{DBLP:books/sp/10/Standaert10,
+  author    = {Fran{\c{c}}ois{-}Xavier Standaert},
+  editor    = {Ingrid M. R. Verbauwhede},
+  title     = {Introduction to Side-Channel Attacks},
+  booktitle = {Secure Integrated Circuits and Systems},
+  series    = {Integrated Circuits and Systems},
+  pages     = {27--42},
+  publisher = {Springer},
+  year      = {2010},
+  url       = {https://doi.org/10.1007/978-0-387-71829-3\_2},
+  doi       = {10.1007/978-0-387-71829-3\_2},
+  timestamp = {Wed, 26 Jun 2019 18:00:01 +0200},
+  biburl    = {https://dblp.org/rec/books/sp/10/Standaert10.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/esorics/BrumleyT11,
+  author    = {Billy Bob Brumley and
+               Nicola Tuveri},
+  editor    = {Vijay Atluri and
+               Claudia D{\'{\i}}az},
+  title     = {Remote Timing Attacks Are Still Practical},
+  booktitle = {Computer Security - {ESORICS} 2011 - 16th European Symposium on Research
+               in Computer Security, Leuven, Belgium, September 12-14, 2011. Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {6879},
+  pages     = {355--371},
+  publisher = {Springer},
+  year      = {2011},
+  url       = {https://doi.org/10.1007/978-3-642-23822-2\_20},
+  doi       = {10.1007/978-3-642-23822-2\_20},
+  timestamp = {Tue, 20 Aug 2019 15:26:50 +0200},
+  biburl    = {https://dblp.org/rec/conf/esorics/BrumleyT11.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/eurocrypt/ProuffR13,
+  author    = {Emmanuel Prouff and
+               Matthieu Rivain},
+  editor    = {Thomas Johansson and
+               Phong Q. Nguyen},
+  title     = {Masking against Side-Channel Attacks: {A} Formal Security Proof},
+  booktitle = {Advances in Cryptology - {EUROCRYPT} 2013, 32nd Annual International
+               Conference on the Theory and Applications of Cryptographic Techniques,
+               Athens, Greece, May 26-30, 2013. Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {7881},
+  pages     = {142--159},
+  publisher = {Springer},
+  year      = {2013},
+  url       = {https://doi.org/10.1007/978-3-642-38348-9\_9},
+  doi       = {10.1007/978-3-642-38348-9\_9},
+  timestamp = {Tue, 14 May 2019 10:00:53 +0200},
+  biburl    = {https://dblp.org/rec/conf/eurocrypt/ProuffR13.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/jce/SchneiderM16,
+  author    = {Tobias Schneider and
+               Amir Moradi},
+  title     = {Leakage assessment methodology - Extended version},
+  journal   = {J. Cryptogr. Eng.},
+  volume    = {6},
+  number    = {2},
+  pages     = {85--99},
+  year      = {2016},
+  url       = {https://doi.org/10.1007/s13389-016-0120-y},
+  doi       = {10.1007/s13389-016-0120-y},
+  timestamp = {Thu, 09 Jul 2020 23:00:30 +0200},
+  biburl    = {https://dblp.org/rec/journals/jce/SchneiderM16.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/cacm/LippSGPHHMKGYHS20,
+  author    = {Moritz Lipp and
+               Michael Schwarz and
+               Daniel Gruss and
+               Thomas Prescher and
+               Werner Haas and
+               Jann Horn and
+               Stefan Mangard and
+               Paul Kocher and
+               Daniel Genkin and
+               Yuval Yarom and
+               Mike Hamburg and
+               Raoul Strackx},
+  title     = {Meltdown: reading kernel memory from user space},
+  journal   = {Commun. {ACM}},
+  volume    = {63},
+  number    = {6},
+  pages     = {46--56},
+  year      = {2020},
+  url       = {https://doi.org/10.1145/3357033},
+  doi       = {10.1145/3357033},
+  timestamp = {Thu, 25 Jun 2020 09:22:10 +0200},
+  biburl    = {https://dblp.org/rec/journals/cacm/LippSGPHHMKGYHS20.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@article{DBLP:journals/cacm/KocherHFGGHHLMP20,
+  author    = {Paul Kocher and
+               Jann Horn and
+               Anders Fogh and
+               Daniel Genkin and
+               Daniel Gruss and
+               Werner Haas and
+               Mike Hamburg and
+               Moritz Lipp and
+               Stefan Mangard and
+               Thomas Prescher and
+               Michael Schwarz and
+               Yuval Yarom},
+  title     = {Spectre attacks: exploiting speculative execution},
+  journal   = {Commun. {ACM}},
+  volume    = {63},
+  number    = {7},
+  pages     = {93--101},
+  year      = {2020},
+  url       = {https://doi.org/10.1145/3399742},
+  doi       = {10.1145/3399742},
+  timestamp = {Tue, 14 Jul 2020 08:50:56 +0200},
+  biburl    = {https://dblp.org/rec/journals/cacm/KocherHFGGHHLMP20.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/cryptography/RandolphD20,
+  author    = {Mark Randolph and
+               William Diehl},
+  title     = {Power Side-Channel Attack Analysis: {A} Review of 20 Years of Study
+               for the Layman},
+  journal   = {Cryptogr.},
+  volume    = {4},
+  number    = {2},
+  pages     = {15},
+  year      = {2020},
+  url       = {https://doi.org/10.3390/cryptography4020015},
+  doi       = {10.3390/cryptography4020015},
+  timestamp = {Tue, 07 Jul 2020 17:29:47 +0200},
+  biburl    = {https://dblp.org/rec/journals/cryptography/RandolphD20.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+% Misc
+
+@article{bentley1980general,
+  title={A general method for solving divide-and-conquer recurrences},
+  author={Bentley, Jon Louis and Haken, Dorothea and Saxe, James B},
+  journal={ACM SIGACT News},
+  volume={12},
+  number={3},
+  pages={36--44},
+  year={1980},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{DBLP:conf/focs/Shor94,
+  author    = {Peter W. Shor},
+  title     = {{Algorithms for Quantum Computation: Discrete Logarithms and Factoring}},
+  booktitle = {35th Annual Symposium on Foundations of Computer Science, Santa Fe,
+               New Mexico, USA, 20-22 November 1994},
+  pages     = {124--134},
+  publisher = {{IEEE} Computer Society},
+  year      = {1994},
+  url       = {https://doi.org/10.1109/SFCS.1994.365700},
+  doi       = {10.1109/SFCS.1994.365700},
+  timestamp = {Wed, 16 Oct 2019 14:14:54 +0200},
+  biburl    = {https://dblp.org/rec/conf/focs/Shor94.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/iacr/BosDKLLSSS17,
+  author    = {Joppe W. Bos and
+               L{\'{e}}o Ducas and
+               Eike Kiltz and
+               Tancr{\`{e}}de Lepoint and
+               Vadim Lyubashevsky and
+               John M. Schanck and
+               Peter Schwabe and
+               Damien Stehl{\'{e}}},
+  title     = {{CRYSTALS}-{K}yber: a {CCA}-secure module-lattice-based {KEM}},
+  journal   = {{IACR} Cryptol. ePrint Arch.},
+  pages     = {634},
+  year      = {2017},
+  url       = {http://eprint.iacr.org/2017/634},
+  timestamp = {Mon, 11 May 2020 15:55:44 +0200},
+  biburl    = {https://dblp.org/rec/journals/iacr/BosDKLLSSS17.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{DBLP:conf/cbc/BaldiBCPS19,
+  author    = {Marco Baldi and
+               Alessandro Barenghi and
+               Franco Chiaraluce and
+               Gerardo Pelosi and
+               Paolo Santini},
+  editor    = {Marco Baldi and
+               Edoardo Persichetti and
+               Paolo Santini},
+  title     = {{LEDA}crypt: {QC-LDPC} Code-Based Cryptosystems with Bounded Decryption
+               Failure Rate},
+  booktitle = {Code-Based Cryptography - 7th International Workshop, {CBC} 2019,
+               Darmstadt, Germany, May 18-19, 2019, Revised Selected Papers},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {11666},
+  pages     = {11--43},
+  publisher = {Springer},
+  year      = {2019},
+  _url       = {https://doi.org/10.1007/978-3-030-25922-8\_2},
+  doi       = {10.1007/978-3-030-25922-8\_2},
+  timestamp = {Mon, 03 Jan 2022 22:40:52 +0100},
+  biburl    = {https://dblp.org/rec/conf/cbc/BaldiBCPS19.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@article{biondi2021quantum,
+  title={Quantum computing use cases are getting real--what you need to know},
+  author={Biondi, M and Heid, A and Henke, N and Mohr, N and Pautasso, L and Ostojic, I and Wester, L and Zemme, R},
+  journal={McKinsey Insights},
+  year={2021}
+}
+
+@misc{ClassicMcEliece, 
+author = {Daniel J. Bernstein and
+Tung Chou and
+Carlos Cid and
+Jan Gilcher and
+Tanja Lange and
+Varun Maram and
+Ingo von Maurich and
+Rafael Misoczki and
+Ruben Niederhagen and
+Edoardo Persichetti and
+Christiane Peters and
+Nicolas Sendrier and
+Jakub Szefer and
+Cen Jung Tjhai and
+Martin Tomlinson and
+Wen Wang}, 
+title = {{Classic McEliece Supporting Documentation}}, 
+howpublished = {\url{https://classic.mceliece.org}},
+year = {2022},
+}
+
+@misc{Kyber, 
+author = {Vadim Lyubashevsky and 
+Leo Ducas and
+Eike Kiltz and
+Tancrede Lepoint and
+Peter Schwabe and
+Gregor Seiler and
+Damien Stehle and
+Shi Bai}, 
+title = {{Kyber Supporting Documentation}}, 
+howpublished = {\url{https://pq-crystals.org/kyber/data/kyber-specification-round3-20210804.pdf}},
+year = {2021},
+}
+
+@misc{BIKE, 
+author = {Nicolas Aragon and 
+Paulo Barreto  and 
+Slim Bettaieb  and 
+Loic Bidoux and  
+Olivier Blazy and 
+Jean-Christophe Deneuville and 
+Phillipe Gaborit and 
+Shay Gueron and 
+Tim Guneysu and 
+Carlos Aguilar Melchor and 
+Rafael Misoczki and 
+Edoardo Persichetti and 
+Nicolas Sendrier and 
+Jean-Pierre Tillich and 
+Gilles Zemor and 
+Valentin Vasseur and 
+Santosh Ghosh and 
+Jan Richter-Brokmann},
+title = {{BIKE Supporting Documentation}}, 
+howpublished = {\url{https://bikesuite.org}},
+year = {2022},
+}
+
+@misc{PQM4,
+  title = {{PQM4}: Post-quantum crypto library for the {ARM} {Cortex-M4}},
+  author = {Matthias J. Kannwischer and Richard Petri and Joost Rijneveld and Peter Schwabe and Ko Stoffelen},
+  note = {\url{https://github.com/mupq/pqm4}}
+}
+
+@misc{alagic2022status,
+  author = {Gorjan Alagic and David Cooper and Quynh Dang and Thinh Dang and John M. Kelsey and Jacob Lichtinger and Yi-Kai Liu and Carl A. Miller and Dustin Moody and Rene Peralta and Ray Perlner and Angela Robinson and Daniel Smith-Tone and Daniel Apon},
+  title = {Status Report on the Third Round of the {NIST} {P}ost-{Q}uantum {C}ryptography Standardization Process},
+  year = {2022},
+  month = {2022-07-05 04:07:00},
+  publisher = {NIST Interagency/Internal Report (NISTIR), National Institute of Standards and Technology, Gaithersburg, MD},
+  url = {https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=934458},
+  doi = {https://doi.org/10.6028/NIST.IR.8413},
+  language = {en},
+}
+
+@article{DBLP:journals/tches/UenoXTITH22,
+  author    = {Rei Ueno and
+               Keita Xagawa and
+               Yutaro Tanaka and
+               Akira Ito and
+               Junko Takahashi and
+               Naofumi Homma},
+  title     = {Curse of Re-encryption: {A} Generic Power/EM Analysis on Post-Quantum
+               KEMs},
+  journal   = {{IACR} Trans. Cryptogr. Hardw. Embed. Syst.},
+  volume    = {2022},
+  number    = {1},
+  pages     = {296--322},
+  year      = {2022},
+  url       = {https://doi.org/10.46586/tches.v2022.i1.296-322},
+  doi       = {10.46586/tches.v2022.i1.296-322},
+  timestamp = {Mon, 27 Dec 2021 17:06:48 +0100},
+  biburl    = {https://dblp.org/rec/journals/tches/UenoXTITH22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}

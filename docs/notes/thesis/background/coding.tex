@@ -1,0 +1,198 @@
+In this section we give the basic concepts and definitions of coding theory (\cite{macwilliams1977theory}), required to formally define
+the problems on which HQC is based.
+
+\subsection{General definitions}
+\begin{definition}[Circulant matrix]
+    Let $\mathbf{v} = (v_0, \cdots, v_{n-1}) \in \mathcal{V}$. The circulant matrix induced by $\mathbf{v}$ is defined as
+    a matrix whose $i$-th row is the vector $\mathbf{v}$ shifted by $i$ positions to the right:
+    \begin{equation*}
+        \mathbf{circ(v)} = \begin{pmatrix}
+            v_0 & v_1 & \cdots & v_{n-1} \\
+            v_{n-1} & v_0 & \cdots & v_{n-2} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            v_1 & v_2 & \cdots & v_0
+            \end{pmatrix} \in \mathds{F}_2^{n\times n}
+    \end{equation*}
+\end{definition}
+The algebra of $n\times n$ circulant matrices over $\mathds{F}_2$ is isomorphic to the algebra of polynomials
+in the ring $\mathcal{R}$:
+\begin{align*}
+    \mathbf{circ(v)} \simeq v_0 + v_1x + v_2x^2 + \cdots + x_{n-1}x^{n-1} 
+\end{align*}
+
+\begin{definition}[Linear $q$-ary Codes]
+    A Linear $q$-ary code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathds{F}_q^n$.\\
+    Due to their vast use in cryptography, we will consider only binary codes ($q=2$).
+\end{definition}
+
+\begin{definition}[Linear Codes]
+    A linear code $\mathcal{C}$ of lenght $n$ and dimension $k$ (denoted as $[n, k]$) is a subspace of $\mathcal{V}$ 
+    of dimension $k$; the elements of $\mathcal{C}$ are called \textit{codewords}.\\
+    Due to the linearity of $\mathcal{V}$, any linear combination of two codewords is also a codeword.
+\end{definition}
+
+\begin{definition}[Generator Matrix]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The matrix $\mathbf{G} \in \mathds{F}_2^{k\times n}$ is called the generator 
+    matrix of $\mathcal{C}$ if
+    \begin{equation*}
+        \mathcal{C} = \{\mathbf{mG}, \text{ for } \mathbf{m}\in \mathds{F}_2^k\}
+    \end{equation*}
+\end{definition}
+
+\begin{definition}[Parity-Check Matrix]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The matrix $\mathbf{H} \in \mathds{F}_2^{(n-k)\times n}$ is called the 
+    parity-check matrix of $\mathcal{C}$ if
+    \begin{equation*}
+        \mathcal{C} = \{\mathbf{v} \in \mathds{F}_2^n \text{ such that } \mathbf{Hv}^\top = 0\}
+    \end{equation*}
+    In other words, $\mathbf{H}$ is the generator matrix of the dual code $\mathcal{C}^\perp$.
+\end{definition}
+
+\begin{definition}[Rank]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The rank of $\mathcal{C}$ is defined as the dimension of the space spanned
+    by its codewords or, in other words, the rank of its parity-check matrix.
+    \begin{equation*}
+        r(\mathcal{C}) = r(\mathbf{H}) = n-k
+    \end{equation*}
+\end{definition}
+A high rank code can correct more errors with fewer parity-check equations, but it usually is harder to construct and decode.
+
+\begin{definition}[Syndrome]
+    Let $\mathcal{C} = [n,k]$ be a code, $\mathbf{H}$ its parity matrix and $\mathbf{v} \in \mathds{F}_2^n$ a word. 
+    The syndrome of $\mathbf{v}$ is defined as
+    \begin{equation*}
+        \mathbf{S}(\mathbf{v}) = \mathbf{Hv}^\top
+    \end{equation*}
+    From this definition,  a vector $\mathbf{v}$ is a codeword if and only if its syndrome is the zero vector.
+\end{definition}
+
+\begin{definition}[Rate]
+    Let $\mathcal{C} = [n,k]$ be a code. The rate of $\mathcal{C}$ is defined as $R = \frac{k}{n}$.
+\end{definition}
+The rate of a code is a measure of its efficiency: with a higher rate we can transmit more information with the same amount
+of bits, at the cost of reduced redundancy (and thus reduced error correcting capability).
+
+\begin{definition}[Minimum distance]
+    Let $\mathcal{C} = [n,k]$ be a code and $\omega$ a norm on $\mathcal{V}$. The minimum distance of $\mathcal{C}$ is defined as
+    \begin{equation*}
+        d = \min_{\mathbf{v}, \mathbf{w} \in \mathcal{C}, \mathbf{v}\neq \mathbf{w}} \omega(\mathbf{v} - \mathbf{w})
+    \end{equation*}
+\end{definition}
+The length, dimension and minimum distance of a linear code $\mathcal{C} = [n,k,d]$ are tied by the Singleton bound~\cite{DBLP:journals/tit/Singleton64}:
+\begin{equation*}
+    d \leqslant n-k+1
+\end{equation*}
+If the equality holds, $\mathcal{C}$ is called a maximum distance separable (MDS) code, and it has desirable properties in terms of error correction.
+
+\begin{definition}[Error Correction Capability]
+A linear code $\mathcal{C} = [n,k,d]$ can decode arbitrary codewords with at most $\delta = \lfloor \frac{d-1}{2}\rfloor$ errors.
+If $\mathcal{C}$ is a MDS code, we can rewrite this as $\delta = \lfloor \frac{n-k}{2} \rfloor$.
+\end{definition}
+
+\begin{definition}[Gilbert-Varshamov bound]
+    Let $\mathcal{C} = [n,k]$ be a linear code. The Gilbert-Varshamov bound~\cite{gilbert1952comparison,varshamov1957estimate} 
+    states that $\mathcal{C}$ can correct at least $t$ errors if its size satisfies
+    \begin{equation}
+        2^k \geqslant \sum_{i=0}^t \binom{n}{i} \label{eq:gv_bound}
+    \end{equation}
+\end{definition}
+
+\subsection{Code families}
+Informally, when we say that a code is \textit{good}, we mean that it satisfies some properties, such as:
+\begin{itemize}
+    \item High minimum distance: the higher the minimum distance, the more errors the code can correct.
+    \item High rate: the higher the rate, the more information we can transmit with the same amount of bits.
+    \item Efficiency: we want the encoder and decoder to be fast and simple to implement.
+\end{itemize}
+In this section we will describe some of the most common code families and the properties they satisfy.
+
+\begin{definition}[Cyclic Codes]
+    Let $\mathbf{c} = (c_0, \cdots, c_{n-1}) \in \mathcal{V}$ be a vector. A linear code $\mathcal{C} = [n, k]$ is Cyclic
+    if, for any $\mathbf{v} \in \mathcal{C}$, the vector obtained by applying a circular shift to $\mathbf{v}$ is also a codeword.
+    codeword. If we think of $\mathbf{v}$ as a polynomial in $\mathcal{R}$, we can say that $\mathcal{C}$ is cyclic if,
+    for any $\mathbf{v} \in \mathcal{C}$, the polynomial $X \cdot \mathbf{v}$ is also a codeword.
+\end{definition}
+
+\begin{definition}[Quasi-Cyclic Codes]
+    Let $\mathbf{c} = (\mathbf{c}_0, \cdots, \mathbf{c}_{s-1}) \in \mathds{F}_2^{sn}$ be a vector, where we consider 
+    each $\mathbf{c}_i$ as a vector in $\mathds{F}_2^n$.
+    A linear code $\mathcal{C} = [sn,k]$ is Quasi-Cyclic of index $s$ if, for any $\mathbf{c} \in \mathcal{C}$, 
+    the vector obtained by applying a circular shift to every block $\mathbf{c}_i$ simultaneously is also a codeword.
+    QC codes are a generalization of cyclic codes.
+\end{definition}
+
+\begin{definition}[Double Circulant Codes]
+    A code $\mathcal{C}$ is double circulant if it is Quasi-Cyclic of even length and index $s=2$.
+\end{definition}
+
+\subsubsection{Random codes}
+    In a linear random code the codewords are chosen at random; specifically, we can build the parity matrix $\mathbf{H}$ of
+    the code by randomly sampling each entry from a Bernoulli distribution.\\
+    For sufficiently large $n$, random linear codes reach the Gilbert-Varshamov bound; moreover, the probability of decoding
+    error decreases exponentially as the minimum distance increases. On the other hand, the computational complexity of a decoder
+    for a random code grows exponentially with the length of the code.
+
+\subsubsection{Repetition codes}
+    Repetition codes are among the simplest codes, as they are just a repetition of the same vector $k$ times.
+    Repetition codes can be easily decoded by majority voting, making the decoding process very fast. However,
+    they have a very low rate and they are not efficient in terms of error correction capability.
+
+\subsubsection{Concatenated codes}
+    Concatenated codes are built by combining an \textit{inner} code $\mathcal{C}_{in} = [n_{in}, k_{in}]$ and an
+    \textit{outer} code $\mathcal{C}_{out} = [n_{out}, k_{out}]$: the idea is to split the input message
+    \begin{itemize}
+        \item Split the input message into chunks: $\mathbf{m} = (m_1, \cdots, m_{k_{out}})$
+        \item Encode each chunk with the outer code: $\mathbf{c} = (\mathcal{C}_{out}(m_1), \cdots, \mathcal{C}_{out}(m_{k_{out}})) = (m_1^\prime, \cdots, m_{n_{out}}^\prime)$
+        \item Encode the resulting codeword with the inner code: $\mathcal{C}_{in}(\mathbf{c}) = (\mathcal{C}_{in}(m_1^\prime), \cdots, \mathcal{C}_{in}(m_{n_{out}}^\prime))$
+    \end{itemize}
+    The resulting code, denoted as $\mathcal{C}_{out} \circ \mathcal{C}_{in}$ thus has length $n_{out} \cdot n_{in}$ and dimension
+    $k_{out} \cdot k_{in}$.
+
+    As shown by Forney in~\cite{forney1965concatenated}, concatenated codes can be used to achieve both a 
+    polynomial-time decoder and exponentially decreasing error probability with increased block length.
+
+\subsubsection{Reed-Muller and Reed-Solomon codes}
+    Reed-Muller codes~\cite{DBLP:journals/tit/Reed54,DBLP:journals/tc/Muller54} are a family of codes; by defining the message lenght as
+    \begin{equation*}
+        k = \sum_{i=0}^r \binom{m}{i}
+    \end{equation*}
+    we denote them as \textsf{RM}$(r, m)$, where $n = 2^m$ is the lenght of the code.
+    Reed-Muller codes are locally testable and locally decodable, meaning that it is possible to
+    detect and correct errors in a codeword by looking at a small subset of its coordinates.
+
+    Reed-Solomon codes~\cite{reed1960polynomial} are a subclass of Reed-Muller codes and they are usually 
+    referred to as \textsf{RS}$(n, k)$, where $n$ and $k$ are the lenght and dimension of the code respectively.
+
+\subsection{Difficult problems for cryptography}
+The problems we are interested in are all variants of the \textit{decoding problem}, which requires to find 
+the closest codeword to a given word with respect to a certain metric; in our case we consider as metric the Hamming
+weight, denoted as \texttt{wt}($\mathbf{v}$), which is the amount of non-zero coordinates of the vector $\mathbf{v}$.
+In the case of linear codes we have shown that the decoding problem stays the same whether one is given 
+the syndrome of the received vector or the vector itself; for this reason, we will only consider 
+the \textit{Syndrome Decoding} (\textsf{SD}) problem.\\
+
+\begin{definition}[\textsf{SD} Distribution]
+    Given $n,k,w \in \mathds{N}$, the distribution $\textsf{SD}(n, k, w)$ randomly samples a parity-check matrix 
+    $\mathbf{H} \xleftarrow{\mathdollar} \mathds{F}_2^{(n-k)\times n}$, a vector 
+    $\mathbf{x} \xleftarrow{\mathdollar} \mathds{F}_2^n$ such that $\texttt{wt}(\mathbf{x}) = w$ 
+    and returns ($\mathbf{H}, \mathbf{S}(\mathbf{x})$).
+\end{definition}
+
+\begin{definition}[\textsf{SD} Problem]
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$ from the $\textsf{SD}(n, k, w)$ 
+    distribution, the \textsf{SD} problem requires to find a vector $\mathbf{x} \in \mathds{F}_2^n$ such that 
+    $\mathbf{S}(\mathbf{x}) = \mathbf{y}^\top$ and $\texttt{wt}(\mathbf{x}) = w$.
+\end{definition}
+This problem has been proven to be NP-complete in~\cite{DBLP:journals/tit/BerlekampMT78}.
+
+\begin{definition}[Decisional \textsf{SD} Problem]
+    Given $(\mathbf{H}, \mathbf{y}^\top) \in \mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$, the \textsf{DSD} problem 
+    requires to determine whether $(\mathbf{H}, \mathbf{y}^\top)$ comes from the \textsf{SD} distribution or from the random
+    distribution over $\mathds{F}_2^{(n-k)\times n} \times \mathds{F}_2^{(n-k)}$.
+\end{definition}
+
+
+ 
+
+
+

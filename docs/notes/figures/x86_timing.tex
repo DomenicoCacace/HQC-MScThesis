@@ -1,0 +1,14 @@
+\pgfplotstableread[col sep=comma]{  % dec
+    Label,               reference (R3), sparsemul (R3), reference (R4), sparsemul (R4), fastmul
+    Encrypt,                148,           604,           157,          667,           1212
+    Decrypt,                219,           370,           185,          396,           757
+    Encaps,                 216,           667,           220,          727,           1278
+    Decaps,                 440,           1041,          407,          1145,          2041
+}\xTimingHQC
+
+\pgfplotstableread[col sep=comma]{  
+    Label,   reference (R3), sparsemul, reference (R4), fastmul
+       0,         39,           246,         34,        530
+}\xMultTiming
+
+

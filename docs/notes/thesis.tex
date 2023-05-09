@@ -1,0 +1,375 @@
+% A LaTeX template for MSc Thesis submissions to 
+% Politecnico di Milano (PoliMi) - School of Industrial and Information Engineering
+%
+% S. Bonetti, A. Gruttadauria, G. Mescolini, A. Zingaro
+% e-mail: template-tesi-ingind@polimi.it
+%
+% Last Revision: October 2021
+%
+% Copyright 2021 Politecnico di Milano, Italy. NC-BY
+
+\documentclass{Configuration_Files/PoliMi3i_thesis}
+
+%------------------------------------------------------------------------------
+%	REQUIRED PACKAGES AND  CONFIGURATIONS
+%------------------------------------------------------------------------------
+
+% CONFIGURATIONS
+\usepackage{parskip} % For paragraph layout
+\usepackage{setspace} % For using single or double spacing
+\usepackage{emptypage} % To insert empty pages
+\usepackage{multicol} % To write in multiple columns (executive summary)
+\usepackage{multirow}
+\setlength\columnsep{15pt} % Column separation in executive summary
+\setlength\parindent{0pt} % Indentation
+\raggedbottom
+
+% PACKAGES FOR TITLES
+\usepackage{titlesec}
+% \titlespacing{\section}{left spacing}{before spacing}{after spacing}
+\titlespacing{\section}{0pt}{3.3ex}{2ex}
+\titlespacing{\subsection}{0pt}{3.3ex}{1.65ex}
+\titlespacing{\subsubsection}{0pt}{3.3ex}{1ex}
+\usepackage{color}
+
+% PACKAGES FOR LANGUAGE AND FONT
+\usepackage[english]{babel} % The document is in English  
+\usepackage[utf8]{inputenc} % UTF8 encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage[11pt]{moresize} % Big fonts
+
+% PACKAGES FOR IMAGES
+\usepackage{graphicx}
+\usepackage{transparent} % Enables transparent images
+\usepackage{eso-pic} % For the background picture on the title page
+\usepackage{subfig} % Numbered and caption subfigures using \subfloat.
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.16}
+\usepackage{forest}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns}
+
+\usepackage[endianness=big]{bytefield}
+\usepackage{soul}
+\usepackage{stmaryrd}
+\pgfplotsset{every axis/.append style={
+                    label style={font=\normalsize},
+                    tick label style={font=\normalsize}
+                    }}
+                    
+\graphicspath{{./Configuration_Files/Images/}} % Directory of the images
+\usepackage{caption} % Coloured captions
+\usepackage{subcaption}
+\usepackage{xcolor} % Coloured captions
+\usepackage{amsthm,thmtools,xcolor} % Coloured "Theorem"
+\usepackage{float}
+
+% STANDARD MATH PACKAGES
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+%\usepackage[overload]{empheq} % For braced-style systems of equations.
+%\usepackage{fix-cm} % To override original LaTeX restrictions on sizes
+\usepackage{dsfont} % For double-struck letters
+
+% PACKAGES FOR TABLES
+\usepackage{tabularx}
+\usepackage{longtable} % Tables that can span several pages
+\usepackage{colortbl}
+
+% PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
+\usepackage{algorithm}
+\usepackage[linesnumbered,ruled,noend,algo2e]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{listings}
+
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codeblue}{rgb}{0,0,0.8}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{bluepoli},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% PACKAGES FOR REFERENCES & BIBLIOGRAPHY
+\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
+\usepackage{cleveref}
+\usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
+\bibliographystyle{alpha} % You may use a different style adapted to your field
+
+% OTHER PACKAGES
+\usepackage{booktabs}
+\usepackage{pdfpages} % To include a pdf file
+\usepackage{afterpage}
+\usepackage{fancyhdr} % For the headers
+\fancyhf{}
+
+% Input of configuration file. Do not change config.tex file unless you really know what you are doing. 
+\input{Configuration_Files/config}
+
+%----------------------------------------------------------------------------
+%	NEW COMMANDS DEFINED
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+%	ADD YOUR PACKAGES (be careful of package interaction)
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+%	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
+%----------------------------------------------------------------------------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\usepackage[most]{tcolorbox}
+\newcounter{example}
+%\usepackage{xparse}
+
+\newcommand{\kpub}{\ensuremath{\mathcal{K}_{pub}}}
+\newcommand{\kpri}{\ensuremath{\mathcal{K}_{pri}}}
+\newcommand{\sample}{\ensuremath{ \stackrel{\$}{\gets} }}
+%\newcommand{\samplewt}[1]{\ensuremath{\stackrel{$}{\leftarrow}_{#1}}}
+\newcommand{\ssplit}[1]{\ensuremath{ \llbracket #1 \rrbracket }}
+\newcommand{\clshift}{\ensuremath{\lll_n}}
+
+\NewDocumentEnvironment{example}{ O{} }
+{
+\colorlet{colexam}{bluepoli} % Global example color
+\newtcolorbox[use counter=example]{examplebox}{%
+    % Example Frame Start
+    empty,% Empty previously set parameters    
+    title={Example: #1},% use \thetcbcounter to access the example counter text
+    % Attaching a box requires an overlay
+    attach boxed title to top left,
+       % Ensures proper line breaking in longer titles
+       minipage boxed title,
+    % (boxed title style requires an overlay)
+    boxed title style={empty,size=minimal,toprule=0pt,top=4pt,left=3mm,overlay={}},
+    coltitle=colexam,fonttitle=\bfseries,
+    before=\par\medskip\noindent,parbox=false,boxsep=0pt,left=3mm,right=0mm,top=2pt,breakable,pad at break=0mm,
+       before upper=\csname @totalleftmargin\endcsname0pt, % Use instead of parbox=true. This ensures parskip is inherited by box.
+    % Handles box when it exists on one page only
+    overlay unbroken={\draw[colexam,line width=1.5pt] ([xshift=-0pt]title.north west) -- ([xshift=-0pt]frame.south west); },
+    % Handles multipage box: first page
+    overlay first={\draw[colexam,line width=1.5pt] ([xshift=-0pt]title.north west) -- ([xshift=-0pt]frame.south west); },
+    % Handles multipage box: middle page
+    overlay middle={\draw[colexam,line width=1.5pt] ([xshift=-0pt]frame.north west) -- ([xshift=-0pt]frame.south west); },
+    % Handles multipage box: last page
+    overlay last={\draw[colexam,line width=1.5pt] ([xshift=-0pt]frame.north west) -- ([xshift=-0pt]frame.south west); },%
+    }
+\begin{examplebox}}
+{\end{examplebox}\endlist}
+
+\input{figures/plotting.tex}
+
+%----------------------------------------------------------------------------
+%	BEGIN OF YOUR DOCUMENT
+%----------------------------------------------------------------------------
+
+\begin{document}
+
+\fancypagestyle{plain}{%
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[RO,RE]{\thepage} %RO=right odd, RE=right even
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+%----------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------
+
+\pagestyle{empty} % No page numbers
+\frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
+
+\puttitle{
+        title=Towards fast and side-channel\\ resistant implementations of\\ Hamming Quasi-Cyclic: a case study on ARM Cortex-M4 devices, % Title of the thesis
+        name=Domenico Cacace, % Author Name and Surname
+        course=Ingegneria Informatica\\Computer Science and Engineering, % Study Programme (in Italian)
+        ID  = 977835,  % Student ID number (codice persona)
+        advisor= Prof. Alessandro Barenghi, % Supervisor name
+        coadvisor={Prof. Gerardo Pelosi}, % Co-Supervisor name, remove this line if there is none
+        academicyear={2022-23},  % Academic Year
+} % These info will be put into your Title page
+
+%----------------------------------------------------------------------------
+%	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
+%----------------------------------------------------------------------------
+\startpreamble
+\setcounter{page}{1} % Set page counter to 1
+
+% ABSTRACT IN ENGLISH
+\chapter*{Abstract} 
+Cryptography plays a fundamental role in the security of modern information systems, as it guarantees
+confidentiality, integrity and authenticity of data. Current cryptosystems can achieve these goals, but
+the advent of quantum computers undermines their security.
+To prepare for the \emph{quantum apocalypse}, in 2016 the U.S. National Institute of Standards and Technologies
+started a competition to evaluate and standardize one or more post-quantum secure schemes; other than security strenght, candidates are also
+judged on their efficiency and security against side-channel attacks, which are especially
+relevant in the context of embedded devices.\\
+In this thesis we present the first constant-time imlementation of HQC tailored for Cortex-M4, showing
+its efficiency and constant-time behavior; furthermore, we implement an efficient masking scheme
+that protects the public key encryption scheme against power side-channel attacks, showing its
+potential efficacy in practice. Finally, we compare the performance of our implementations with other
+standardization candidates, highlighting the efficiency and shortcomings of our approach.
+
+\textbf{Keywords:} post-quantum cryptography, code-based cryptosystems, constant-time implementation, masking, HQC
+
+% ABSTRACT IN ITALIAN
+\chapter*{Sommario}
+La crittografia gioca un ruolo fondamentale nella sicurezza dei moderni sistemi informativi, garantendo
+confidenzialità, integrità e autenticità dei dati. Le primitive crittografiche attuali possono
+garantire queste proprietà, ma l'avvento dei computer quantistici mina la loro sicurezza.
+In vista dell'\emph{apocalisse quantistica}, nel 2016 l'istituto per la standardizzazione e la tecnologia degli 
+Stati Uniti ha avviato una competizione per valutare e standardizzare una o più primitive crittografiche
+resistenti ai computer quantistici; oltre alla sicurezza formale, i candidati sono giudicati anche in base
+alla loro efficienza e alla loro resistenza agli attacchi di tipo side-channel, che sono particolarmente
+rilevanti nel caso di dispositivi embedded.\\
+In questa tesi presentiamo la prima implementazione a tempo costante di HQC ottimizzata per processori 
+Cortex-M4, mostrandone l'efficienza e l'esecuzione in tempo costante; inoltre, implementiamo uno schema di masking
+efficiente in grado di proteggere lo schema di crittografia a chiave pubblica contro attacchi side-channel
+basati sul consumo energetico, mostrandone empiricamente la potenziale efficacia. Infine, confrontiamo le prestazioni delle 
+nostre implementazioni con altri candidati per la standardizzazione, evidenziandone l'efficienza e le limitazioni.
+
+\textbf{Parole chiave:} crittografia post-quantistica, crittosistemi basati su codici, implementazioni a tempo costante, masking, HQC % Keywords (italian)
+
+%----------------------------------------------------------------------------
+%	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
+%----------------------------------------------------------------------------
+
+% TABLE OF CONTENTS
+\thispagestyle{empty}
+\tableofcontents % Table of contents 
+\thispagestyle{empty}
+\cleardoublepage
+
+%-------------------------------------------------------------------------
+%	THESIS MAIN TEXT
+%-------------------------------------------------------------------------
+% In the main text of your thesis you can write the chapters in two different ways:
+%
+%(1) As presented in this template you can write:
+%    \chapter{Title of the chapter}
+%    *body of the chapter*
+%
+%(2) You can write your chapter in a separated .tex file and then include it in the main file with the following command:
+%    \chapter{Title of the chapter}
+%    \input{chapter_file.tex}
+%
+% Especially for long thesis, we recommend you the second option.
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+\mainmatter % Begin numeric (1,2,3...) page numbering
+
+% --------------------------------------------------------------------------
+% NUMBERED CHAPTERS % Regular chapters following
+% --------------------------------------------------------------------------
+\chapter{Introduction}\label{chap:intro}
+\input{thesis/intro/intro.tex}
+
+\chapter{Background}\label{chap:background}
+\input{thesis/background/background.tex}
+
+\chapter{Implementation}\label{chap:implementation}
+\input{thesis/impl/impl.tex}
+
+\chapter{Empirical Evaluations}\label{chap:empirical}
+\input{thesis/empirical/empirical.tex}
+
+\chapter{Conclusions}\label{chap:conclusions}
+\input{thesis/conclusions/conclusions.tex}
+
+%-------------------------------------------------------------------------
+%	BIBLIOGRAPHY\
+%-------------------------------------------------------------------------
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+\bibliography{refs.bib} % The references information are stored in the file named "Thesis_bibliography.bib"
+
+%-------------------------------------------------------------------------
+%	APPENDICES
+%-------------------------------------------------------------------------
+
+\cleardoublepage
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+\appendix
+\input{thesis/appendix.tex}
+
+
+% LIST OF FIGURES
+\listoffigures
+
+% LIST OF TABLES
+\listoftables
+
+% LIST OF ALGORITHMS
+\listofalgorithms
+\lstlistoflistings
+
+% LIST OF SYMBOLS
+\chapter*{List of Symbols} % You have to include a chapter for your list of symbols (
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ll}
+        \textbf{Symbol} & \textbf{Description}\\\hline\\[-9px]
+        $\mathds{Z}$ & Ring of integer numbers \\[2px]
+        $\mathds{F}_2$ & Galois field of order 2, GF(2) \\[2px]
+        $\mathds{F}_{2^n}$ & Galois field of order $2^n$, GF($2^n$) \\[2px]
+        $\mathcal{V}$ & Vector space of dimension $n$ over GF(2) \\[2px]
+        $\mathcal{R}$ & Ring of binary polynomials of degree less than $n$ \\[2px] 
+        $\mathcal{R}_{<n}$ & Ring of binary polynomials of degree less than $n$ \\[2px]
+        $\mathcal{R}_{\omega}$ & Polynomials in $\mathcal{R}$ with exactly $\omega$ non-null coefficients \\[2px]
+        $\texttt{wt}(\cdot)$ & Hamming weight of a binary string \\[2px]
+        $\clshift$ & Circular shift to the left of $n$ positions \\[2px]
+        $\ssplit{a} = (a_0,\ldots,a_{d-1})$ & Additive share splitting of $a$ in $d$ shares over $\mathcal{R}$ \\[2px]
+        $\sample$ & Uniform sampling from the right hand side of the equation \\[2px]
+        $(a+\sum_{i=0}^{d-2} \mathtt{rnd}_i)$ & Masking of $a$ with $d-1$ masks sampled from the same field of $a$ \\[2px]
+        $\textsc{Collapse}(a, \ssplit{b})$ & Sum all shares of $b$, in order, to $a$ 
+    \end{tabular}
+\end{table}
+
+% ACKNOWLEDGEMENTS
+\chapter*{Ringraziamenti}
+Vorrei innanzitutto ringraziare il professor Barenghi ed il professor Pelosi per la pazienza, il supporto
+e la guida, che mi hanno permesso di sviluppare questo progetto ed apprendere tante cose interessanti.
+
+Un ringraziamento più che dovuto va ai miei genitori e alla mia famiglia, che mi hanno sempre
+sostenuto e incoraggiato a seguire la mia passione, nonostante tutti i sacrifici.
+Un ringraziamento speciale va a Scibubi, che ha sempre la pazienza di supportarmi e 
+ascoltarmi, anche quando parlo e (non) mi capisco da solo.
+
+Desidero poi ringraziare i miei coinqilini sia passati che presenti: senza di loro questi cinque
+anni sarebbero stati meno caotici, ma senza ombra di dubbio non sarebbero stati così divertenti.
+
+Infine, un ringraziamento va a tutti i miei amici e colleghi, che mi hanno accompagnato in questo 
+viaggio e, tra alti e bassi, mi hanno sempre incoraggiato a continuare.
+
+\cleardoublepage
+
+\end{document}

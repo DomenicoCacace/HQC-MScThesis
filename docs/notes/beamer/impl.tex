@@ -1,0 +1,241 @@
+\subsection{Polynomial multiplication}
+
+\begin{frame}{Parameters}
+    Our target: \texttt{hqc-128} on ARM Cortex-M4
+    \uncover<2->{
+    \begin{block}{Multiplication parameters}
+        \begin{itemize}
+            \item Maximum polynomial degree: $n = 17669$
+            \item Hamming weight of sparse polynomials: $\omega = 75$
+        \end{itemize}
+    \end{block}
+    }
+    \uncover<3->{
+    \begin{columns}
+    \begin{column}{0.45\textwidth}
+    \begin{block}{Target board}
+        STM32L476RG
+        \begin{itemize}
+            \item 32-bit CPU
+            \item 80 MHz
+            \item 128 KB RAM
+            \item 1 MB Flash
+        \end{itemize}   
+    \end{block}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+        \begin{figure}
+            \visible<3->{\includegraphics[scale=0.15]{beamer/images/board.jpg}}
+        \end{figure}
+    \end{column}
+    \end{columns}
+    }
+\end{frame}
+
+\begin{frame}{Polynomial representation}
+    We consider the ring of binary polynomials $\mathcal{R} = \mathds{F}_2[x] / \langle x^n+1 \rangle$
+    \begin{block}{}
+        We have two ways of representing binary polynomials:
+        \begin{itemize}
+            \uncover<2->{\item sparse: a vector of indexes, every index is a non-null coefficient}
+            \uncover<3->{\item dense: a vector of coefficients, every entry is a coefficient}
+        \end{itemize}
+    \end{block}
+    \uncover<4->{
+    \begin{block}{Example}
+        The polynomial $f(x) = x^{15}+x^{13}+x^8+x^6+x+1$ can be represented as:
+        \begin{itemize}
+            \uncover<5->{\item sparse: $[15,13,8,6,1,0]$}
+            \uncover<6->{\item dense: $[1,0,0,0,0,0,1,0,1,0,0,0,1,0,1,1]$}
+        \end{itemize}
+    \end{block}
+    }
+    \uncover<7->{
+    \begin{block}{Memory usage - 32 bit architectures}
+        \begin{itemize}
+            \item sparse: one integer per coefficient (\emph{i.e.} 4 bytes per coefficient)
+            \item dense: one bit per coefficient (\emph{i.e.}  0.25 bytes per coefficient)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Shift\&Add}
+    \begin{block}{}
+        Multiplying a dense polynomial by $x^i$ is equivalent to a circular shift ($\clshift$) of $i$ positions to the left:
+        \begin{itemize}
+            \uncover<2->{
+            \item $a(x)$ in dense representation
+            \item $b(x) = [b_0, \cdots, b_{\omega-1}]$ in sparse representation
+            }
+            \uncover<3->{\item Calculate $c_i(x) \gets a(x) \clshift b_i$}
+            \uncover<4->{\item Sum the partial results $c(x) = \sum_{i=0}^{\omega-1} c_i(x)$}
+        \end{itemize}
+    \end{block}
+    \uncover<5->{
+    \begin{block}{Pros and cons}
+        \begin{itemize}
+            \item Extremely fast for $\omega \ll n$
+            \item Non constant-time execution
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Constant time S\&A}
+    Calculate all the shifts, but only sum the ones that are needed:
+    \uncover<2->{
+    \begin{block}{Monomial-Polynomial multiplication}
+        Let $a(x)$ be a dense polynomial and $x^b$ a monomial, with $b = (\beta_{m-1}\beta_{m-2}\cdots\beta_0)_{\texttt{bin}}$.
+        For each bit $i \in \{0, \cdots, m-1\}$, we have:
+        \begin{itemize}
+            \uncover<3->{\item $tmp(x) \gets a(x) \clshift 2^i$}
+            \uncover<4->{\item if $\beta_i = 1$ then \texttt{mask} = $[111\cdots11]_n$, otherwise \texttt{mask} = $[000\cdots00]_n$}
+            \uncover<5->{\item $c(x) \gets c(x) + ((tmp(x) \wedge \texttt{mask}))$}
+            \uncover<6->{
+            \begin{itemize}
+                \item $\beta_i = 1$: $c(x) \gets c(x) + tmp(x)$
+                \item $\beta_i = 0$: $c(x) \gets c(x) + [000\cdots00]_n$ 
+            \end{itemize}
+            }
+        \end{itemize}        
+    \end{block}
+    }
+    \uncover<7->{
+    \begin{block}{Pros and cons}
+        \begin{itemize}
+            \item Constant-time execution
+            \item Slower than plain S\&A
+        \end{itemize} 
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Frobenius Additive FFT}
+    Based on the BIKE optimized implementation on ARM Cortex-M4~\cite{DBLP:journals/tches/ChenCK21}\\
+    \begin{block}{}
+        Let $a(x)$ and $b(x)$ be two dense polynomials of degree $n$ a power of 2
+        \begin{itemize}
+           \item Basis conversion (from monomial to novelpoly)
+           \item Evaluation with the FFT
+           \begin{itemize}
+                \item Encode (truncated FFT)
+                \item Butterflies
+           \end{itemize}
+           \item Pointwise multiplication
+           \item Inverse FFT
+           \item Basis conversion (from novelpoly to monomial)
+        \end{itemize}
+        Inverse operations follow the same principles of the forward ones.
+    \end{block}
+    Operands have fixed sizes $\rightarrow$ unroll and optimize recursive calls
+\end{frame}
+
+\subsection{Masking}
+
+\begin{frame}{Masking HQC}
+    \begin{block}{}
+    HQC operations are linear $\rightarrow$ boolean masking of the entire scheme
+    \uncover<2->{
+    \begin{equation*}
+        a \mapsto \ssplit{a} = (a_1, \cdots, a_{d}) \text{ such that } \bigoplus_{i=1}^d a_i = a
+    \end{equation*}
+    }
+    \end{block}
+    \uncover<3->{
+    \begin{block}{Our implementation}
+        More shares $\rightarrow$ slower performance, higher security\\
+        We chose $d = 2$ shares:
+        \begin{equation*}
+            \ssplit{a} = (a \oplus x, x)
+        \end{equation*}
+        \begin{itemize}
+            \item $a$ is the secret value
+            \item $x$ is a random value (from the TRNG)
+        \end{itemize}
+    \end{block}
+    }
+\end{frame}
+
+\begin{frame}{Keygen}
+    Mask $x$ and $y$, perform the same operations of the unmasked version
+    \begin{algorithm2e}[H]
+        \SetKwFunction{keygen}{\textsc{Keygen}}
+        \SetKwFunction{coll}{\textsc{Collapse}}
+    
+        \SetKwProg{Fn}{Function}{}{}
+    
+        \Fn{\keygen{}}{
+            $h \sample \mathcal{R}$\;
+            $(x, y) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
+            $\ssplit{y} \gets (y+\sum \texttt{rnd}_i)$\;
+            $\ssplit{s} \gets {h}\ssplit{y}$\;
+            $\ssplit{s} \gets {x} + \ssplit{s}$\;
+            $\kpri \gets (x, y)$\;
+            $\kpub \gets (\coll{\ssplit{{h}}}, s)$\;
+            \KwRet{($\kpri, \kpub$)}
+        }
+    \end{algorithm2e}
+\end{frame}
+
+\begin{frame}{Encryption}
+    Mask $e$, $r_1$ and $r_2$, perform the same operations of the unmasked version
+    \begin{algorithm2e}[H]
+
+        \SetKwFunction{enc}{\textsc{Encrypt}}
+        \SetKwFunction{coll}{\textsc{Collapse}}
+    
+        \SetKwProg{Fn}{Function}{}{}
+        \Fn{\enc{$\kpub, {m}$}}{
+            $e \sample \mathcal{R}_{\omega_e}$\;
+            $(r_1,r_2) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
+            $\ssplit{r_1} \gets (r_1+\sum \mathtt{rnd}_i)$\;
+            $\ssplit{r_2} \gets (r_2+\sum \mathtt{rnd}_i)$\;
+            $\ssplit{u} \gets \ssplit{r_1} + h\ssplit{r_2}$\;
+            $\ssplit{m} \gets (m+\sum \mathtt{rnd}_i) $\;
+            $\ssplit{v} \gets \ssplit{m}\mathbf{G} + s \ssplit{r_2} + e $\;
+            \KwRet{$(\coll{\ssplit{u}}, \coll{\ssplit{v}})$}
+        }
+    \end{algorithm2e}
+\end{frame}
+
+\begin{frame}{Decryption}
+    \begin{columns}
+        \begin{column}{0.55\textwidth}
+            \begin{algorithm2e}[H]
+                \SetKwFunction{dec}{\textsc{Decrypt}}
+                \SetKwFunction{coll}{\textsc{Collapse}}
+            
+                \SetKwProg{Fn}{Function}{}{}
+        
+                \Fn{\dec{$\kpri, {c}$}}{
+                    $\ssplit{y} \gets (y+\sum \mathtt{rnd}_i)$\;
+                    $\ssplit{uy} \gets u \ssplit{y}$\;
+                    $\ssplit{\bar{m}} \sample (\{0,1\}^k)^d$\;
+                    $\ssplit{\bar{c}} \gets \ssplit{\bar{m}}\mathbf{G}$\; 
+                    $a \gets \coll{(v ,\ssplit{\bar{c}})}$\;
+                    $m \gets \text{\sc Decode}(\coll{a,\ssplit{uy}})$\;
+                    \KwRet $\coll{m ,\ssplit{\bar{m}}}$\;
+                }
+            \end{algorithm2e}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \begin{block}{}
+                Generate a random message $\ssplit{\bar{m}}$\\
+                Encode it $\ssplit{\bar{c}} = \ssplit{\bar{m}}\mathbf{G}$\\
+                Add the first half of the ciphertext\\
+                Collapse it together with the second half of the ciphertext\\
+                Decode the result\\
+                Remove the random message
+            \end{block}
+        \end{column}
+    \end{columns}
+    \uncover<2->{
+    \begin{block}{Linearity of the RMRS code}
+        \begin{equation*}
+            \textsc{Encode}(m_1 + m_2) = \textsc{Encode}(m_1) + \textsc{Encode}(m_2)
+        \end{equation*}
+    \end{block}
+    }
+    
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{figure}[H]
+    \caption{Butterfly unit}
+    \begin{center}
+        \begin{tikzpicture}
+            \node (p0) at (0,3) {$p_0(X)$};
+            \node (p1) at (0,0) {$p_1(X)$};
+            \node (h0) at (10,3) {$h_0(X)$};
+            \node (h1) at (10,0) {$h_1(X)$};
+            \node (mul) at (3, 0) {$\bullet$};
+            \node (add1) at (5, 3) {$\oplus$};
+            \node (add2) at (7, 0) {$\oplus$};
+            \node (sk) at (3.3, 1.5) {$s_k(\alpha)$};
+            % arrow from p3 to p4
+            \draw[->] (p0) to (add1);
+            \draw[->] (p1) to (mul);
+            \draw[->] (mul) to (add1);
+            \draw[->] (mul) to (add2);
+            \draw[->] (add1) to (add2);
+            \draw[->] (add1) to (h0);
+            \draw[->] (add2) to (h1);
+        \end{tikzpicture}
+    \end{center}
+    \label{fig:butterfly} 
+\end{figure}
