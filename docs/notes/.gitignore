@@ -10,10 +10,12 @@
 *.lof
 *.lol
 *.lot
+*.nav
 *.out
 *.pdfsync
 *.rel
 *.run.xml
+*.snm
 *.synctex.gz
 *.toc
 
