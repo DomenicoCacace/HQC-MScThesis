@@ -1,0 +1,8 @@
+commit,branch,seclvl,algorithm,mean,var,notes
+e3966fa,fastmul,128,pke,2.295989,
+e3966fa,fastmul,128,kem,1.229808,
+e3966fa,fastmul,128,mul,-1.231860,
+e3966fa,fastmul,128,enc,-3.363371,
+e3966fa,fastmul,128,dec,1.705602,
+e3966fa,fastmul,128,encaps,4.310991,
+e3966fa,fastmul,128,decaps,2.411122,

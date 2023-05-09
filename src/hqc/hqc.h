@@ -6,10 +6,12 @@
  * @brief Functions of the HQC_PKE IND_CPA scheme
  */
 
-#include <stdint.h>
+#include "parameters.h"
 
-void hqc_pke_keygen(unsigned char* pk, unsigned char* sk);
-void hqc_pke_encrypt(uint64_t *u, uint64_t *v, uint64_t *m, unsigned char *theta, const unsigned char *pk);
-void hqc_pke_decrypt(uint64_t *m, const uint64_t *u, const uint64_t *v, const unsigned char *sk);
+void hqc_pke_keygen(unsigned char *pk, unsigned char *sk);
+
+void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk);
+
+void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk);
 
 #endif

@@ -1,4 +1,3 @@
-
 /**
  * @file shake_prng.c
  * @brief Implementation of SHAKE-256 based PRNG and seedexpander
@@ -29,7 +28,6 @@ void shake_prng_init(uint8_t *entropy_input, uint8_t *personalization_string, ui
 }
 
 
-
 /**
  * @brief A SHAKE-256 based PRNG
  *
@@ -41,7 +39,6 @@ void shake_prng_init(uint8_t *entropy_input, uint8_t *personalization_string, ui
 void shake_prng(uint8_t *output, uint32_t outlen) {
     shake256_inc_squeeze(output, outlen, &shake_prng_state);
 }
-
 
 
 /**
@@ -62,7 +59,6 @@ void seedexpander_init(seedexpander_state *state, const uint8_t *seed, uint32_t 
 }
 
 
-
 /**
  * @brief A SHAKE-256 based seedexpander
  *
@@ -79,10 +75,10 @@ void seedexpander(seedexpander_state *state, uint8_t *output, uint32_t outlen) {
     uint8_t tmp[sizeof(uint64_t)];
     shake256_inc_squeeze(output, outlen - remainder, state);
     if (remainder != 0) {
-      shake256_inc_squeeze(tmp, bsize, state);
-      output += outlen - remainder;
-      for (uint8_t i = 0; i < remainder; i++){
-        output[i] = tmp[i];
-      }
+        shake256_inc_squeeze(tmp, bsize, state);
+        output += outlen - remainder;
+        for (uint8_t i = 0; i < remainder; i++) {
+            output[i] = tmp[i];
+        }
     }
 }

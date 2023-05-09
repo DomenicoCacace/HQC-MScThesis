@@ -5,6 +5,12 @@
 *.code-workspace
 
 # Build folders
+__pycache__/
+cmake-build-debug/
 .pio/
 build/
-cmake-build-debug/
+cmake-build*/
+__pycache__/
+
+# Docs
+docs/notes

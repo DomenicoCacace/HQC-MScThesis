@@ -5,12 +5,24 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
 
-#include "../lib/shake_prng.h"
+#include "architecture_detect.h"
 #include "parameters.h"
 #include "vector.h"
 
+
+/**
+ * @brief Constant-time comparison of two integers v1 and v2
+ *
+ * Returns 1 if v1 is equal to v2 and 0 otherwise
+ * https://gist.github.cppom/sneves/10845247
+ *
+ * @param[in] v1 
+ * @param[in] v2 
+ */
+static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
+    return 1 ^ (((v1 - v2)|(v2 - v1)) >> 31);
+}
 
 /**
  * @brief Generates a vector of a given Hamming weight
@@ -30,38 +42,25 @@
  * @param[in] ctx Pointer to the context of the seed expander
  */
 void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32_t *v, uint16_t weight) {
-    size_t random_bytes_size = 3 * weight;
-    uint8_t rand_bytes[3 * PARAM_OMEGA_R] = {0}; // weight is expected to be <= PARAM_OMEGA_R
-    uint8_t inc;
-    size_t i, j;
+    uint32_t rand_u32[PARAM_OMEGA_R] = {0};
 
-    i = 0;
-    j = random_bytes_size;
-    while (i < weight) {
-        do {
-            if (j == random_bytes_size) {
-                seedexpander(ctx, rand_bytes, random_bytes_size);
-                j = 0;
-            }
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * PARAM_OMEGA_R);
 
-            v[i]  = ((uint32_t) rand_bytes[j++]) << 16;
-            v[i] |= ((uint32_t) rand_bytes[j++]) << 8;
-            v[i] |= rand_bytes[j++];
+    for (size_t i = 0; i < weight; ++i) {
+        v[i] = i + rand_u32[i] % (PARAM_N - i);
+    }
 
-        } while (v[i] >= UTILS_REJECTION_THRESHOLD);
+    for (int32_t i = (weight - 1); i -- > 0;) {
+        uint32_t found = 0;
 
-        v[i] = v[i] % PARAM_N;
-
-        inc = 1;
-        for (size_t k = 0; k < i; k++) {
-            if (v[k] == v[i]) {
-                inc = 0;
-            }
+        for (size_t j = i + 1; j < weight; ++j) {
+            found |= compare_u32(v[j], v[i]);
         }
-        i += inc;
+
+        uint32_t mask = -found;
+        v[i] = (mask & i) ^ (~mask & v[i]);
     }
 }
-
 
 
 /**
@@ -80,19 +79,47 @@ void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32
  * @param[in] weight Integer that is the Hamming weight
  * @param[in] ctx Pointer to the context of the seed expander
  */
-void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t weight) {
-    uint32_t tmp[PARAM_OMEGA_R] = {0};
+void vect_set_random_fixed_weight(seedexpander_state *ctx, DIGIT *v, uint16_t weight) {
+    uint32_t rand_u32[PARAM_OMEGA_R] = {0};
+    uint32_t support[PARAM_OMEGA_R] = {0};
+    uint32_t index_tab [PARAM_OMEGA_R] = {0};
+    DIGIT bit_tab [PARAM_OMEGA_R] = {0};
 
-    vect_set_random_fixed_weight_by_coordinates(ctx, tmp, weight);
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * weight);
 
     for (size_t i = 0; i < weight; ++i) {
-        int32_t index = tmp[i] / 64;
-        int32_t pos = tmp[i] % 64;
-        v[index] |= ((uint64_t) 1) << pos;
+        support[i] = i + rand_u32[i] % (PARAM_N - i);
+    }
+
+    for (int32_t i = (weight - 1); i -- > 0;) {
+        uint32_t found = 0;
+
+        for (size_t j = i + 1; j < weight; ++j) {
+            found |= compare_u32(support[j], support[i]);
+        }
+
+        uint32_t mask = -found;
+        support[i] = (mask & i) ^ (~mask & support[i]);
+    }
+
+    for (size_t i = 0; i < weight; i++) {
+        index_tab[i] = support[i] >> DIGIT_SIZE_LOG2;
+        int32_t pos = support[i] & (DIGIT_SIZE_b-1);
+        bit_tab[i]  = ((DIGIT) 1) << pos;
+    }
+
+    DIGIT val = 0;
+    for (uint32_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        val = 0;
+        for (uint32_t j = 0 ; j < weight ; j++) {
+            uint32_t tmp = i - index_tab[j];
+            int val1 = 1 ^ ((tmp | -tmp) >> 31);
+            DIGIT mask = -val1;
+            val |= (bit_tab[j] & mask);
+        }
+        v[i] |= val;
     }
 }
-
-
 
 /**
  * @brief Generates a random vector of dimension <b>PARAM_N</b>
@@ -103,15 +130,14 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, uint64_t *v, uint16_t
  * @param[in] v Pointer to an array
  * @param[in] ctx Pointer to the context of the seed expander
  */
-void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
+void vect_set_random(seedexpander_state *ctx, DIGIT *v) {
     uint8_t rand_bytes[VEC_N_SIZE_BYTES] = {0};
 
     seedexpander(ctx, rand_bytes, VEC_N_SIZE_BYTES);
 
     memcpy(v, rand_bytes, VEC_N_SIZE_BYTES);
-    v[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, 64);
+    v[VEC_N_SIZE_DIGIT - 1] &= RED_MASK;
 }
-
 
 
 /**
@@ -121,17 +147,23 @@ void vect_set_random(seedexpander_state *ctx, uint64_t *v) {
  *
  * @param[in] v Pointer to an array
  */
-void vect_set_random_from_prng(uint64_t *v) {
-    uint8_t rand_bytes [VEC_K_SIZE_BYTES] = {0};
+void vect_set_random_from_prng(DIGIT *v) {
+    uint8_t rand_bytes[VEC_K_SIZE_BYTES] = {0};
 
-    shake_prng(rand_bytes, VEC_K_SIZE_BYTES);
+    randombytes(rand_bytes, VEC_K_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_K_SIZE_BYTES);
 }
-void vect_generate_random_for_mult(uint64_t *v) {
+
+/**
+ * @brief Generates a random vector representing a polynomial
+ * of degree at most <b>PARAM_N</b>
+*/
+void vect_generate_random_for_mult(DIGIT *v) {
     uint8_t rand_bytes [VEC_N_SIZE_BYTES] = {0};
 
-    shake_prng(rand_bytes, VEC_N_SIZE_BYTES);
+    randombytes(rand_bytes, VEC_N_SIZE_BYTES);
     memcpy(v, rand_bytes, VEC_N_SIZE_BYTES);
+    v[VEC_N_SIZE_DIGIT-1] &= RED_MASK;
 }
 
 /**
@@ -142,8 +174,8 @@ void vect_generate_random_for_mult(uint64_t *v) {
  * @param[in] v2 Pointer to an array that is the second vector
  * @param[in] size Integer that is the size of the vectors
  */
-void vect_add(uint64_t *o, const uint64_t *v1, const uint64_t *v2, uint32_t size) {
-    for (uint32_t i = 0 ; i < size ; ++i) {
+void vect_add(DIGIT *o, const DIGIT *v1, const DIGIT *v2, uint32_t size) {
+    for (uint32_t i = 0; i < size; ++i) {
         o[i] = v1[i] ^ v2[i];
     }
 }
@@ -158,16 +190,15 @@ void vect_add(uint64_t *o, const uint64_t *v1, const uint64_t *v2, uint32_t size
  * @returns 0 if the vectors are equals and a negative/psotive value otherwise
  */
 uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size) {
-    uint64_t r = 0;
+    DIGIT r = 0;
 
     for (size_t i = 0; i < size; i++) {
         r |= v1[i] ^ v2[i];
     }
 
-    r = (~r + 1) >> 63;
+    r = (~r + 1) >> (DIGIT_SIZE_b-1);
     return (uint8_t) r;
 }
-
 
 
 /**
@@ -178,25 +209,23 @@ uint8_t vect_compare(const uint8_t *v1, const uint8_t *v2, uint32_t size) {
  * @param[in] v Pointer to the input vector
  * @param[in] size_v Integer that is the size of the input vector in bits
  */
-void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_v) {
-    uint64_t mask = 0x7FFFFFFFFFFFFFFF;
+void vect_resize(DIGIT *o, uint32_t size_o, const DIGIT *v, uint32_t size_v) {
     int8_t val = 0;
     if (size_o < size_v) {
 
-        if (size_o % 64) {
-            val = 64 - (size_o % 64);
+        if (size_o % DIGIT_SIZE_b) {
+            val = DIGIT_SIZE_b - (size_o % DIGIT_SIZE_b);
         }
 
         memcpy(o, v, VEC_N1N2_SIZE_BYTES);
 
-        for (int8_t i = 0 ; i < val ; ++i) {
-            o[VEC_N1N2_SIZE_64 - 1] &= (mask >> i);
+        for (int8_t i = 0; i < val; ++i) {
+            o[VEC_N1N2_SIZE_DIGIT - 1] &= (RED_MASK >> i);
         }
     } else {
         memcpy(o, v, CEIL_DIVIDE(size_v, 8));
     }
 }
-
 
 
 /**
@@ -205,30 +234,30 @@ void vect_resize(uint64_t *o, uint32_t size_o, const uint64_t *v, uint32_t size_
  * @param[in] v Pointer to an array of bytes
  * @param[in] size Integer that is number of bytes to be displayed
  */
-void vect_print(const uint64_t *v, const uint32_t size) {
-    if(size == VEC_K_SIZE_BYTES) {
-        uint8_t tmp [VEC_K_SIZE_BYTES] = {0};
+void vect_print(const DIGIT *v, const uint32_t size) {
+    if (size == VEC_K_SIZE_BYTES) {
+        uint8_t tmp[VEC_K_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_K_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_K_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     } else if (size == VEC_N_SIZE_BYTES) {
-        uint8_t tmp [VEC_N_SIZE_BYTES] = {0};
+        uint8_t tmp[VEC_N_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     } else if (size == VEC_N1N2_SIZE_BYTES) {
-        uint8_t tmp [VEC_N1N2_SIZE_BYTES] = {0};
+        uint8_t tmp[VEC_N1N2_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N1N2_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N1N2_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
-    }  else if (size == VEC_N1_SIZE_BYTES) {
-        uint8_t tmp [VEC_N1_SIZE_BYTES] = {0};
+    } else if (size == VEC_N1_SIZE_BYTES) {
+        uint8_t tmp[VEC_N1_SIZE_BYTES] = {0};
         memcpy(tmp, v, VEC_N1_SIZE_BYTES);
         for (uint32_t i = 0; i < VEC_N1_SIZE_BYTES; ++i) {
-            printf("%02x", tmp[i]);
+            PRINTF("%02x", tmp[i]);
         }
     }
 }
@@ -241,8 +270,39 @@ void vect_print(const uint64_t *v, const uint32_t size) {
  * @param[in] weight Integer that is number positions to be displayed
  */
 void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
-    for (uint16_t i = 0; i < weight-1; ++i) {
-        printf("%d ,", v[i]);
+    for (uint16_t i = 0; i < weight - 1; ++i) {
+        PRINTF("%d ,", v[i]);
     }
-    printf("%d", v[weight - 1]);
+    PRINTF("%d", v[weight - 1]);
 }
+
+
+/**
+ * @brief Converts a sparse vector to a dense vector
+ * 
+ * @param[out] dense Pointer to the dense vector
+ * @param[in] sparse Pointer to the sparse vector
+ * @param[in] weight Integer that is the Hamming weight
+*/
+void vect_sparse_to_dense(DIGIT *dense, const uint32_t *sparse, const uint16_t weight) {
+    uint32_t index_tab [PARAM_OMEGA_R] = {0};
+    DIGIT bit_tab [PARAM_OMEGA_R] = {0};
+
+    for (size_t i = 0; i < weight; i++) {
+        index_tab[i] = sparse[i] / DIGIT_SIZE_b;
+        int32_t pos = sparse[i] & (DIGIT_SIZE_b-1);
+        bit_tab[i]  = ((DIGIT) 1) << pos;
+    }
+    DIGIT val = 0;
+    for (uint32_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        val = 0;
+        for (uint32_t j = 0 ; j < weight ; j++) {
+            uint32_t tmp = i - index_tab[j];
+            size_t val1 = 1 ^ ((tmp | -tmp) >> 31);
+            DIGIT mask = -val1;
+            val |= (bit_tab[j] & mask);
+        }
+        dense[i] |= val;
+    }
+}
+

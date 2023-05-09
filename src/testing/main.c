@@ -1,0 +1,20 @@
+/**
+ * @file main.c
+ */
+
+#include "main.h"
+
+#ifdef CORTEX_M4
+#include "board_utils.h"
+#endif
+
+#ifndef BATCH_SIZE
+#define BATCH_SIZE 1000
+#endif
+
+int main(void) {
+#ifdef CORTEX_M4
+    setup_board();
+#endif
+    return run(BATCH_SIZE);
+}
