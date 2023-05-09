@@ -23,7 +23,7 @@ def main():
     if len(sys.argv) > 3:
         rate = int(sys.argv[3])
     else:
-        rate = 9600
+        rate = 115200
 
     branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode("utf-8").strip()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()[0:7]

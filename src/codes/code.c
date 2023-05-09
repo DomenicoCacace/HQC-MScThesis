@@ -34,6 +34,16 @@ void code_encode(DIGIT *em, const DIGIT *m) {
 #endif
 }
 
+void code_encode_shares(shares_n1n2_t *em, shares_k_t *m) {
+#if SHARES == 1
+    code_encode(em->s0, m->s0);
+#elif SHARES == 2
+    code_encode(em->s0, m->s0);
+	code_encode(em->s1, m->s1);
+#else
+#error TOO_MANY_SHARES
+#endif
+}
 
 /**
  * @brief Decoding the code word em to a message m using the concatenated code

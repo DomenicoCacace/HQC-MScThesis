@@ -6,7 +6,7 @@ import sys
 branches = ["reference", "reference_noshuffle", "sparsemul", "masking", "fastmul", "avx"]
 algs = ["FULL_PKE", "FULL_KEM", "MULT", "ENC", "DEC", "ENCAPS", "DECAPS", "KEYGEN"]
 alg_names = ["pke", "kem", "mul", "enc", "dec", "encaps", "decaps", "keygen"]
-branches = ["fastmul"]
+branches = ["masking"]
 def main(): 
     if len(sys.argv) > 1:
         try:
@@ -17,7 +17,7 @@ def main():
         batch_size = 10000
             
     for branch in branches:
-        if branch == "masking" or branch == "fastmul": # only support 128-bit security level
+        if branch == "masking_salted" or branch == "fastmul": # only support 128-bit security level
             seclevs = ["128"]   
         else:
             seclevs = ["128", "192", "256"]

@@ -24,7 +24,6 @@ static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
     return 1 ^ (((v1 - v2)|(v2 - v1)) >> 31);
 }
 
-
 /**
  * @brief Generates a vector of a given Hamming weight
  *
@@ -45,7 +44,7 @@ static inline uint32_t compare_u32(const uint32_t v1, const uint32_t v2) {
 void vect_set_random_fixed_weight_by_coordinates(seedexpander_state *ctx, uint32_t *v, uint16_t weight) {
     uint32_t rand_u32[PARAM_OMEGA_R] = {0};
 
-    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * weight);
+    seedexpander(ctx, (uint8_t *)&rand_u32, 4 * PARAM_OMEGA_R);
 
     for (size_t i = 0; i < weight; ++i) {
         v[i] = i + rand_u32[i] % (PARAM_N - i);
@@ -105,7 +104,7 @@ void vect_set_random_fixed_weight(seedexpander_state *ctx, DIGIT *v, uint16_t we
 
     for (size_t i = 0; i < weight; i++) {
         index_tab[i] = support[i] >> DIGIT_SIZE_LOG2;
-        int32_t pos = support[i] & 0x3f;
+        int32_t pos = support[i] & (DIGIT_SIZE_b-1);
         bit_tab[i]  = ((DIGIT) 1) << pos;
     }
 

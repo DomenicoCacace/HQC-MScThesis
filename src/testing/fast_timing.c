@@ -16,6 +16,7 @@
 #include "parameters.h"
 #include "parsing.h"
 #include "shake_ds.h"
+#include "shares.h"
 #include "timing_tools.h"
 #include "vector.h"
 
@@ -105,17 +106,21 @@ int run(int reps) {
     welford_init(&mult);
     for(int i = 0; i < reps; i++) {
         DIGIT u[VEC_N_SIZE_DIGIT] = {0};
-        DIGIT y[VEC_N_SIZE_DIGIT] = {0};
-        DIGIT res[VEC_N_SIZE_DIGIT] = {0};
+        shares_n_t y;
+        shares_n_t res;
+        unsigned char seed[SECRET_KEY_BYTES];
         seedexpander_state seedexpander;
 
+        shares_n_init(&y);
+        shares_n_init(&res);
         randombytes(sk, SEED_BYTES);
-        seedexpander_init(&seedexpander, sk, SEED_BYTES);
+        seedexpander_init(&seedexpander, seed, SEED_BYTES);
+        vect_set_random_fixed_weight(&seedexpander, y.s0, PARAM_OMEGA);
+        shares_init_from_data(&y, y.s0);
         vect_generate_random_for_mult(u);
-        vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
 
         t0 = get_systick();
-        opt_mul(res, u, y);
+        shares_vec_mul(&res, &y, u);
         t1 = get_systick();
 
         welford_update(&mult, t1-t0);

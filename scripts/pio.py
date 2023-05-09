@@ -89,18 +89,23 @@ elif mode == 4 or mode == 5: #fast ttest/timing
         alg = 0
     env.Append(CPPDEFINES=[("{}".format(algs[alg]))])
 elif mode == 6: #power
-    print("Algorithm\n[0] Encrypt (Default)\n[1] Decrypt\n")
+    print("Algorithm\n[0] Encrypt (Default)\n[1] Decrypt\n[2] Decode\n[3] RS Decode\n")
     try:
         alg = int(input("Select algorithm: \n"))
     except ValueError:
         alg = 0
-    if alg > 1:
+    if alg > 3:
         alg = 0
-    algs = ["ENC", "DEC"]
+    algs = ["ENC", "DEC", "DECODE", "RSDECODE"]
     print("Algorithm selected: " + algs[alg])
     env.Append(CPPDEFINES=[("ALG", algs[alg])])
-    env.Append(CPPDEFINES=[("{}RYPT".format(algs[alg]))])
-
+    if alg < 2:
+        env.Append(CPPDEFINES=[("{}RYPT".format(algs[alg]))])
+    else:
+        if alg == 2:
+            env.Append(CPPDEFINES=[("DECODE")])
+        else:
+            env.Append(CPPDEFINES=[("RSDECODE")])
 else:   # PLAIN/TIMING/TTEST
     print("Algorithm\n[0] PKE (Default)\n[1] KEM\n[2] Multiplication\n[3] Encrypt\n[4] Decrypt\n[5] Encaps\n[6] Decaps\n[7] Keygen\n")
     try:
@@ -112,6 +117,12 @@ else:   # PLAIN/TIMING/TTEST
     print("Algorithm selected: " + algs[alg])
     env.Append(CPPDEFINES=[("ALG", algs[alg])])
 
+masks = input("Enable masks [Y/n]: \n")
+if masks == "N" or masks == "n":
+    print("Masks disabled")
+else:
+    env.Append(CPPDEFINES=[("MASK_ENABLE")])
+    print("Masks enabled")
     
 try:
     reps = int(input("Number of iterations: \n"))

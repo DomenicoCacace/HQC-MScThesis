@@ -135,6 +135,7 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     hqc_ciphertext_from_string(u, v, d, salt, ct);
 
     // Retrieving pk from sk
+    //memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
     pk = sk + SEED_BYTES;
 
     // Decryting

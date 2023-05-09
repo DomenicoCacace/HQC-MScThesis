@@ -1,8 +1,10 @@
 // Implemented by Ming-Shing Chen, Tung Chou and Markus Krausz.
 // public domain
-#include "string.h"
-#include "bmul2.h"
+
+#include <string.h>
+
 #include "bc_2.h"
+#include "bmul2.h"
 #include "btfy_ffft.h"
 #include "encode.h"
 #include "gfv_tower.h"

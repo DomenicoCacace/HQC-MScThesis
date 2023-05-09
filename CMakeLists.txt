@@ -26,6 +26,7 @@ set(SOURCES ${BASE_DIR}/codes/code.c
 			${BASE_DIR}/lib/shake_ds.c
 			${BASE_DIR}/lib/shake_prng.c
 			${BASE_DIR}/testing/functional.c
+			${BASE_DIR}/testing/gen.c
 			${BASE_DIR}/testing/plain.c
 			${BASE_DIR}/testing/timing.c
 			${BASE_DIR}/testing/ttest.c)
@@ -45,6 +46,7 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/fields/fft.h
 			${BASE_DIR}/fields/gf.h
 			${BASE_DIR}/fields/gf2x.h
+			${BASE_DIR}/fields/shares.h
 			${BASE_DIR}/hqc/hqc.h
 			${BASE_DIR}/lib/domains.h
 			${BASE_DIR}/lib/fips202.h

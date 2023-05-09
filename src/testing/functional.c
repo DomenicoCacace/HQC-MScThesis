@@ -14,6 +14,7 @@
 #include "hqc.h"
 #include "main.h"
 #include "shake_ds.h"
+#include "shares.h"
 #include "vector.h"
 
 
@@ -60,11 +61,17 @@ int FULL_PKE(void) {
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
+    DIGIT salt[SALT_SIZE_DIGIT] = {0};
+    uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
 
-    vect_set_random_from_prng(m_in);
-    shake256_512_ds(&shake256state, theta, (uint8_t*) m_in, VEC_K_SIZE_BYTES, G_FCT_DOMAIN);
-    
     hqc_pke_keygen(pk, sk);
+    vect_set_random_from_prng(m_in);
+    randombytes((uint8_t *)salt, SALT_SIZE_BYTES);
+    memcpy(tmp, m_in, VEC_K_SIZE_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
+    memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
+    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+    
     hqc_pke_encrypt(u, v, m_in, theta, pk);
     hqc_pke_decrypt(m_out, u, v, sk);
 
@@ -75,26 +82,32 @@ int FULL_PKE(void) {
 
 int MULT(void) {
     #define MUL_ORIGINAL vect_mul
-    #define MUL_OPTIMIZED opt_mul
+    #define MUL_OPTIMIZED shares_vec_mul
 
     uint64_t u[VEC_N_SIZE_64] = {0};
     uint32_t y[PARAM_OMEGA] = {0};
-    DIGIT y_dense[VEC_N_SIZE_DIGIT] = {0};
+    shares_n_t y_shares;
     uint64_t res_original[VEC_N_SIZE_64] = {0};
-    DIGIT res_optimized[VEC_N_SIZE_64] = {0};
+    shares_n_t res_optimized;
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
+
+    shares_n_init(&y_shares);
+    shares_n_init(&res_optimized);
 
     randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
     vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
-    vect_sparse_to_dense(y_dense, y, PARAM_OMEGA);
+    vect_sparse_to_dense(y_shares.s0, y, PARAM_OMEGA);
+    shares_init_from_data(&y_shares, y_shares.s0);
     vect_generate_random_for_mult(u);
 
     MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
-    MUL_OPTIMIZED(res_optimized, y_dense, u);
+    MUL_OPTIMIZED(&res_optimized, &y_shares, u);
 
-    if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0)
+    shares_collapse_nosum(res_optimized.s0, &res_optimized);
+
+    if (memcmp(res_original, res_optimized.s0, VEC_N_SIZE_BYTES) == 0)
         return 1;
     return 0;
 }

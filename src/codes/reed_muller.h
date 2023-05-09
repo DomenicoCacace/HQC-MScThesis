@@ -10,6 +10,7 @@
 
 #include "parameters.h"
 
+
 void reed_muller_encode(DIGIT *cdw, const DIGIT *msg);
 
 void reed_muller_decode(DIGIT *msg, const DIGIT *cdw);

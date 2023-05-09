@@ -13,7 +13,8 @@
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
 
-static void reduce(DIGIT *o, const DIGIT *a);
+static void reduce(uint64_t *o, const uint64_t *a);
+
 static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
 
 /**
@@ -161,22 +162,21 @@ void vect_mul(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_
 /**
  * @brief Multiply two polynomials modulo \f$ X^n - 1\f$.
  *
- * This functions multiplies a sparse polynomial <b>a1</b> (of Hamming weight equal to <b>weight</b>)
- * and a dense polynomial <b>a2</b>. The multiplication is done modulo \f$ X^n - 1\f$.
+ * This functions multiplies two dense polynomials modulo \f$ X^n - 1\f$.
  *
  * @param[out] o Pointer to the result
- * @param[in] a1 Pointer to the sparse polynomial
- * @param[in] a2 Pointer to the dense polynomial
- * @param[in] weight Integer that is the weigt of the sparse polynomial
- * @param[in] ctx Pointer to the randomness context
+ * @param[in] a1 Pointer to the first polynomial
+ * @param[in] a2 Pointer to the second polynomial
  */
 void opt_mul(DIGIT *o, const DIGIT *a1, const DIGIT *a2) {
-    DIGIT a1_m[65536/DIGIT_SIZE_b] = {0};
-    DIGIT a2_m[65536/DIGIT_SIZE_b] = {0};
-    DIGIT res[65536/DIGIT_SIZE_b*2] = {0};
+    DIGIT a1_m[32768/DIGIT_SIZE_b] = {0};
+    DIGIT a2_m[32768/DIGIT_SIZE_b] = {0};
+    DIGIT res[32768/DIGIT_SIZE_b*2] = {0};
     memcpy(a1_m, a1, VEC_N_SIZE_BYTES);
     memcpy(a2_m, a2, VEC_N_SIZE_BYTES);
 
     bmul2((uint8_t *) res, (const uint8_t *) a1_m, (const uint8_t *) a2_m);
     reduce(o, res);
 }
+
+

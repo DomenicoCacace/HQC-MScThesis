@@ -15,6 +15,7 @@
 #include "main.h"
 #include "parameters.h"
 #include "shake_ds.h"
+#include "shares.h"
 #include "vector.h"
 
 
@@ -77,21 +78,24 @@ void FULL_PKE(void) {
 }
 
 void MULT(void) {
-    #define MUL opt_mul
+    #define MUL shares_vec_mul
 
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
-    DIGIT res[VEC_N_SIZE_DIGIT] = {0};
+    shares_n_t y;
+    shares_n_t res;
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
+    shares_n_init(&y);
+    shares_n_init(&res);
     randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
-    vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&seedexpander, y.s0, PARAM_OMEGA);
+    shares_init_from_data(&y, y.s0);
     vect_generate_random_for_mult(u);
 
     TRIGGER_SET
-    MUL(res, y, u);
+    MUL(&res, &y, u);
     TRIGGER_RESET
 }
 
