@@ -11,6 +11,12 @@ set(SOURCES ${BASE_DIR}/codes/code.c
 			${BASE_DIR}/codes/reed_solomon.c
 			${BASE_DIR}/common/parsing.c
 			${BASE_DIR}/common/vector.c
+			${BASE_DIR}/fastmul/bc_2.c
+			${BASE_DIR}/fastmul/bmul2.c
+			${BASE_DIR}/fastmul/btfy_consts_gft.c
+		    ${BASE_DIR}/fastmul/btfy_ffft.c
+			${BASE_DIR}/fastmul/encode.c
+			${BASE_DIR}/fastmul/gft_mul_vi.c
 			${BASE_DIR}/fields/fft.c
 			${BASE_DIR}/fields/gf.c
 			${BASE_DIR}/fields/gf2x.c
@@ -30,6 +36,12 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 			${BASE_DIR}/common/api.h
 			${BASE_DIR}/common/parsing.h
 			${BASE_DIR}/common/vector.h
+			${BASE_DIR}/fastmul/bc_2.h
+			${BASE_DIR}/fastmul/bmul2.h
+			${BASE_DIR}/fastmul/btfy_consts_gft.h
+			${BASE_DIR}/fastmul/btfy_ffft.h
+			${BASE_DIR}/fastmul/encode.h
+			${BASE_DIR}/fastmul/gft_mul_vi.h
 			${BASE_DIR}/fields/fft.h
 			${BASE_DIR}/fields/gf.h
 			${BASE_DIR}/fields/gf2x.h
@@ -43,6 +55,7 @@ set(HEADERS ${BASE_DIR}/codes/code.h
 
 include_directories(${BASE_DIR}/codes)
 include_directories(${BASE_DIR}/common)
+include_directories(${BASE_DIR}/fastmul)
 include_directories(${BASE_DIR}/fields)
 include_directories(${BASE_DIR}/hqc)
 include_directories(${BASE_DIR}/lib)

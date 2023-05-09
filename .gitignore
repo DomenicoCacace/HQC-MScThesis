@@ -8,6 +8,8 @@
 cmake-build-debug/
 .pio/
 build/
+cmake-build*/
+__pycache__/
 
 # Docs
 docs/notes

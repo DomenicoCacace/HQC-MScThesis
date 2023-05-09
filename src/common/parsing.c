@@ -47,7 +47,7 @@ void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
     vect_set_random_fixed_weight(&sk_seedexpander, x, PARAM_OMEGA);
-    vect_set_random_fixed_weight_by_coordinates(&sk_seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&sk_seedexpander, y, PARAM_OMEGA);
     memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
 }
 
@@ -97,11 +97,13 @@ void hqc_public_key_from_string(DIGIT *h, DIGIT *s, const uint8_t *pk) {
  * @param[in] u uint8_t representation of vector u
  * @param[in] v uint8_t representation of vector v
  * @param[in] d String containing the hash d
+ * @param[in] salt String containing the salt
  */
-void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const uint8_t *d) {
+void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const uint8_t *d, const DIGIT *salt) {
     memcpy(ct, u, VEC_N_SIZE_BYTES);
     memcpy(ct + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
     memcpy(ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, d, SHAKE256_512_BYTES);
+    memcpy(ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES + SHAKE256_512_BYTES, salt, SALT_SIZE_BYTES);
 }
 
 
@@ -113,10 +115,12 @@ void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const
  * @param[out] u uint8_t representation of vector u
  * @param[out] v uint8_t representation of vector v
  * @param[out] d String containing the hash d
+ * @param[out] salt String containing the salt
  * @param[in] ct String containing the ciphertext
  */
-void hqc_ciphertext_from_string(DIGIT *u, DIGIT *v, uint8_t *d, const uint8_t *ct) {
+void hqc_ciphertext_from_string(DIGIT *u, DIGIT *v, uint8_t *d, DIGIT *salt, const uint8_t *ct) {
     memcpy(u, ct, VEC_N_SIZE_BYTES);
     memcpy(v, ct + VEC_N_SIZE_BYTES, VEC_N1N2_SIZE_BYTES);
     memcpy(d, ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, SHAKE256_512_BYTES);
+    memcpy(salt, ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES + SHAKE256_512_BYTES, SALT_SIZE_BYTES);
 }

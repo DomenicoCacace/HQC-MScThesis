@@ -15,6 +15,7 @@
 #define DIGIT                                       uint32_t
 #define DIGIT_SIZE_B                                4
 #define DIGIT_SIZE_b                                32
+#define DIGIT_SIZE_LOG2                             5
 #elif HIGH_PERFORMANCE_X86_64
 #define DIGIT                                       _m256i
 #define DIGIT_SIZE_B                                32
@@ -23,6 +24,7 @@
 #define DIGIT                                       uint64_t
 #define DIGIT_SIZE_B                                8
 #define DIGIT_SIZE_b                                64  
+#define DIGIT_SIZE_LOG2                             6
 #endif
 
 
@@ -162,5 +164,8 @@
 #define VEC_N1_SIZE_DIGIT                       CEIL_DIVIDE(PARAM_N1, DIGIT_SIZE_B)
 #define VEC_N1N2_SIZE_DIGIT                     CEIL_DIVIDE(PARAM_N1N2, DIGIT_SIZE_b)
 #define RED_MASK                                BITMASK(PARAM_N, DIGIT_SIZE_b)
+
+#define SALT_SIZE_BYTES                         16
+#define SALT_SIZE_DIGIT                         CEIL_DIVIDE(SALT_SIZE_BYTES, DIGIT_SIZE_B)
 
 #endif

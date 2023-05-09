@@ -10,9 +10,15 @@
 #define TIMING 1
 #define PLAIN 2
 #define TTEST 3
+#define TTEST_FAST 4
+#define TIMING_FAST 5
+#define POWER 6
 
 #define CAT(a, b) a ## b
 #define CONST(a) CAT(a, _CONST)
+
+#define DELAY(x) for(int _i = 0; _i < x/4; _i++) {asm volatile("nop;");}
+#define RNG_DELAY DELAY(42*8)
 
 #include <stdint.h>
 
@@ -21,30 +27,40 @@
  * @param[out] x The vector to fill
  * @param[in] xlen The length of the vector in bytes
  */
-static void randombytes(uint8_t *x, uint16_t xlen);
+static int randombytes(uint8_t *obuf, uint16_t xlen);
 
 #ifdef CORTEX_M4
 #include "board_utils.h"
 #include "shake_prng.h"
 
-    #define PRINTF(...) debug(__VA_ARGS__)
+#define PRINTF(...) debug(__VA_ARGS__)
 
-    #define TRIGGER_SET trigger_set();
-    #define TRIGGER_RESET trigger_reset();
-    #define DELAY_CYCLES(x) delay_cycles(x);
-    #define DELAY_US(x) delay_us(x);
+#define TRIGGER_SET trigger_set();
+#define TRIGGER_RESET trigger_reset();
 
-    static void randombytes(uint8_t *x, uint16_t xlen) {
-        uint8_t rand[4];
-        for (int i = 0; i < (xlen/4)*4; i+=4) {
-            rng_get_random((uint32_t *)rand);
-            x[i] = *rand;
-        }
-        rng_get_random((uint32_t *)rand);
-        for (int i = (xlen/4)*4; i < xlen; i++) {
-            x[i] = rand[i-(xlen/4)*4];
+static int randombytes(uint8_t *obuf, uint16_t len) {
+    union {
+        unsigned char aschar[4];
+        uint32_t asint;
+    } random;
+
+    while (len > 4) {
+        RNG_DELAY
+        random.asint = rng_get_random_blocking();
+        *obuf++ = random.aschar[0];
+        *obuf++ = random.aschar[1];
+        *obuf++ = random.aschar[2];
+        *obuf++ = random.aschar[3];
+        len -= 4;
+    }
+    if (len > 0) {
+        RNG_DELAY
+        for (random.asint = rng_get_random_blocking(); len > 0; --len) {
+            *obuf++ = random.aschar[len - 1];
         }
     }
+    return 0;
+}
 
 #else
 #include <stdio.h>
@@ -54,11 +70,10 @@ static void randombytes(uint8_t *x, uint16_t xlen);
 
 #define TRIGGER_SET
 #define TRIGGER_RESET
-#define DELAY_CYCLES(x)
-#define DELAY_US(x)
 
-static void randombytes(uint8_t *x, uint16_t xlen) {
-    shake_prng(x, xlen);
+static int randombytes(uint8_t *obuf, uint16_t xlen) {
+    shake_prng(obuf, xlen);
+    return 0;
 }
 
 

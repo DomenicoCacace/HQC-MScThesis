@@ -88,21 +88,21 @@ void FULL_PKE(void) {
 }
 
 void MULT(void) {
-    #define MUL vect_mul
+    #define MUL opt_mul
 
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
-    uint32_t y[PARAM_OMEGA] = {0};
-    uint64_t res[VEC_N_SIZE_64] = {0};
+    DIGIT y[VEC_N_SIZE_DIGIT] = {0};
+    DIGIT res[VEC_N_SIZE_DIGIT] = {0};
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
     randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
-    vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
+    vect_set_random_fixed_weight(&seedexpander, y, PARAM_OMEGA);
     vect_generate_random_for_mult(u);
 
     start = get_systick();
-    MUL(res, y, u, PARAM_OMEGA, &seedexpander);
+    MUL(res, y, u);
     end = get_systick();
 }
 

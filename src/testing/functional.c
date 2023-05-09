@@ -75,22 +75,24 @@ int FULL_PKE(void) {
 
 int MULT(void) {
     #define MUL_ORIGINAL vect_mul
-    #define MUL_OPTIMIZED vect_mul
+    #define MUL_OPTIMIZED opt_mul
 
     uint64_t u[VEC_N_SIZE_64] = {0};
     uint32_t y[PARAM_OMEGA] = {0};
+    DIGIT y_dense[VEC_N_SIZE_DIGIT] = {0};
     uint64_t res_original[VEC_N_SIZE_64] = {0};
-    uint64_t res_optimized[VEC_N_SIZE_64] = {0};
+    DIGIT res_optimized[VEC_N_SIZE_64] = {0};
     unsigned char sk[SECRET_KEY_BYTES];
     seedexpander_state seedexpander;
 
     randombytes(sk, SEED_BYTES);
     seedexpander_init(&seedexpander, sk, SEED_BYTES);
     vect_set_random_fixed_weight_by_coordinates(&seedexpander, y, PARAM_OMEGA);
+    vect_sparse_to_dense(y_dense, y, PARAM_OMEGA);
     vect_generate_random_for_mult(u);
 
     MUL_ORIGINAL(res_original, y, u, PARAM_OMEGA, &seedexpander);
-    MUL_OPTIMIZED(res_optimized, y, u, PARAM_OMEGA, &seedexpander);
+    MUL_OPTIMIZED(res_optimized, y_dense, u);
 
     if (memcmp(res_original, res_optimized, VEC_N_SIZE_BYTES) == 0)
         return 1;

@@ -46,16 +46,19 @@ void welford_update(welford_t *state, long double sample) {
     state->mean += delta / (long double) (state->count);
     delta2 = sample - state->mean;
     state->M2 += delta * delta2;
+    #ifdef CORTEX_M4
+    dwt_enable_cycle_counter();
+    #endif
 }
 
 static inline
 void welford_print(const welford_t state) {
-    double variance = state.M2 / (long double) (state.count - 1);
-    PRINTF("%f,%f\r\n", state.mean, sqrtl(variance));
+    long double variance = state.M2 / (long double) (state.count - 1);
+    PRINTF("%Lf,%Lf\r\n", state.mean, sqrtl(variance));
 }
 
 static inline
-double welch_t_statistic(const welford_t state1, const welford_t state2) {
+long double welch_t_statistic(const welford_t state1, const welford_t state2) {
     long double num, den, var1, var2;
     var1 = state1.M2/(long double)(state1.count-1);
     var2 = state2.M2/(long double)(state2.count-1);
@@ -73,13 +76,13 @@ double welch_t_statistic(const welford_t state1, const welford_t state2) {
 
 static inline
 void welch_t_print(const welford_t state1, const welford_t state2) {
-    double t = welch_t_statistic(state1, state2);
+    long double t = welch_t_statistic(state1, state2);
     if (t == INFINITY) {
         double num = state1.mean - state2.mean;
         PRINTF("inf,num=%f\r\n", num);
     }
     else {
-        PRINTF("%f\r\n", t);
+        PRINTF("%Lf\r\n", t);
     }
 }
 #endif
