@@ -301,9 +301,9 @@ void ibc_1_256(uint32_t *poly, unsigned n_256bit) {
     }
 }
 
-
+#if !defined(_M4_ASM_)
 static
-void cvt_to_fft_256_32768(uint32_t *poly) {
+void cvt_to_fft(uint32_t *poly) {
     const unsigned w = 32768;
 
     uint32_t *ptr;
@@ -523,6 +523,7 @@ void cvt_to_fft_256_32768(uint32_t *poly) {
 #undef DEG_H
 #undef DEG_L
 }
+#endif
 
 static
 void icvt_to_poly_256_65536(uint32_t *poly) {
@@ -818,9 +819,9 @@ void icvt_to_poly_256_65536(uint32_t *poly) {
 #undef DEG_L
 }
 
-
+#if !defined(_M4_ASM_)
 static
-void repr_s8_1_32768(uint32_t *poly) {
+void repr_s8(uint32_t *poly) {
     const unsigned w = 32768;
     uint32_t *ptr;
 
@@ -992,9 +993,11 @@ void repr_s8_1_32768(uint32_t *poly) {
         ptr += (512 / 32);
     }
 }
+#endif
 
+#if !defined(_M4_ASM_)
 static
-void irepr_s8_1_65536(uint32_t *poly) {
+void irepr_s8(uint32_t *poly) {
     const unsigned w = 65536;
     uint32_t *ptr;
 
@@ -1191,22 +1194,23 @@ void irepr_s8_1_65536(uint32_t *poly) {
 #undef DEG_L
 
 }
+#endif
 
 
 void bc_1_32768(uint32_t *poly) {
-    repr_s8_1_32768(poly);
+    repr_s8(poly);
 
-    cvt_to_fft_256_32768(poly);
+    cvt_to_fft(poly);
 
-    bc_1_256(poly, 32768 / 256);
+    bc_1_256(poly, CEIL_DIVIDE(PARAM_N, 256));
 }
 
 void ibc_1_65536(uint32_t *poly) {
-    ibc_1_256(poly, 65536 / 256);
+    ibc_1_256(poly, CEIL_DIVIDE(PARAM_N*2, 256));
 
     icvt_to_poly_256_65536(poly);
 
-    irepr_s8_1_65536(poly);
+    irepr_s8(poly);
 }
 
 

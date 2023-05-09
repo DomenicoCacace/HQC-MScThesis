@@ -1,4 +1,8 @@
-commit, mean_original, mean_opt, var_original, var_opt, note
-04a9bd, 698998.82, 699649.37, 13134.85, 14000.03, Reference implementation
-8f47c6, 712718.23, 712718.23, 12659.29, 5168.44, Reference implementation without shuffling
-c51465, 714730.55, 4209335.98, 13078.45, 0.2, bitpolymul from BIKE, opsize 32768
+commit,mean,var,branch,note
+04a9bd,698998.82,13098.04487204,fastmul,Reference implementation
+8f47c6,745506.546,5785.706160674,fastmul,Reference implementation without shuffling
+c51465,3473858.118,0.3227695465627,fastmul,bitpolymul from BIKE
+a85b2b,3380243.118,0.3227695465627,fastmul,optimized cvt_to_fft
+6e51ac,3349349.118,0.3227695465627,fastmul,optimized poly→s8
+9556e4,3334630.118,0.3227695465627,fastmul,optimized gft encoding
+d4859c,3309004.118,0.3227695465627,fastmul,optimized s8→poly

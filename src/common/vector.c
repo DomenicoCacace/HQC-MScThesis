@@ -10,6 +10,7 @@
 #include "parameters.h"
 #include "vector.h"
 
+
 /**
  * @brief Constant-time comparison of two integers v1 and v2
  *
@@ -284,10 +285,24 @@ void vect_print_sparse(const uint32_t *v, const uint16_t weight) {
  * @param[in] weight Integer that is the Hamming weight
 */
 void vect_sparse_to_dense(DIGIT *dense, const uint32_t *sparse, const uint16_t weight) {
-    for (size_t i = 0; i < weight; ++i) {
-        int32_t index = sparse[i] / DIGIT_SIZE_b;
-        int32_t pos = sparse[i] % DIGIT_SIZE_b;
-        dense[index] |= ((DIGIT) 1) << pos;
+    uint32_t index_tab [PARAM_OMEGA_R] = {0};
+    DIGIT bit_tab [PARAM_OMEGA_R] = {0};
+
+    for (size_t i = 0; i < weight; i++) {
+        index_tab[i] = sparse[i] / DIGIT_SIZE_b;
+        int32_t pos = sparse[i] & (DIGIT_SIZE_b-1);
+        bit_tab[i]  = ((DIGIT) 1) << pos;
+    }
+    DIGIT val = 0;
+    for (uint32_t i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        val = 0;
+        for (uint32_t j = 0 ; j < weight ; j++) {
+            uint32_t tmp = i - index_tab[j];
+            size_t val1 = 1 ^ ((tmp | -tmp) >> 31);
+            DIGIT mask = -val1;
+            val |= (bit_tab[j] & mask);
+        }
+        dense[i] |= val;
     }
 }
 

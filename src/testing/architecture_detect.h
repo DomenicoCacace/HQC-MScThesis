@@ -32,7 +32,7 @@ static int randombytes(uint8_t *obuf, uint16_t xlen);
 #include "board_utils.h"
 #include "shake_prng.h"
 
-    #define PRINTF(...) debug(__VA_ARGS__)
+#define PRINTF(...) debug(__VA_ARGS__)
 
     #define TRIGGER_SET trigger_set();
     #define TRIGGER_RESET trigger_reset();

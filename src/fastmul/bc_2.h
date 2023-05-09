@@ -4,7 +4,7 @@
 #define _BC_2_H_
 
 #include "stdint.h"
-
+#include "../common/parameters.h"
 
 //
 // libaray for basis conversion

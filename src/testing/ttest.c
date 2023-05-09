@@ -50,7 +50,6 @@ uint32_t start, end;
 
 unsigned char pk_const[PUBLIC_KEY_BYTES] = {0};
 unsigned char sk_const[SECRET_KEY_BYTES] = {0};
-unsigned char ct_const[CIPHERTEXT_BYTES];
 DIGIT m_const[VEC_K_SIZE_DIGIT] = {0};
 DIGIT u_const[VEC_N_SIZE_DIGIT] = {0};
 DIGIT y_const[VEC_N_SIZE_DIGIT] = {0};
@@ -103,9 +102,14 @@ void FULL_KEM(void) {
 }
 
 void FULL_KEM_CONST(void) {
+    unsigned char pk[PUBLIC_KEY_BYTES];
+    unsigned char sk[SECRET_KEY_BYTES];
     unsigned char ct[CIPHERTEXT_BYTES];
     unsigned char key1[SHARED_SECRET_BYTES];
     unsigned char key2[SHARED_SECRET_BYTES];
+
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
+    memcpy(sk, sk_const, SECRET_KEY_BYTES);
 
     start = get_systick();
     crypto_kem_enc(ct, key1, pk_const);
@@ -315,6 +319,8 @@ void ENCAPS_CONST(void) {
     unsigned char pk[PUBLIC_KEY_BYTES];
     unsigned char ct[CIPHERTEXT_BYTES];
     unsigned char key[SHARED_SECRET_BYTES];
+    
+    memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
 
     memcpy(pk, pk_const, PUBLIC_KEY_BYTES);
 

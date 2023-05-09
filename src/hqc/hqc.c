@@ -149,7 +149,7 @@ void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const u
     PRINTF("\n\nr1: ");
     vect_print(r1, VEC_N_SIZE_BYTES);
     PRINTF("\n\nr2: ");
-    vect_print_sparse(r2, PARAM_OMEGA_R);
+    vect_print(r2, VEC_N_SIZE_BYTES);
     PRINTF("\n\ne: ");
     vect_print(e, VEC_N_SIZE_BYTES);
     PRINTF("\n\ntmp2: ");

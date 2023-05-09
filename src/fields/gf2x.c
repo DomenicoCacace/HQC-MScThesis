@@ -43,17 +43,17 @@ static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2) {
  * @param[in] a Pointer to the polynomial a(x)
  * @param[out] o Pointer to the result
  */
-static void reduce(uint64_t *o, const uint64_t *a) {
+static void reduce(DIGIT *o, const DIGIT *a) {
     size_t i;
-    uint64_t r;
-    uint64_t carry;
+    DIGIT r;
+    DIGIT carry;
 
-    for (i = 0; i < VEC_N_SIZE_64; i++) {
-        r = a[i + VEC_N_SIZE_64 - 1] >> (PARAM_N &(WORD-1));
-        carry = (uint64_t) (a[i + VEC_N_SIZE_64] << (WORD - (PARAM_N & (WORD-1))));
+    for (i = 0; i < VEC_N_SIZE_DIGIT; i++) {
+        r = a[i + VEC_N_SIZE_DIGIT - 1] >> (PARAM_N &(DIGIT_SIZE_b-1));
+        carry = (DIGIT) (a[i + VEC_N_SIZE_DIGIT] << (DIGIT_SIZE_b - (PARAM_N & (DIGIT_SIZE_b-1))));
         o[i] = a[i] ^ r ^ carry;
     }
-    o[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, WORD);
+    o[VEC_N_SIZE_DIGIT - 1] &= BITMASK(PARAM_N, DIGIT_SIZE_b);
 }
 
 
