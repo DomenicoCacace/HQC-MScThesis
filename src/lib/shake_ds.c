@@ -34,7 +34,7 @@ typedef struct {
 
 
 void shake256_g(shake256incctx *state, uint8_t *output, const uint8_t *input) {
-#ifdef MASKING
+#ifdef MASK_ENABLE
     shake256incctx_masked state_masked;
     g_hash_t input_masked;
     out_hash_t output_masked;
@@ -65,7 +65,7 @@ void shake256_g(shake256incctx *state, uint8_t *output, const uint8_t *input) {
 
 
 void shake256_h(shake256incctx *state, uint8_t *output, const uint8_t *input) {
-#ifdef MASKING
+#ifdef MASK_ENABLE
     shake256incctx_masked state_masked;
     h_hash_t input_masked = {0};
     out_hash_t output_masked = {0};
@@ -95,7 +95,7 @@ void shake256_h(shake256incctx *state, uint8_t *output, const uint8_t *input) {
 }
 
 void shake256_k(shake256incctx *state, uint8_t *output, const uint8_t *input) {
-#ifdef MASKING
+#ifdef MASK_ENABLE
     shake256incctx_masked state_masked;
     k_hash_t input_masked;
     out_hash_t output_masked;
