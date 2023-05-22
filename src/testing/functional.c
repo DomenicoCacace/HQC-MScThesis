@@ -56,6 +56,7 @@ int FULL_PKE(void) {
     unsigned char sk[SECRET_KEY_BYTES];
     DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
     DIGIT m_out[VEC_K_SIZE_DIGIT] = {0};
+    uint8_t sigma[VEC_K_SIZE_BYTES] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
@@ -66,7 +67,7 @@ int FULL_PKE(void) {
     
     hqc_pke_keygen(pk, sk);
     hqc_pke_encrypt(u, v, m_in, theta, pk);
-    hqc_pke_decrypt(m_out, u, v, sk);
+    hqc_pke_decrypt(m_out, sigma, u, v, sk);
 
     if (memcmp(m_in, m_out, VEC_K_SIZE_BYTES) == 0)
         return 1;

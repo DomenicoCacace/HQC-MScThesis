@@ -9,22 +9,22 @@
 
 #if SECURITY_LEVEL == 128
 #define CRYPTO_ALGNAME                      "HQC-128"
-#define CRYPTO_SECRETKEYBYTES               2289
+#define CRYPTO_SECRETKEYBYTES               2305
 #define CRYPTO_PUBLICKEYBYTES               2249
 #define CRYPTO_BYTES                        64
-#define CRYPTO_CIPHERTEXTBYTES              4497
+#define CRYPTO_CIPHERTEXTBYTES              4433
 #elif SECURITY_LEVEL == 192
 #define CRYPTO_ALGNAME                      "HQC-192"
-#define CRYPTO_SECRETKEYBYTES               4562
+#define CRYPTO_SECRETKEYBYTES               4586
 #define CRYPTO_PUBLICKEYBYTES               4522
 #define CRYPTO_BYTES                        64
-#define CRYPTO_CIPHERTEXTBYTES              9042
+#define CRYPTO_CIPHERTEXTBYTES              8978
 #elif SECURITY_LEVEL == 256
 #define CRYPTO_ALGNAME                      "HQC-256"
-#define CRYPTO_SECRETKEYBYTES               7285
+#define CRYPTO_SECRETKEYBYTES               7317
 #define CRYPTO_PUBLICKEYBYTES               7245
 #define CRYPTO_BYTES                        64
-#define CRYPTO_CIPHERTEXTBYTES              14485
+#define CRYPTO_CIPHERTEXTBYTES              14421
 #else
 #error INVALID SECURITY LEVEL
 #endif

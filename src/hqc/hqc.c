@@ -28,6 +28,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     seedexpander_state sk_seedexpander;
     seedexpander_state pk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
+    uint8_t sigma[VEC_K_SIZE_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
     DIGIT x[VEC_N_SIZE_DIGIT] = {0};
     DIGIT y[VEC_N_SIZE_DIGIT] = {0};
@@ -36,6 +37,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
 
     // Create seed_expanders for public key and secret key
     randombytes(sk_seed, SEED_BYTES);
+    shake_prng(sigma, VEC_K_SIZE_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
     randombytes(pk_seed, SEED_BYTES);
@@ -52,11 +54,13 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
 
     // Parse keys to string
     hqc_public_key_to_string(pk, pk_seed, s);
-    hqc_secret_key_to_string(sk, sk_seed, pk);
+    hqc_secret_key_to_string(sk, sk_seed, sigma, pk);
 
 #ifdef VERBOSE
     PRINTF("\n\nsk_seed: ");
-    for (int i = 0; i < SEED_BYTES; ++i) PRINTF("%02x", sk_seed[i]);
+    for(int i = 0 ; i < SEED_BYTES ; ++i) PRINTF("%02x", sk_seed[i]);
+    PRINTF("\n\nsigma: "); 
+    for(int i = 0 ; i < VEC_K_SIZE_BYTES ; ++i) PRINTF("%02x", sigma[i]);
     PRINTF("\n\nx: ");
     vect_print(x, VEC_N_SIZE_BYTES);
     PRINTF("\n\ny: ");
@@ -153,37 +157,23 @@ void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const u
  * @param[in] v Vector v (second part of the ciphertext)
  * @param[in] sk String containing the secret key
  */
-void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
+uint8_t hqc_pke_decrypt(DIGIT *m, uint8_t *sigma, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
     DIGIT x[VEC_N_SIZE_DIGIT] = {0};
     DIGIT y[VEC_N_SIZE_DIGIT] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
     DIGIT tmp1[VEC_N_SIZE_DIGIT] = {0};
     DIGIT tmp2[VEC_N_SIZE_DIGIT] = {0};
-    seedexpander_state perm_seedexpander;
-    uint8_t perm_seed[SEED_BYTES] = {0};
 
     // Retrieve x, y, pk from secret key
-    hqc_secret_key_from_string(x, y, pk, sk);
-
-    randombytes(perm_seed, SEED_BYTES);
-    seedexpander_init(&perm_seedexpander, perm_seed, SEED_BYTES);
+    hqc_secret_key_from_string(x, y, sigma, pk, sk);
 
     // Compute v - u.y
     vect_resize(tmp1, PARAM_N, v, PARAM_N1N2);
     opt_mul(tmp2, y, u);
     vect_add(tmp2, tmp1, tmp2, VEC_N_SIZE_DIGIT);
 
-#ifdef VERBOSE
-    PRINTF("\n\nu: ");
-    vect_print(u, VEC_N_SIZE_BYTES);
-    PRINTF("\n\nv: ");
-    vect_print(v, VEC_N1N2_SIZE_BYTES);
-    PRINTF("\n\ny: ");
-    vect_print(y, VEC_N_SIZE_BYTES);
-    PRINTF("\n\nv - u.y: ");
-    vect_print(tmp2, VEC_N_SIZE_BYTES);
-#endif
-
-    // Compute m by decoding v - u.y
+    // Decode v - u.y
     code_decode(m, tmp2);
+
+    return 0;
 }
