@@ -67,19 +67,19 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     memcpy(tmp, m, VEC_K_SIZE_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+    shake256_g(&shake256state, theta, tmp);
 
     // Encrypting m
     hqc_pke_encrypt(u, v, m, theta, pk);
 
     // Computing d
-    shake256_512_ds(&shake256state, d, (uint8_t *) m, VEC_K_SIZE_BYTES, H_FCT_DOMAIN);
+    shake256_h(&shake256state, d, (uint8_t *) m);
 
     // Computing shared secret
     memcpy(mc, m, VEC_K_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
-    shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
+    shake256_k(&shake256state, ss, mc);
 
     // Computing ciphertext
     hqc_ciphertext_to_string(ct, u, v, d, salt);
@@ -145,19 +145,19 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     memcpy(tmp, m, VEC_K_SIZE_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+    shake256_g(&shake256state, theta, tmp);
 
     // Encrypting m'
     hqc_pke_encrypt(u2, v2, m, theta, pk);
 
     // Computing d'
-    shake256_512_ds(&shake256state, d2, (uint8_t *) m, VEC_K_SIZE_BYTES, H_FCT_DOMAIN);
+    shake256_h(&shake256state, d2, (uint8_t *) m);
 
     // Computing shared secret
     memcpy(mc, m, VEC_K_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
-    shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
+    shake256_k(&shake256state, ss, mc);
 
     // Abort if c != c' or d != d'
     result = vect_compare((uint8_t *) u, (uint8_t *) u2, VEC_N_SIZE_BYTES);
