@@ -58,6 +58,7 @@ int FULL_PKE(void) {
     DIGIT m_in[VEC_K_SIZE_DIGIT] = {0};
     DIGIT m_out[VEC_K_SIZE_DIGIT] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
+    uint8_t sigma[VEC_K_SIZE_BYTES] = {0};
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
     shake256incctx shake256state;
@@ -73,7 +74,7 @@ int FULL_PKE(void) {
     shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
     
     hqc_pke_encrypt(u, v, m_in, theta, pk);
-    hqc_pke_decrypt(m_out, u, v, sk);
+    hqc_pke_decrypt(m_out, sigma, u, v, sk);
 
     if (memcmp(m_in, m_out, VEC_K_SIZE_BYTES) == 0)
         return 1;

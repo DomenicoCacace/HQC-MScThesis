@@ -20,11 +20,13 @@
  *
  * @param[out] sk String containing the secret key
  * @param[in] sk_seed Seed used to generate the secret key
+ * @param[in] sigma String used in HHK transform
  * @param[in] pk String containing the public key
  */
-void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t *pk) {
+void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t *sigma, const uint8_t *pk) {
     memcpy(sk, sk_seed, SEED_BYTES);
-    memcpy(sk + SEED_BYTES, pk, PUBLIC_KEY_BYTES);
+    memcpy(sk + SEED_BYTES, sigma, VEC_K_SIZE_BYTES);
+    memcpy(sk + SEED_BYTES + VEC_K_SIZE_BYTES, pk, PUBLIC_KEY_BYTES);
 }
 
 
@@ -36,21 +38,22 @@ void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t
  *
  * @param[out] x DIGIT representation of vector x
  * @param[out] y uint32_t representation of vector y
+ * @param[in] sigma String used in HHK transform
  * @param[out] pk String containing the public key
  * @param[in] sk String containing the secret key
  */
-void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *sk) {
+void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *sigma, uint8_t *pk, const uint8_t *sk) {
     seedexpander_state sk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
 
     memcpy(sk_seed, sk, SEED_BYTES);
+    memcpy(sigma, sk + SEED_BYTES, VEC_K_SIZE_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
     vect_set_random_fixed_weight(&sk_seedexpander, x, PARAM_OMEGA);
     vect_set_random_fixed_weight(&sk_seedexpander, y, PARAM_OMEGA);
-    memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
+    memcpy(pk, sk + SEED_BYTES + VEC_K_SIZE_BYTES, PUBLIC_KEY_BYTES);
 }
-
 
 /**
  * @brief Parse a public key into a string
@@ -91,36 +94,33 @@ void hqc_public_key_from_string(DIGIT *h, DIGIT *s, const uint8_t *pk) {
 /**
  * @brief Parse a ciphertext into a string
  *
- * The ciphertext is composed of vectors <b>u</b>, <b>v</b> and hash <b>d</b>.
+ * The ciphertext is composed of vectors <b>u</b>, <b>v</b> and salt.
  *
  * @param[out] ct String containing the ciphertext
  * @param[in] u uint8_t representation of vector u
  * @param[in] v uint8_t representation of vector v
- * @param[in] d String containing the hash d
- * @param[in] salt String containing the salt
+ * @param[in] salt String containing a salt
  */
-void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const uint8_t *d, const DIGIT *salt) {
+void hqc_ciphertext_to_string(uint8_t *ct, const uint64_t *u, const uint64_t *v, const uint64_t *salt) {
     memcpy(ct, u, VEC_N_SIZE_BYTES);
     memcpy(ct + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
-    memcpy(ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, d, SHAKE256_512_BYTES);
-    memcpy(ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES + SHAKE256_512_BYTES, salt, SALT_SIZE_BYTES);
+    memcpy(ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, salt, SALT_SIZE_BYTES);
 }
+
 
 
 /**
  * @brief Parse a ciphertext from a string
  *
- * The ciphertext is composed of vectors <b>u</b>, <b>v</b> and hash <b>d</b>.
+ * The ciphertext is composed of vectors <b>u</b>, <b>v</b> and salt.
  *
  * @param[out] u uint8_t representation of vector u
  * @param[out] v uint8_t representation of vector v
  * @param[out] d String containing the hash d
- * @param[out] salt String containing the salt
  * @param[in] ct String containing the ciphertext
  */
-void hqc_ciphertext_from_string(DIGIT *u, DIGIT *v, uint8_t *d, DIGIT *salt, const uint8_t *ct) {
+void hqc_ciphertext_from_string(uint64_t *u, uint64_t *v, uint64_t *salt, const uint8_t *ct) {
     memcpy(u, ct, VEC_N_SIZE_BYTES);
     memcpy(v, ct + VEC_N_SIZE_BYTES, VEC_N1N2_SIZE_BYTES);
-    memcpy(d, ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, SHAKE256_512_BYTES);
-    memcpy(salt, ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES + SHAKE256_512_BYTES, SALT_SIZE_BYTES);
+    memcpy(salt, ct + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, SALT_SIZE_BYTES);
 }

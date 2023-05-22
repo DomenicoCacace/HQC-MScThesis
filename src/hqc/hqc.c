@@ -28,6 +28,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
     seedexpander_state sk_seedexpander;
     seedexpander_state pk_seedexpander;
     uint8_t sk_seed[SEED_BYTES] = {0};
+    uint8_t sigma[VEC_K_SIZE_BYTES] = {0};
     uint8_t pk_seed[SEED_BYTES] = {0};
     DIGIT x[VEC_N_SIZE_DIGIT] = {0};
     shares_n_t y;
@@ -39,6 +40,7 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
 
     // Create seed_expanders for public key and secret key
     randombytes(sk_seed, SEED_BYTES);
+    shake_prng(sigma, VEC_K_SIZE_BYTES);
     seedexpander_init(&sk_seedexpander, sk_seed, SEED_BYTES);
 
     randombytes(pk_seed, SEED_BYTES);
@@ -56,11 +58,13 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk) {
 
     // Parse keys to string
     hqc_public_key_to_string(pk, pk_seed, s.s0);
-    hqc_secret_key_to_string(sk, sk_seed, pk);
+    hqc_secret_key_to_string(sk, sk_seed, sigma, pk);
 
     #ifdef VERBOSE
     PRINTF("\n\nsk_seed: ");
     for(int i = 0 ; i < SEED_BYTES ; ++i) PRINTF("%02x", sk_seed[i]);
+    PRINTF("\n\nsigma: "); 
+    for(int i = 0 ; i < VEC_K_SIZE_BYTES ; ++i) PRINTF("%02x", sigma[i]);
     PRINTF("\n\nx: ");
     vect_print(x, VEC_N_SIZE_BYTES);
     PRINTF("\n\ny: ");
@@ -171,7 +175,7 @@ void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const u
  * @param[in] v Vector v (second part of the ciphertext)
  * @param[in] sk String containing the secret key
  */
-void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
+uint8_t hqc_pke_decrypt(DIGIT *m, uint8_t *sigma, const DIGIT *u, const DIGIT *v, const unsigned char *sk) {
     DIGIT x[VEC_N_SIZE_DIGIT] = {0};
     uint8_t pk[PUBLIC_KEY_BYTES] = {0};
     shares_n_t y;
@@ -182,7 +186,7 @@ void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned ch
 
     // Retrieve x, y, pk from secret key
     shares_n_init(&y);
-    hqc_secret_key_from_string(x, y.s0, pk, sk);
+    hqc_secret_key_from_string(x, y.s0, sigma, pk, sk);
     shares_init_from_data(&y, y.s0);
 
     // Generate and encode a random codeword
@@ -207,4 +211,6 @@ void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned ch
     //shares_n_init(&tmp1);
     code_decode(m, _v);
     shares_collapse_msg(m, &_m, m);
+
+    return 0;
 }
