@@ -8,16 +8,16 @@
 
 #include "parameters.h"
 
-void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t *pk);
+void hqc_secret_key_to_string(uint8_t *sk, const uint8_t *sk_seed, const uint8_t *sigma, const uint8_t *pk);
 
-void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *pk, const uint8_t *sk);
+void hqc_secret_key_from_string(DIGIT *x, DIGIT *y, uint8_t *sigma, uint8_t *pk, const uint8_t *sk);
 
 void hqc_public_key_to_string(uint8_t *pk, const uint8_t *pk_seed, const DIGIT *s);
 
 void hqc_public_key_from_string(DIGIT *h, DIGIT *s, const uint8_t *pk);
 
-void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const uint8_t *d, const DIGIT *salt);
+void hqc_ciphertext_to_string(uint8_t *ct, const DIGIT *u, const DIGIT *v, const DIGIT *salt);
 
-void hqc_ciphertext_from_string(DIGIT *u, DIGIT *v, uint8_t *d, DIGIT *salt, const uint8_t *ct);
+void hqc_ciphertext_from_string(DIGIT *u, DIGIT *v, DIGIT *salt, const uint8_t *ct);
 
 #endif

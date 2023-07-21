@@ -53,7 +53,6 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     DIGIT m[VEC_K_SIZE_DIGIT] = {0};
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
-    uint8_t d[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
     DIGIT salt[SALT_SIZE_DIGIT] = {0};
     uint8_t tmp[VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES] = {0};
@@ -67,22 +66,19 @@ int crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsigned char *pk
     memcpy(tmp, m, VEC_K_SIZE_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+    shake256_g(&shake256state, theta, tmp);
 
     // Encrypting m
     hqc_pke_encrypt(u, v, m, theta, pk);
-
-    // Computing d
-    shake256_512_ds(&shake256state, d, (uint8_t *) m, VEC_K_SIZE_BYTES, H_FCT_DOMAIN);
 
     // Computing shared secret
     memcpy(mc, m, VEC_K_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
     memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
-    shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
+    shake256_k(&shake256state, ss, mc);
 
     // Computing ciphertext
-    hqc_ciphertext_to_string(ct, u, v, d, salt);
+    hqc_ciphertext_to_string(ct, u, v, salt);
 
 #ifdef VERBOSE
     PRINTF("\n\npk: ");
@@ -116,59 +112,53 @@ int crypto_kem_dec(unsigned char *ss, const unsigned char *ct, const unsigned ch
     PRINTF("\n\n\n\n### DECAPS ###");
 #endif
 
-    const uint8_t *pk;
     uint8_t result;
     DIGIT u[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v[VEC_N1N2_SIZE_DIGIT] = {0};
-    uint8_t d[SHAKE256_512_BYTES] = {0};
-    DIGIT m[VEC_K_SIZE_DIGIT] = {0};
+    uint8_t pk[PUBLIC_KEY_BYTES] = {0};
+    uint8_t m[VEC_K_SIZE_BYTES] = {0};
+    uint8_t sigma[VEC_K_SIZE_BYTES] = {0};
     uint8_t theta[SHAKE256_512_BYTES] = {0};
     DIGIT u2[VEC_N_SIZE_DIGIT] = {0};
     DIGIT v2[VEC_N1N2_SIZE_DIGIT] = {0};
-    uint8_t d2[SHAKE256_512_BYTES] = {0};
     uint8_t mc[VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES] = {0};
     DIGIT salt[SALT_SIZE_DIGIT] = {0};
     uint8_t tmp[VEC_K_SIZE_BYTES + SALT_SIZE_BYTES + SEED_BYTES] = {0};
     shake256incctx shake256state;
 
     // Retrieving u, v and d from ciphertext
-    hqc_ciphertext_from_string(u, v, d, salt, ct);
+    hqc_ciphertext_from_string(u, v, salt, ct);
 
     // Retrieving pk from sk
-    //memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
-    pk = sk + SEED_BYTES;
+    memcpy(pk, sk + SEED_BYTES, PUBLIC_KEY_BYTES);
 
     // Decryting
-    hqc_pke_decrypt(m, u, v, sk);
+    result = hqc_pke_decrypt((DIGIT *)m, sigma, u, v, sk);
 
     // Computing theta
     memcpy(tmp, m, VEC_K_SIZE_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES, pk, SEED_BYTES);
     memcpy(tmp + VEC_K_SIZE_BYTES + SEED_BYTES, salt, SALT_SIZE_BYTES);
-    shake256_512_ds(&shake256state, theta, tmp, VEC_K_SIZE_BYTES + SEED_BYTES + SALT_SIZE_BYTES, G_FCT_DOMAIN);
+    shake256_g(&shake256state, theta, tmp);
 
     // Encrypting m'
-    hqc_pke_encrypt(u2, v2, m, theta, pk);
+    hqc_pke_encrypt(u2, v2, (DIGIT *)m, theta, pk);
 
-    // Computing d'
-    shake256_512_ds(&shake256state, d2, (uint8_t *) m, VEC_K_SIZE_BYTES, H_FCT_DOMAIN);
-
-    // Computing shared secret
-    memcpy(mc, m, VEC_K_SIZE_BYTES);
-    memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
-    memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
-    shake256_512_ds(&shake256state, ss, mc, VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES + VEC_N1N2_SIZE_BYTES, K_FCT_DOMAIN);
-
-    // Abort if c != c' or d != d'
-    result = vect_compare((uint8_t *) u, (uint8_t *) u2, VEC_N_SIZE_BYTES);
-    result |= vect_compare((uint8_t *) v, (uint8_t *) v2, VEC_N1N2_SIZE_BYTES);
-    result |= vect_compare(d, d2, SHAKE256_512_BYTES);
+    // Check if c != c'
+    result |= vect_compare((uint8_t *)u, (uint8_t *)u2, VEC_N_SIZE_BYTES);
+    result |= vect_compare((uint8_t *)v, (uint8_t *)v2, VEC_N1N2_SIZE_BYTES);
 
     result = (uint8_t) (-((int16_t) result) >> 15);
 
-    for (size_t i = 0; i < SHARED_SECRET_BYTES; i++) {
-        ss[i] &= ~result;
+    for (size_t i = 0; i < VEC_K_SIZE_BYTES; ++i) {
+        mc[i] = (m[i] & result) ^ (sigma[i] & ~result);
     }
+
+    // Computing shared secret
+    memcpy(mc + VEC_K_SIZE_BYTES, u, VEC_N_SIZE_BYTES);
+    memcpy(mc + VEC_K_SIZE_BYTES + VEC_N_SIZE_BYTES, v, VEC_N1N2_SIZE_BYTES);
+    shake256_k(&shake256state, ss, mc);
+
 
 #ifdef VERBOSE
     PRINTF("\n\npk: ");

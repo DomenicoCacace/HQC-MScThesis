@@ -12,6 +12,6 @@ void hqc_pke_keygen(unsigned char *pk, unsigned char *sk);
 
 void hqc_pke_encrypt(DIGIT *u, DIGIT *v, DIGIT *m, unsigned char *theta, const unsigned char *pk);
 
-void hqc_pke_decrypt(DIGIT *m, const DIGIT *u, const DIGIT *v, const unsigned char *sk);
+uint8_t hqc_pke_decrypt(DIGIT *m, uint8_t *sigma, const DIGIT *u, const DIGIT *v, const unsigned char *sk);
 
 #endif
