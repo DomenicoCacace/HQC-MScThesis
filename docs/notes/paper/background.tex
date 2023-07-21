@@ -1,0 +1,152 @@
+A Key Encapsulation Mechanism (KEM) is an asymmetric encryption technique 
+designed to generate both a randomly chosen symmetric key $k_s$ and its 
+encrypted version $c$, denoted as {\em encapsulated key}. 
+Considering an insecure communication channel, the encapsulation $c$ serves as 
+a secure delivery of the secret key, while $k_s$ is meant to be used for the 
+subsequent symmetric encryption of data exchanged between the endpoints of the 
+communication.
+Unlike public key encryption primitives (PKEs), such as either 
+RSA~\cite{DBLP:journals/cacm/RivestSA78} or the 
+ElGamal~\cite{DBLP:journals/tit/Elgamal85} encryption algorithms, to prepare a proper plaintext there is no need for a criterion to map bitstrings into 
+elements of an algebraic structure,
+Furthermore, since the bulk of the data is encrypted with the conveyed 
+symmetric key $k_s$, they can be received as a stream, without the need to 
+buffer the whole ciphertext before decryption. 
+From a security standpoint, the only (weak) requirement on the symmetric-key 
+cipher used for subsequent data bulk encryption is that it exhibits a 
+stream-based mode of operation (e.g., CTR - CounTeR mode) that is secure in case $k_s$ is employed only once per data exchange session.
+
+Post-quantum cryptographic primitives define PKEs that are only weakly secure, 
+due to the presence of probabilistic correctness errors or because they are 
+proven to exhibit only the computational property of either {\em indistinguishability of ciphertexts under chosen-plaintext attack} (IND-CPA) or 
+{\em one-wayness under chosen-plaintext attack} (OW-CPA).
+A PKE benefits from OW-CPA if an adversary equipped with a public key and the corresponding encryption of a random plaintext, is computationally unable to 
+derive the entire plaintext.
+It is well known that IND-CPA implies OW-CPA, because a PKE benefits from the 
+IND-CPA property when an adversary is unable to distinguish the encryptions of 
+two messages of his choice; more precisely, given the public key and the 
+corresponding encryption of one of two attacker-chosen plaintexts, the 
+attacker is able to determine which of the two messages was encrypted only 
+with negligible success probability. 
+%
+To guarantee security in both the Random Oracle Model (ROM) and the Quantum Random 
+Oracle Model (QROM), every post-quantum cryptographic scheme makes use of a variant 
+of the so-called Fujisaki-Okamoto (FO) 
+transformation~\cite{DBLP:conf/crypto/FujisakiO99}, introduced for the first 
+time in $1999$.
+Nowadays, a newer fine-grained modular toolkit of improved FO 
+transformations~\cite{DBLP:conf/tcc/HofheinzHK17} is employed for turning weakly 
+secure PKE schemes into strongly secure ones, i.e., schemes benefiting from the 
+property of {\em indistinguishability of ciphertexts under adaptive chosen-
+ciphertext attack} (IND-CCA), i.e., an adversary is unable to distinguish the 
+encryptions of two messages of his choice even if he is allowed access to a 
+decryption oracle before and after seeing the (randomly selected) ciphertext of one 
+of the two messages he has chosen (honoring the constraint of not querying the 
+oracle with the challenge ciphertext itself).
+\vspace{-0.2cm}
+\subsection{HQC cryptosystem}
+The first code-based PKE was introduced by McEliece in $1978$ and is based on the 
+assumption that the underlying forward error-correction code, a Goppa code, used 
+is indistinguishable from a random one. Although the original McEliece 
+cryptosystem remains secure to this day as demonstrated by the 
+highly optimized Classic-McEliece cryptoscheme~\cite{ClassicMcEliece}, the storage 
+requirements for its public key, which is not smaller than $0.25$ MiB for $128$-bit 
+security, is deemed too large for many application scenarios. Attempts to reduce 
+the key size of the McEliece PKE by using codes more structured than Goppa codes have been all cryptanalyzed.
+Therefore, the authors of the IND-CCA {\em Hamming Quasi-Cyclic} (HQC) code-based 
+post-quantum KEM proposed a novel approach for the design of their PKE, which 
+combines two different types of codes:
+{\em (i)} An [$n, k$] code $\mathcal{C}$ defined as the concatenation of 
+({\em shortened}) Reed-M\"{u}ller (RM) and ({\em duplicated}) Reed-Solomon (RS) codes, 
+for which an efficient decoding algorithm is known, with a fixed, publicly known 
+generator matrix $\mathbf{G} \in \mathbb{F}_2^{k \times n}$ ensuring the capability 
+to correct up to $\delta$ errors (i.e., bit-flips) in a $n$-bit codeword obtained 
+from a message $\mathbf{m} \in \mathbb{F}_2^k$ encoded as a (row) binary vector, as 
+$\mathbf{m}\mathbf{G}$. 
+{\em (ii)} A random double-circulant [$2n, n$] code with a publicly
+known parity-check matrix $\mathbf{H}$$\in$$\mathbb{F}_2^{n \times 2n}$, 
+$\mathbf{H}$$=$$[\mathbf{I_n} | \mathbf{rot}(\mathbf{h})]$, where $\mathbf{I_n}$ 
+is the identity matrix and $\mathbf{rot}(\mathbf{h}$) is the circulant 
+$n \times n$ matrix induced by the $1 \times n$  binary vector $\mathbf{h}$, 
+i.e., the matrix obtained from the juxtaposition of $\mathbf{h}$ as the first 
+column and the subsequent columns obtained through a vertical rotation, by one 
+cell, of the previous one. 
+The coefficients of the $1 \times n$  binary vector $\mathbf{h} \in \mathbb{F}_2^n$ are seen as the coefficients of a randomly chosen binary polynomial in 
+$\mathcal{R}=\mathbb{F}_2[x]/(x^n-1)$, where $n$ is a prime number such that 
+$\mathtt{ord}_2(n) = n-1$, i.e., $2^{n-1} = 1 \bmod n$.
+%
+The design rationale is that the double-circulant code is going to be used to 
+add some ``noise'' (i.e., bit-flips) to the codewords of the inner RM-RS code, 
+which in turn will be partially removed through the use of the secret key. The 
+leftover noise plus an additional uncorrelated noise term will be decoded by the 
+code $\mathcal{C}$, following the same generic steps of the ElGamal 
+cryptosystem~\cite{DBLP:journals/tit/Elgamal85} and adapting to quasi-cyclic (QC) 
+codes the approach first introduced in~\cite{DBLP:conf/focs/Alekhnovich03}. In such 
+a way, HQC can exhibit significantly smaller keys than the Classic-McEliece KEM, 
+while still providing the same computational security guarantees. Indeed, for a 
+security level of $128$-bit, the public key size is around $2$ kiB vs $256$ kiB 
+of the Classic-McEliece scheme.
+Specifically, the PKE underlying the HQC design is defined by the following three algorithms.
+
+\noindent \textsf{Keygen()}: samples $\mathbf{h} \xleftarrow{\mathdollar} \mathcal{R}$,  
+$(\mathbf{x}, \mathbf{y}) \xleftarrow{\mathdollar} \mathcal{R}_\omega \times \mathcal{R}_\omega$, and 
+outputs the private and public keypair as: \kpri = $(\mathbf{x}, \mathbf{y})$ 
+and \kpub = $(\mathbf{h}, \mathbf{s} = \mathbf{H}[\mathbf{x}|\mathbf{y}]^{T} = \mathbf{x} + \mathbf{h\cdot y})$. $\mathcal{R}_\omega$ denotes the set of binary polynomials (i.e., vectors in $\mathbb{F}_2^n$) with Hamming Weight $\omega$ (i.e., the number of non-zero coefficients), while $\cdot$ is the circular convolution of the two sequences of coefficients of the factors (each of which is considered as either a binary vector or a binary polynomial); e.g., given $\mathbf{a}, \mathbf{b}, \mathbf{c}=\mathbf{a}\cdot \mathbf{b} \in \mathbb{F}_2^n$, it holds that $\mathbf{a}$$=$$(a_0, \ldots, a_i,\ldots, a_{n-1})$,  $\mathbf{b}$$=$$(b_0, \ldots, b_j,\ldots, b_{n-1})$ and $\displaystyle \mathbf{c} = \mathbf{a} \cdot \mathbf{b} = \hspace{-2.5em}\sum_{\footnotesize \begin{array}{c} k=0 \\ i+j \equiv k \bmod n\end{array}}^{n-1} \hspace{-2.5em} a_ib_j$.
+
+\noindent \textsf{Encrypt(\kpub, \textbf{m})}: takes as input the public key, \kpub = $(\mathbf{h}, \mathbf{s} = \mathbf{x} + \mathbf{h\cdot y})$, samples an ephemeral $1 \times n$ error vector $\mathbf{e}$ from the subset of $\mathcal{R}$ that includes items with Hamming Weight $\omega_e$, i.e., $\mathbf{e} \xleftarrow{\mathdollar} \mathcal{R}_{\omega_e}$, samples the ephemeral vector $r=[\mathbf{r_1}| \mathbf{r_2}] \in \mathbb{F}_2^{2n}$ in such a way that each pair ($\mathbf{r_1}$, $\mathbf{r_2}$) is picked from the Cartesian product of two instances of the subset of $\mathcal{R}$ that includes items with Hamming Weight  $\omega_r$, i.e., $(\mathbf{r_1}, \mathbf{r_2}) \xleftarrow{\mathdollar} \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$, and output a ciphertext $\mathbf{c}$ which, in turn, is composed by the pair $(\mathbf{u}, \mathbf{v})$, where: 
+$$\mathbf{u} = \mathbf{r_1} + \mathbf{h}\cdot\mathbf{r_2},\ \text{and}\ \mathbf{v} = \mathbf{mG} + \mathbf{s\cdot r_2} + \mathbf{e}$$
+
+\noindent \textsf{Decrypt(\kpri, $(\mathbf{u}, \mathbf{v})$)}: takes as input the private key, \kpri = $(\mathbf{x}, \mathbf{y})$ and a ciphertext $(\mathbf{u}, \mathbf{v}) \in \mathbb{F}_2^n \times \mathbb{F}_2^n$, and outputs the original plaintext message through computing $\mathbf{m} = \mathcal{C}.\textsf{Decode}(\mathbf{v} - \mathbf{u\cdot y})$.
+
+\smallskip
+\noindent The computational security of recovering either the secret-key or the plaintext of an instance of the HQC.PKE scheme is computationally equivalent to solving the syndrome decoding problem on random quasi-cyclic codes with length $n$ and dimension $k$~\cite{DBLP:journals/tit/Aguilar-Melchor18}. 
+While random quasi-cyclic codes are not proven to yield an NP-complete and hard 
+to approximate syndrome decoding problems, it is largely believed that, in case 
+$n$ is chosen as a prime such that $\mathtt{ord}(2)$$=$$n$$-$$1$, no speedup 
+can be achieved with respect to the solution of the syndrome decoding problem
+on random codes with the same length, when the error generating the syndrome 
+is half of the code distance expected for a random code~\cite{DBLP:journals/tit/Aguilar-Melchor18}.
+
+Thus, the best classical and quantum cryptanalytic techniques that are currently 
+known to perform a key- or a message-recovery attack against the cryptosystem 
+have been considered to design the parameters sets shown in Table~\ref{tab:params}. 
+In particular, the NIST call defines the security levels for which parameter
+sets should be designed stating that the resulting computational effort to 
+break the cryptoscheme should match the one to break both classical and quantum realizations of AES-$128$, AES-$192$, and AES-$256$, respectively.
+The sets of parameters of a post-quantum cryptosystem that match the security 
+desiderata are labeled by NIST as Category $1$, Category $3$ and Category $5$, 
+respectively, while the authors of HQC.KEM named the corresponding instances of 
+their proposal as \texttt{hqc-128}, \texttt{hqc-192} and \texttt{hqc-256}.
+% 
+Finally, the most up-to-date specification of HQC reports a public code that is 
+defined as the concatenation of Reed-Solomon (outer) and Reed-M\"{u}ller (inner) 
+codes, with codeword length equal to $n_1$ and $n_2$, respectively, while the overall 
+codeword length $n$ is taken as the smallest prime number greater than $n_1n_2$ 
+such that $\mathtt{ord}_n(2)$$=$$n$$-$$1$. Thus, the public generator matrix 
+$\mathbf{G}$ has dimension $k\times n$, where $k$ coincides with the bitsize of 
+the plaintext message $\mathbf{m}$. Furthermore, the random code with 
+parity-check matrix $\mathbf{H}$ is instantiated by randomly sampling the 
+vector $\mathbf{h}$ from $\mathds{F}_2^n$. 
+\begin{table}[!t]
+    \centering
+    \caption{HQC Parameter sets. $n$: public code length, $n_1$: Reed–Solomon code length, $n_2$: Reed–M\"{u}ller code length. $\omega$: weight of the $n$-bit binary vectors $\mathbf{x}, \mathbf{y}$, composing the secret key. 
+    $\omega_r=\omega_e$: weight of the $n$-bit binary vectors used in the 
+    encryption. $[n, k, d]$ for Reed–Solomon and Reed–M\"{u}ller codes are the 
+    length, dimension, and minimum distance of the codes, respectively.
+    The multiplicity of duplicated Reed–M\"{u}ller code is $3$, $5$, $5$ for \textsc{hqc-128}, \textsc{hqc-192}, \textsc{hqc-256}.
+    The probability of a decapsulation error (i.e., of a correctness error of the system) is specified as the decoding failure rate (DFR) of the public code}
+    {\small
+     \begin{tabular}{cc|cccc|cc|c}
+        \toprule
+        \textbf{NIST} & \multirow{2}{*}{\textbf{Instance}} & \textbf{Plaintex} & \multirow{1}{*}{\bf 
+        Reed-} & \multirow{1}{*}{\bf Reed-} & \multirow{2}{*}{$\mathbf{n}$} & \multirow{2}{*}{$\mathbf{\omega}$} & \multirow{2}{*}{$\mathbf{\omega_r = \omega_e}$} & \multirow{2}{*}{\textbf{DFR}}\\
+        \textbf{Category} &  & \textbf{size (bit)} & {\bf Solomon} & {\bf M\"{u}ller}&  &  &  & \\
+        \midrule
+        $1$& \texttt{hqc-$128$} & $128$ &$[46, 16, 15]$ &  $[384, 8, 192]$ & $17,669$ & $66 $ & $ 75$ & $2^{-128}$\\
+        $3$& \texttt{hqc-$192$} & $192$ &$[56, 24, 16]$ &  $[640, 8, 320]$ & $35,851$ & $100$ & $114$ & $2^{-192}$\\
+        $5$& \texttt{hqc-$256$} & $256$ &$[90, 32, 29]$ &  $[640, 8, 320]$ & $57,637$ & $131$ & $149$ & $2^{-256}$\\
+        \bottomrule
+    \end{tabular}
+    \label{tab:params}
+    }\vspace{-0.4cm}
+\end{table}

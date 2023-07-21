@@ -1,0 +1,433 @@
+The HQC.KEM is obtained starting from the HQC.PKE, augmenting it with components
+which do not involve polynomial arithmetic operations. 
+In particular, the HQC.KEM employs the \textsc{SHAKE} extendable output function~\cite{SHAandSHAKE} (i.e., a function mapping an arbitrary-length bit 
+string to a bitstring with a user chosen length, which is indistinguishable from
+a randomly selected string; in other words a PRNG algorithm with a seed of 
+arbitrary length) to realize the variant of the FO 
+transform~\cite{DBLP:conf/tcc/HofheinzHK17}. Since the constant time and 
+side channel protection of \textsc{SHAKE} have been successfully tackled in the 
+literature, we consider them out of scope for this work, 
+and employ the existing results.
+Except for \textsc{SHAKE}, the HQC.KEM algorithmic components are the same of the 
+HQC.PKE, namely polynomial addition and multiplication in $\mathcal{R}$, 
+pseudorandom bit generation via \textsc{SHAKE} and encoding/decoding for the 
+concatenated Reed-M\"{u}ller Reed-Solomon code.
+Considering the fact that binary polynomial additions are straightforward to 
+compute in constant time, and protect with respect to side channel attacks, 
+we focus on polynomial multiplications and encoding/decoding. The pseudorandom
+number generation component is effectively and efficiently protected in the
+same way the HQC.KEM \textsc{SHAKE} element is.
+
+Concerning the encoding/decoding, we devise an algorithmic strategy to avoid
+the requirement for a power based side channel attack protected decoder, 
+exploiting the linearity of the RM-RS codes, while no timing analysis concerns 
+are present thanks to their constant time implementation being the current one 
+at the state of the art.
+In the following, we describe in detail the approaches to a timing-side channel
+protected polynomial multiplication, while deferring the protection of the said
+multiplication against power analysis attacks to the description of our 
+algorithmic strategy for the protection of the entire HQC.PKE.
+
+\subsection{Polynomial Multiplication Approaches}
+HQC.PKE uses polynomial multiplications in $\mathcal{R}=\mathbb{F}_2[x] / (x^n-1)$
+in each of its primitives. Referring to the definition of the HQC.PKE 
+primitives and to Table~\ref{tab:params}, \textsf{Keygen()} requires one 
+multiplication between elements in $\mathcal{R}$, where the polynomial 
+employed as a second factor has only $\omega$ of non-null coefficients, 
+with $\omega \ll n$, i.e., $\mathbf{h} \cdot \mathbf{y}$, with 
+$\mathbf{h} \in \mathcal{R}$, $\mathbf{y} \in \mathcal{R}_{\omega}$. 
+Thus, in any software implementation, the first factor (e.g., $\mathbf{h}$) 
+is stored as a {\em dense} polynomial, i.e., a sequence of $n$ binary 
+coefficients, while the second one ($\mathbf{y}$) is stored as a {\em sparse} 
+polynomial, i.e., as a sequence of integer numbers, each of which is intended 
+as the exponent of a non-null monomial ($x^i, 0 \leq i \leq n-1$). 
+\textsf{Encrypt()} requires two multiplications in $\mathcal{R}$ to compute the 
+ciphertext, in each of which the first factor is a dense polynomial and the 
+second factor is a sparse polynomial with a number of coefficients equal to 
+$\omega_r$. 
+Finally, \textsf{Decrypt()} requires one multiplication in $\mathcal{R}$, where 
+the first factor is a dense polynomial ($\mathbf{u}$) and the second one is a 
+sparse polynomial ($\mathbf{y}$) with $\omega$ non-null coefficients.\\ 
+Denoting as $\mathtt{wsize}$ the bitlength of the word of the CPU employed as a 
+target computational platform, the data structure for storing a dense polynomial 
+$b(x) \in \mathcal{R}$ is an array $B = (B_{t-1}, \ldots, B_j, \ldots, B_0)_{\mathtt{w}}$ of $t = \left\lceil \frac{n}{\mathtt{wsize}} \right\rceil$ cells, where each cell 
+$B_j$ stores a sequence of adjacent binary coefficients in $b(x)$ that fits in 
+a CPU word. Equivalently, the same polynomial can be thought of as a 
+multiple precision unsigned integer encoded in $t$ CPU words, with each digit 
+(limb) $0$$\leq$$B_j$$<$$\mathtt{w}$, $0$$\leq$$j$$\leq$$t$$-$$1$, meant to 
+follow the usual positional notation of a number in radix 
+$\mathtt{w} = 2^{\mathtt{wsize}}$.
+A sparse polynomial $a(x) \in \mathcal{R}$ is an array $A = (A_{\omega-1}, \ldots, A_i, \ldots, A_{0})$, with $\omega \ll n$ cells, such that each cell $A_i=a$ is an 
+unsigned integer that encodes the exponent of a non-null monomial 
+$x^a \in \mathcal{R}$ included in $a(x)$, where the value $0\leq a\leq n-1$ is 
+encoded with at most $m=\lceil \log_2(n)\rceil$ bits. 
+The product $c(x) = b(x) \cdot x^{A_i} \bmod (x^n-1)$ between a dense polynomial 
+$b(x)$ and a monomial with $A_i = a$  must be equivalent to the computation of 
+a circular left-shift of the coefficients of $b(x)$, for $a$ positions across 
+their original $n$-bit positions (also denoted as $\clshift a$). 
+
+\subsection{Sparse-to-dense Multiplication Algorithm}\label{subsec:shift_add}
+% \begin{figure*}[!t]
+% \noindent\begin{minipage}{0.99\textwidth}
+% \footnotesize
+% \begin{algorithm}[H]
+%     \caption{Sparse-to-dense Polynomial Multiplication\label{alg:varTimeShiftAndAdd}}
+%     \KwIn{$n$: maximum number of bits for a polynomial in $\mathcal{R}$$=$$\mathbb{F}_2[x]/(x^n$$-$$1)$.\newline 
+%     $\mathtt{wsize}$: bitlength of a CPU word, $\mathtt{w} = 2^{\mathtt{wsize}}$ radix employed to represent in positional notation a long integer/binary-polynomial.\newline   
+%     $A = (A_{\omega-1}, \ldots, A_i, \ldots, A_{0})$, represents $a(x) \in \mathcal{R}$, where $A_i$ is an unsigned integer that encodes the exponent of a non-null monomial $x^a \in \mathcal{R}$, $0\leq a\leq n-1$, $\omega < n$.\newline 
+%           $B = (B_{t-1}, \ldots, B_j, \ldots, B_0)_{\mathtt{w}}$, $t = \left\lceil \frac{n}{\mathtt{wsize}} \right\rceil$, represents $b(x) \in \mathcal{R}$, where a limb $B_j$ stores a sequence of binary coefficients fitting in a CPU word having $\mathtt{wsize}$ bits (i.e., $0$$\leq$$B_j$$<$$\mathtt{w}$), $0$$\leq$$j$$\leq$$t$$-$$1$.} 
+%     \KwOut{$C = (C_{t-1}, \ldots, C_k, \ldots, C_0)_{\mathtt{w}}$, represents $c(x) = a(x)\cdot b(x) \in \mathcal{R}$, where each limb $C_k$ stores a sequence of binary coefficients fitting into a CPU word (i.e., $0$$\leq$$C_k$$<$$\mathtt{w}$), $0$$\leq$$k$$\leq$$t$$-$$1$.}
+%     \BlankLine
+%     $C \gets (0,\ldots,0)$ \tcp*[l]{\color{blue}zeroed array with $t$ cells, each with\ \text{{\em wsize}}\ bits}
+%     \For{$i \gets 0$ \KwTo $\omega-1$}{
+%        $\mathtt{tmp} \gets (\ B \clshift A_i\ )$\tcp*[l]{\color{blue}\footnotesize variable-time comput. of a $t$-word array}    
+%        \For{$k \gets 0$ \KwTo $(t-1)$} {
+%            $C_k \gets C_k \oplus \mathtt{tmp}_k$\;
+%         }
+%     }
+%     \BlankLine
+%     \KwRet $C$\;
+%     \end{algorithm}
+% \end{minipage}
+% \vspace{-0.4cm}
+% \end{figure*}
+In the third round of the NIST standardization process, the authors of HQC 
+proposed, as a reference implementation, only a schoolbook non-constant time 
+polynomial multiplication algorithm using a minor variant of the schoolbook
+\textit{Shift-and-Add} method, exploiting the sparsity of one of the two 
+operands.
+The approach is summarized as $c(x) = b(x) \cdot a(x) = b(x) (x^{A_{\omega-1}}\oplus\cdots \oplus x^{A_{i}}\oplus\ldots)$ $= b(x)x^{A_{\omega-1}} \oplus \cdots\oplus b(x)x^{A_{i}} \cdots\oplus b(x)x^{A_{0}}$, where $A_{\omega-1},\ldots, A_{0} \in \{0,\ldots ,n-1\}$ 
+and each multiplication by a monomial is computed as a circular left-shift of 
+the coefficients of the first polynomial $b(x)$ for $A_i$ positions across its 
+original $n$ bit positions. 
+The pseudo-code of the method is in Algorithm~\ref{alg:varTimeShiftAndAdd}, Appendix~\ref{sec:appendix}, while its worst-case computational 
+complexity is ${O}(\omega(2t)$) bit operations.
+
+The major drawback of the schoolbook \textit{Shift-and-Add} method lies in the 
+variable-time computation reported on Alg.~\ref{alg:varTimeShiftAndAdd}, 
+$\mathbf{line}\ 3$, which reveals on the timing side-channel, the sensitive 
+value of each monomial coefficient $A_i$ of the sparse polynomial factor. 
+Indeed, the computation time of a circular left-shift for $a$ positions across 
+the original $n$ bit positions of the first array is a multiple of the execution 
+time required to compute ($B \clshift 1$).         
+% 
+\begin{figure*}[!t]
+\noindent\begin{minipage}{0.99\textwidth}
+\footnotesize
+\begin{algorithm}[H]
+\SetAlgoLined
+    \caption{Constant-time Sparse-to-dense Polynom. Multiplication\label{alg:CTShiftAndAdd}}
+    \KwIn{$n$: maximum number of bits for a polynomial in $\mathcal{R}$$=$$\mathbb{F}_2[x]/(x^n$$-$$1)$.\newline 
+    $\mathtt{wsize}$: bitlength of a CPU word, $\mathtt{w} = 2^{\mathtt{wsize}}$ radix employed to represent in positional notation a long integer or the sequence of coefficients of a binary-polynomial.\newline   
+    $A = (A_{\omega-1}, \ldots, A_i, \ldots, A_{0})$, represents $a(x) \in \mathcal{R}$, where $A_i=a$ is an unsigned integer that encodes the exponent of a non-null monomial $x^a \in \mathcal{R}$, $0\leq a\leq n-1$, $\omega < n$, $a = (a_{m-1}, \ldots, a_0)_{\mathtt{bin}}$, $a_i \in \{0,1\}$, $m = \lceil \log_2(n) \rceil$.\newline 
+    $B = (B_{t-1}, \ldots, B_j, \ldots, B_0)_{\mathtt{w}}$, $t = \left\lceil \frac{n}{\mathtt{wsize}} \right\rceil$, represents $b(x) \in \mathcal{R}$, where a limb $B_j$ stores a sequence of binary coefficients fitting in a CPU word having $\mathtt{wsize}$ bits (i.e., $0$$\leq$$B_j$$<$$\mathtt{w}$), $0$$\leq$$j$$\leq$$t$$-$$1$.} 
+    \KwOut{$C = (C_{t-1}, \ldots, C_k, \ldots, C_0)_{\mathtt{w}}$, represents $c(x) = x^a \cdot b(x) \in \mathcal{R}$, where each limb $C_k$ stores a sequence of binary coefficients fitting into a CPU word (i.e., $0$$\leq$$C_k$$<$$\mathtt{w}$), $0$$\leq$$k$$\leq$$t$$-$$1$.}
+    \BlankLine
+    \For{$i \gets 0$ \KwTo $\omega-1$}{
+    $a \gets A_i$\tcp*[l]{\color{blue}value with $m$$=$$\lceil \log_2(n)\rceil$ bits: $(a_{m-1},\ldots,m_0)_{\mathtt{bin}}$}
+    $C \gets (\ B \clshift (a \mod \mathtt{wsize}) \ )$\tcp*[l]{\color{blue}\footnotesize computation of a $t$-word array}
+    \For{$j \gets \log_2(\mathtt{wsize})$ \KwTo $(m-1)$} {
+        $\mathtt{tmp} \gets (\ B \clshift 2^j\ )$\tcp*[l]{\color{blue}\footnotesize computation of a $t$-word array}
+        $\mathtt{mask} \gets 0 - (a_j = 1)$\tcp*[l]{\color{blue}\footnotesize single word: all its bits are $1$ or $0$}
+        \For{$k \gets 0$ \KwTo $(t-1)$} {
+           $C_k \gets C_k \oplus ((C_k \wedge \mathtt{mask}) \vee (\mathtt{tmp}_k \wedge \mathtt{mask}))$\;
+        }
+    }
+    }
+    \KwRet $C$\;
+    \end{algorithm}
+\end{minipage}
+\vspace{-0.4cm}
+\end{figure*}
+A constant-time realization of the Shift-and-Add strategy is shown in Algorithm~\ref{alg:CTShiftAndAdd}. The rationale is still to split the computation 
+as the iterated sum of the dense polynomial multiplied by a monomial one. 
+However, instead of executing in variable-time every single monomial 
+multiplication, it is possible to realize it as a fixed sequence of circular 
+left-shift operations followed by arithmetic predicates for the conditional 
+committment of each of them.
+Specifically, considering $a$$=$$(a_{m-1}, \ldots, a_j, \ldots, a_0)_{\mathtt{bin}}$, $0$$\leq$$j$$<$$m$, $a_j$$\in$$\{0,1\}$, $m$$=$$\lceil \log_2(n) \rceil$, 
+the multiplication $c(x) = b(x) \cdot x^a \bmod (x^n$$-$$1)$ is decomposed as: 
+\begin{center}
+$c(x) = b(x)  \cdot \left( x^{a_{m-1}2^{m-1}} \cdots x^{a_{j}2^{m-1}} \cdots x^{a_{0}} \right)\bmod (x^n-1) $ $=\phantom{MMMMMMM...}$\newline
+$= b(x)  \cdot \left( x^{a_{m-1}2^{m-1}} \cdots x^{a_{\log_2(\mathtt{wsize})}2^{\log_2(\mathtt{wsize})}} \cdots x^{a \bmod \mathtt{wsize}} \right) \bmod (x^n-1)$, 
+\end{center}
+observing that $\mathtt{wsize}$ is a power of two (for any CPU), thus $a = (a_{m-1},  \ldots, a_0)_{\mathtt{bin}}$ $= (a_{m-1}, \ldots, a_{\log_2(\mathtt{wsize})})_{\mathtt{bin}}$ concatenated with the binary string encoding $(a \bmod \mathtt{wsize})$, while the execution of $b(x) \cdot x^{a \bmod \mathtt{wsize}}$ is amenable to be realized through a constant amount of $t=\lceil \frac{n}{\mathtt{wsize}}\rceil$ circular left-shifts. These observations, together with  the arithmetic test to establish whether any $a_j$ is asserted or not, and a conditional update of the final result (see Alg.~\ref{alg:CTShiftAndAdd}: \textbf{lines} $4$--$8$), allow to realize a constant-time version of the Shift-and-Add method with a computational cost that amounts to $\Theta\left(\omega\,(2t)\,m + \omega\, t+\omega\, m\right)$ bit operations. 
+
+\subsection{Dense-to-dense Multiplication Algorithms}\label{subsec:CTDenseMul}
+Another approach to constant-time polynomial multiplication is to give up the 
+savings offered by the sparse representation of one of the factors and represent
+both factors as dense polynomials. 
+Indeed, the execution of algorithmic strategies as the schoolbook multiplication 
+(recommended for operands encoded with up to $\approx 300$ bits), the 
+Karatsuba-, Toom-Cook- or Fast-Fourier-Transform-based (FFT) multiplications 
+(recommended for operands with bitlength up to $\approx 10^4$, from 
+$\approx 10^4$ to $\approx 6\cdot10^4$, and $\gtrapprox 6\cdot10^4$, 
+respectively) exhibit no information leakage on the timing side-channel. 
+ 
+\noindent
+\textbf{HQC Approach.}
+% From a performance perspective, the choice of the algorithmic strategy that better fits the multiplication operations listed by the HQC primitives depends on the bitlength of the operands, which in turn depend on the HQC instance that is specifically considered among \texttt{hqc-128}, \texttt{hqc-192}, and \texttt{hqc-256}.
+In the fourth round of the NIST standardization process, given the size of the 
+polynomials listed in Table~\ref{tab:params}, for the realization of polynomial 
+multiplications required in \texttt{hqc-128}, \texttt{hqc-192}, the authors of 
+HQC decided to apply a combination of the Toom-Cook multiplication strategy 
+named as Toom-$3$, which splits each factor in three parts before performing 
+operations on them, with a recursive $3$-split Karatsuba multiplication approach 
+or a recursive $5$-split Karatsuba multiplication approach, down to the point 
+where a $64$-bit$ \times 64$-bit multiplier is sufficient. 
+For the realization of polynomial multiplications required in \texttt{hqc-256} 
+the same overall approach is applied, replacing the $3$-split Karatsuba 
+algorithm with a $5$-split one. The chosen strategy is supported by a favorable 
+$O(n^{1.46})$ cost of the Toom-Cook approach, which is further optimized, in 
+the finite regime of the HQC parameters, applying also the Karatsuba technique 
+and the (vectorized) multiply instructions provided by the instruction set 
+architecture of the target platform.
+ 
+\noindent
+\textbf{Alternate Approach.}
+The asymptotically fastest methods currently known to perform multiplications in 
+$\mathcal{R}$ require to evaluate them at $2n$ points, perform a pointwise 
+multiplication of the these results, and interpolate the resulting $2n$ values 
+to get the final polynomial. While this approach may seem less efficient, 
+with a proper choice of the evaluation points it takes the name of 
+Fast Fourier Transform (FFT) based multiplication, and the overall 
+computational cost (including the one of interpolation) requires 
+${O}(n\cdot\log(n))$ bit operations.
+
+We noted that relatively recent development in the field of FFT-based arithmetic 
+in binary finite fields may allow execution of polynomial multiplications in 
+both $\mathtt{F}_2[x]$ and $\mathcal{R}$ exhibiting a computational complexity 
+that is less than the one that can be obtained with other methods when the 
+bitlength of the operands in in the range prescribed by each HQC instance.
+% 
+Specifically, Cantor~\cite{DBLP:journals/jct/Cantor89}, developed the so-called 
+additive-FFTs through evaluating polynomials at points that form an additive 
+subgroup in $\mathbb{F}_2$ and defining a basis, termed {\em Cantor basis}, for 
+constructing an FFT over the field that works with the complexity of 
+$O(n \log(n))$ multiplications and 
+$O(n\cdot\log^{\log_2 (3)}(n))$ $\mathtt{xor}$-additions for evaluating 
+$n = 2^m$ elements. 
+In $2010$, Gao and Mateer~\cite{DBLP:journals/tit/GaoM10} presented an 
+additive-FFT (GM-FFT) over $\mathbb{F}_{2^k}$ with 
+$O(n\cdot\log^2(n))$ $\mathtt{xor}$-operations for evaluating a polynomial at 
+$n = 2^m $ points in general. 
+It can be optimized to $O(n\cdot\log( n)\cdot\log (\log(n)))$ only when $m$ is 
+a power of $2$, and the polynomials in this case are represented in a special 
+basis introduced by Cantor~\cite{DBLP:journals/jct/Cantor89}. 
+In $2014$, Bernstein and Chou~\cite{DBLP:conf/sacrypt/BernsteinC14} presented an 
+efficient implementation of the GM-FFT with performance equal to the ones 
+obtainable applying the more general variant introduced in the same year by 
+Lin, Chung, and Han~\cite{DBLP:conf/focs/LinCH14} (named LCH-FFT ), which uses 
+a polynomial basis different from the standard one. 
+In the subsequent work~\cite{DBLP:journals/tit/LinAH16} a method to convert 
+from/to the standard polynomial basis to/from the one required 
+by~\cite{DBLP:journals/jct/Cantor89} is introduced. 
+The computational complexity to realize the conversion is 
+$O(n\cdot \log(n)\cdot \log(\log(n)))$ $\mathtt{xor}$-operations, with $n$ 
+being any power of two, which in turn reaches the same complexity as the 
+common multiplicative FFTs.
+
+We were able to effectively reproduce the multiplication strategy introduced  
+in~\cite{DBLP:conf/sacrypt/BernsteinC14} to the end of realizing the polynomial 
+multiplications listed in the HQC primitives with a constant-time dense-to-dense
+algorithmic approach.
+Since the length of the operands $n$ in HQC is not a power of two, a 
+straightforward approach would call for zero-padding of the polynomials 
+for a number of coefficients up to the nearest power of two greater than $n$.
+However, this approach performs a significant amount of unnecessary computations
+among zero-filled words, whenever $n$ is far from the said power of two (as it
+is the case in \textsc{hqc-128} and \textsc{hqc-192}).
+To avoid such overhead, we automatically generated the code of the  
+multiplication algorithm in~\cite{DBLP:conf/sacrypt/BernsteinC14}, removing at code
+generation time the operations acting deterministically only on zero-filled words.\footnote{The source code of our HQC realization will be publicly available upon 
+acceptance} 
+
+\subsection{Boolean Masking of the HQC.PKE against Power Analysis}\label{subsec:masking}
+Regardless of their security against mathematical cryptanalysis, the 
+implementation of cryptographic algorithms on end-user devices may leak 
+information about secret parameters of the scheme, which can lead to 
+successful plaintext or secret-key recovery attacks. 
+Gathering power- or EM-measurements (a.k.a. {\em traces}) during a known-input 
+execution of a cryptographic primitive allows to apply a divide-and-conquer 
+strategy in inferring the secret values in the computation, thanks to the 
+timewise locality and granularity of the information obtained.
+The general workflow for non-profiled side channel attacks predicts the side
+channel behaviour of a simple operation in the cryptographic primitive, depending
+on a (guessed) value for the small portion of secret involved in it.
+After collecting measurements from the device, the correct guess for the secret
+is singled out comparing with statistical means the secret-dependent predictions
+with the actual measures.
+
+A popular, and quantifiably secure countermeasure against side-channel attacks 
+is \emph{masking}~\cite{ishai2003private,prouff2013masking}.
+Masking works through performing the entire computation on share-split values, 
+through an $x$-out-of-$x$ share splitting schemes.
+The number of shares into which a value is split provides a quantification
+of the security margin: this is commonly denoted as the \emph{masking order} $d$, 
+where a masking scheme with $x$ shares is known as a $d=x-1$ order masking.
+The most common share splitting strategy is the one known as 
+\emph{Boolean masking}.
+Applying Boolean masking to a polynomial in $\mathbf{v}\in\mathcal{R}$ we have that the $x$-uple $\ssplit{\mathbf{v}}= (\mathbf{v}_0,\ldots,\mathbf{v}_{x-1})$ of the shares of a polynomial $\mathbf{v}\in \mathcal{R}$ is obtained drawing $x-1$ random polynomials, 
+$(\mathtt{rnd}_0,\ldots,\mathtt{rnd}_{x-2})$ and obtaining the remaining share 
+as their coefficient-wise \texttt{xor} sum with the polynomial to be 
+split $\mathbf{v}$, $(\mathbf{v}\oplus \bigoplus_{i=0}^{x-2} 
+\mathtt{rnd}_i)$. We denote this operation as 
+$\text{\sc Split}(\mathbf{v}) = (\mathbf{v}\oplus \sum_{i=0}^{x-2} \mathtt{rnd}_i,\mathtt{rnd}_0,\ldots,\mathtt{rnd}_{x-2})=\ssplit{\mathbf{v}}$.
+
+All the operations on share-split polynomials must be performed so that combining
+the share-split results (i.e., \texttt{xor}-ing together all shares) yields the correct result. 
+We will denote such an action on the share-split value $\ssplit{\mathbf{v}}$ as
+$\text{\sc Combine}(\ssplit{\mathbf{v}})=\mathbf{v}$.
+The share combination is performed only at the end of the primitive computation, as any operation combining all the shares from of a single original value $\mathbf{v}$ reveals information on the value itself.
+By contrast, combining up to $x-1$ shares does not yield any information 
+leakage.
+
+Boolean masking incurs in only a linear (in $x$) overhead whenever the performed 
+operations on share-split polynomials are \texttt{xor} linear, nonlinear operations (e.g., Boolean \texttt{and}) have a quadratic overhead~\cite{ishai2003private}.
+
+\begin{figure*}[!t]
+\noindent\begin{minipage}{0.45\textwidth}
+\footnotesize
+    \begin{algorithm}[H]
+        \caption{Masked HQC.PKE \textsf{Keygen}\label{alg:keygen}}
+        \KwIn{none}
+        \KwOut{$\kpub = (\mathbf{h},\mathbf{s})\in \mathcal{R}\times \mathcal{R}$\newline 
+        $\kpri$$=$$(\mathbf{x},\mathbf{y})$$\in$$\mathcal{R}_\omega$$\times$$\mathcal{R}_\omega$}
+
+        $\mathbf{h} \sample \mathcal{R}$\; 
+        $(\mathbf{x},\mathbf{y}) \sample \mathcal{R}_\omega \times \mathcal{R}_\omega$\;
+        $\ssplit{\mathbf{y}} \gets \text{\sc Split}(\mathbf{y})$\;
+        $\ssplit{\mathbf{s}} \gets (\mathbf{h}\cdot\mathbf{y}_{,0},\ldots,\mathbf{h}\cdot\mathbf{y}_{,x-1})$\;
+        $\ssplit{\mathbf{x}} \gets \text{\sc Split}(\mathbf{x})$\;
+        $\ssplit{\mathbf{s}} \gets \ssplit{\mathbf{x}} \oplus \ssplit{\mathbf{s}}$  \;
+        $\kpri \gets (\mathbf{x},\mathbf{y})$\;
+        $\kpub \gets (\mathbf{h},\textsc{Combine}(\ssplit{\mathbf{s}}))$\;
+        \KwRet $\kpri$, $\kpub$\;
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        \BlankLine
+    \end{algorithm}
+\end{minipage}\hspace{0.5cm}
+\begin{minipage}{0.5\textwidth}
+\footnotesize
+    \begin{algorithm}[H]
+        \caption{Masked HQC.PKE \textsf{Encrypt}\label{alg:enc}}
+        \KwData{$\mathbf{G}$: a $\mathds{F}_2^{k \times n}$ matrix generating an efficiently correctable code}
+        \KwIn{$\kpub = (\mathbf{h},\mathbf{s})\in \mathcal{R}\times \mathcal{R}$\newline 
+        $\mathbf{m}\in \mathbb{F}_2^k$}
+        \KwOut{$(\mathbf{u}, \mathbf{v}) \in \mathcal{R} \times \mathcal{R}$}
+
+        $\mathbf{e} \sample \mathcal{R}_{\omega_e}$, 
+        $(\mathbf{r_1},\mathbf{r_2}) \sample \mathcal{R}_{\omega_r} \times \mathcal{R}_{\omega_r}$\;
+        $\ssplit{\mathbf{r_1}} \gets \text{\sc Split}(\mathbf{r_1})$\;
+        $\ssplit{\mathbf{r_2}} \gets \text{\sc Split}(\mathbf{r_2})$\;
+        $\ssplit{\mathbf{u}} \gets \ssplit{\mathbf{r_1}} \oplus 
+        (\mathbf{h}\cdot\mathbf{r_2}_{,0},\ldots,\mathbf{h}\cdot\mathbf{r_2}_{,x-1})$\;
+        $\ssplit{\mathbf{m}} \gets \text{\sc Split}(\mathbf{m})$\;
+        $\ssplit{\mathbf{v}} \gets \ssplit{\mathbf{m}}\mathbf{G}  \oplus \text{\sc Split}(\mathbf{e}) $\;
+        $\ssplit{\mathbf{v}} \gets \ssplit{\mathbf{v}} \oplus (\mathbf{s}\cdot\mathbf{r_2}_{,0},\ldots,\mathbf{s}\cdot\mathbf{r_2}_{,x-1}) $\;
+        $\mathbf{u} \gets \textsc{Combine}(\ssplit{\mathbf{u}})$\;
+        $\mathbf{v} \gets \textsc{Combine}(\ssplit{\mathbf{v}})$\;
+        \KwRet $(\mathbf{u},\mathbf{v})$\;
+    \end{algorithm}
+\end{minipage}
+\vspace{-0.4cm}
+\end{figure*}
+To the end of devising our algorithmic proposal for efficient Boolean masking
+of HQC.PKE, we observe that the following two properties hold for its structure:
+\begin{prop}[Public operands]\label{prop:one} All the polynomial multiplications have a factor 
+which is public and either input independent or constant (across a computation). 
+It is thus possible to avoid the share-splitting of the public operand and 
+rewrite the multiplication as a sequence of $x$ share-wise \texttt{xor} 
+additions of the share-split operand and $x$ share-wise circular shifts.
+\end{prop}
+\begin{prop}[Share-split decoding]\label{prop:two} Computing in a share-split 
+representation the decoding w.r.t. the public code $\mathbf{G}$ is  
+performed in a more efficient way exploiting the linearity of the encoding: 
+the $x-1$ random shares for the erroneous codeword to be decoded are obtained 
+encoding $x-1$ random information words.
+\end{prop}
+\noindent\textbf{Masked} \textsf{Keygen}.
+The masking of the key generation algorithm (Algorithm~\ref{alg:keygen}) is 
+performed splitting the private key ($\kpri = (\mathbf{x},\mathbf{y}) \in 
+\mathcal{R}_\omega \times \mathcal{R}_\omega$) element $\mathbf{v}$ (line $3$), 
+and multiplying it by the public polynomial $\mathbf{h}$, which does not need
+to be share-split (Property~\ref{prop:one}). To add the secret value 
+$\mathbf{x}$ to $\ssplit{\mathbf{s}}$, we share-split it (line $5$) in turn 
+and perform a share-wise \texttt{xor}. Finally, we combine the shares of 
+$\ssplit{\mathbf{s}}$ to obtain the second half of the public key.
+
+\noindent\textbf{Masked} \textsf{Encrypt}. In the encryption algorithm, 
+we protect both the message $\mathbf{m}$ and the ephemeral values 
+$\mathbf{r_1},\mathbf{r_2},\mathbf{e}$ by share splitting them (lines $2,3,5,6$).
+The multiplications at lines $4$ and $6$ can be performed without share splitting
+the public factors $\mathbf{h}$ and $\mathbf{s}$ -- by Property~\ref{prop:one}, 
+indeed, they are the two components of the public key -- and therefore their 
+share-wise multiplication only takes linear time in the number of shares $x$.
+The encoding of the shared message $\ssplit{\mathbf{m}}$ is performed via a sequence
+of linear operations, i.e. the share-wise multiplication by the public binary 
+matrix $\mathbf{G}$, which therefore does not need to be share split, or any 
+equivalent encoding technique.
+\begin{figure*}[!t]
+\noindent\begin{minipage}{0.99\textwidth}
+\footnotesize
+\begin{algorithm}[H]
+    \caption{Masked HQC.PKE \textsf{Decrypt}\label{alg:dec}}
+    \KwData{$\mathbf{G}$: a $\mathbb{F}_2^{k \times n}$ matrix generating an efficiently correctable code}
+    \KwIn{$\kpri = (\mathbf{x},\mathbf{y}) \in \mathcal{R}_\omega \times \mathcal{R}_\omega$\newline $(\mathbf{u}, \mathbf{v}) \in \mathcal{R} \times \mathcal{R}$}
+    \KwOut{$\ssplit{\mathbf{b}}$, such that $\text{\sc Combine}(\ssplit{\mathbf{b}})=\mathbf{m}\in \mathbb{F}_2^k$}
+
+    $\ssplit{\mathbf{y}} \gets \text{\sc Split}(\mathbf{y})$\;
+    $\ssplit{\mathbf{uy}} \gets (\mathbf{u}\cdot\mathbf{y}_0,\ldots,\mathbf{u}\cdot\mathbf{y}_{x-1})$\;
+    $\mathbf{b} \sample \mathbb{F}_2^k$\;
+    $\ssplit{\mathbf{b}} \sample \text{\sc Split}(\mathbf{b})$\;
+    $\ssplit{\mathbf{c}} \gets \ssplit{\mathbf{b}}\mathbf{G}$\; 
+    $\mathbf{a} \gets \text{\sc Collapse}(\mathbf{v} ,\ssplit{\mathbf{c}})$\;
+    $\overline{\mathbf{b}} \gets \text{\sc Decode}(\text{\sc Collapse}(\mathbf{a},\ssplit{\mathbf{uy}}))$\tcp*[l]{\color{blue}$\overline{\mathbf{b}} = \mathbf{m} \oplus \mathbf{b} $}
+    $\mathbf{b}_0 \gets \overline{\mathbf{b}} \oplus\mathbf{b}_0$\tcp*[l]{\color{blue}this sets $\ssplit{\mathbf{b}}=(\mathbf{m} \oplus \mathbf{b} \oplus\mathbf{b}_0,\mathbf{b}_1, \ldots,\mathbf{b}_{x-1} )$}
+    \KwRet $\ssplit{\mathbf{b}}$\;
+    \end{algorithm}
+\end{minipage}
+\vspace{-0.4cm}
+\end{figure*}
+
+\noindent\textbf{Masked} \textsf{Decrypt}. The decryption function needs to 
+protect the private key component $\mathbf{y}$, which is split (line $1$ of 
+Algorithm~\ref{alg:dec}), and subsequently multiplied by the public ciphertext
+component $\mathbf{u}$, which does not need splitting (Property~\ref{prop:one}).
+We now use Property~\ref{prop:two} to protect the decoding procedure (line $6$)
+without computing $x$ times the decoding algorithm, which is the most demanding
+portion of HQC.PKE \textsf{Decrypt}.
+To this end, we denote with a helper procedure, \textsc{Collapse}$(\mathbf{a}, \ssplit{\mathbf{b}})$ the \texttt{xor} sum of $\mathbf{a}$ with all the shares of
+$\mathbf{b}$, done in storage order of the shares themselves, as doing a hierarchical
+reduction would lower the number of side channel samples to know for an attacker~\cite{ishai2003private,prouff2013masking}.
+We protect the input of the \textsc{Decode} procedure, adding a random codeword
+to it. This random codeword is obtained drawing a random information word 
+$\mathbf{b}$ (line $4$), share splitting it (line $5$) and encoding all the shares, 
+obtaining the share-split codeword $\ssplit{\mathbf{c}}$ (line $6$).
+We note that a single \textsc{Decode} computation is performed, as opposed
+to a straightforward masking scheme which would require $x$ of them to be 
+computed.
+Thanks to Property~\ref{prop:two}, decoding the sum of share-split codewords
+will result in the sum of the corresponding share-split information words.
+We therefore collapse the share-split codeword $\ssplit{\mathbf{c}}$ onto the
+public decoder input, $\mathbf{v}$, while also performing the subtraction 
+$\mathbf{v}-\mathbf{uy}$ (lines $6$,$7$, recalling that the subtraction 
+among binary polynomials amounts to a coefficient-wise \texttt{xor}).
+The result of the \textsc{Decode} procedure $\mathbf{b}_0$ is thus the message 
+information word $\mathbf{m}$, with a random information word $\mathbf{b}$ 
+added to it.
+Adding such a value to the first share of the share-split representation of
+$\ssplit{\mathbf{b}}= (\mathbf{b}_0,\mathbf{b}_1, \ldots,\mathbf{b}_{x-1} )$ turns such a representation into a share split representation of
+$\mathbf{m}=(\mathbf{m} \oplus \mathbf{b} \oplus\mathbf{b}_0,\mathbf{b}_1, \ldots,\mathbf{b}_{x-1} )$ which is the value returned by the protected HQC.PKE \textsf{Decrypt}.
+Such a value would be recombined, in case the HQC.PKE were used alone; instead, 
+considering the HQC.KEM, can be forwarded to the protected components of the FO
+construction for further processing.

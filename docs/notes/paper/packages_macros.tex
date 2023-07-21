@@ -12,15 +12,18 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{hyperref}
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{tabularx}
 \usepackage{booktabs}
+\usepackage{float}
+\usepackage{subfig}
 
 \usepackage{comment}
 
 \usepackage{multirow}
 
 \usepackage{tikz}
+\usetikzlibrary{patterns, positioning}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \pgfplotsset{compat=1.16}
@@ -32,7 +35,7 @@
                     label style={font=\normalsize},
                     tick label style={font=\normalsize}
                     }}
-
+\newtheorem{prop}{Property}
 \pgfplotscreateplotcyclelist{alecolorlist}{%
 violet \\%
 blue   \\%
