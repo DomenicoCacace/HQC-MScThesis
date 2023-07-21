@@ -1,124 +1,103 @@
-Post-quantum cryptography (PQC), which is also known as quantum-resistant 
+Post-quantum cryptography (PQC), also known as quantum-resistant 
 cryptography, aims at defining new public-key cryptographic schemes based 
-on mathematical problems proven to be hard against adversaries equipped with 
-both classical and quantum computers. Recent advancements on quantum computer 
-technology have witnessed a steep increase in scientific and engineering 
-activities to deliver new solutions to some of the most pressing scientific 
-and societal challenges~\cite{biondi2021quantum}. However, from a cybersecurity standpoint, 
-the availability of a quantum computer with a sufficiently large number of 
-qubits, could leave most of the current protocols used to guarantee the 
-confidentiality and authenticity of communications and storage of data  
-vulnerable to cryptanalytic techniques based on Shor~\cite{DBLP:conf/focs/Shor94}-like quantum algorithms 
-that can subvert the security guarantees of the underlying 
-public key cryptosystems employing only a polynomial computational effort 
-w.r.t. the exponential one required by classical computational platforms.
-Since 2017, several institutional and governmental bodies (e.g.,
-The Center for Advanced China Research - CACR,    
-The European Quantum Communications Infrastructure - EuroQCI - initiative) 
-promoted the analysis of quantum-secure systems, but most market stakeholders 
-are focused on tracking efforts being pursued in the 
-PQC standardization contest promoted by the U.S. National Institute of Standard (NIST).  
+on mathematical problems proven to be computationally hard against 
+adversaries equipped with both classical and quantum computers. 
+Recent advancements on quantum computer technology have witnessed a steep 
+increase in scientific and engineering activities to deliver new solutions 
+to some of the most pressing scientific and societal challenges~\cite{mckinsey23}. 
+However, from a cybersecurity standpoint, the availability of a quantum computer 
+with a sufficiently large number of qubits, would leave most of the 
+current protocols used to guarantee the confidentiality and authenticity of communications and data storage vulnerable to cryptanalytic techniques based on Shor~\cite{DBLP:conf/focs/Shor94}-like quantum algorithms that subvert the 
+security guarantees of the underlying public key cryptosystems.\\
+\indent Since $2017$, several institutional and governmental bodies promoted the 
+analysis of quantum-secure systems, but most stakeholders track the efforts 
+of the PQC standardization contest promoted by the U.S. National Institute 
+of Standard (NIST).  
 Through two rounds of this evaluation process, NIST selected seven finalists
 and eight alternate candidates, which were then thinned down to two standard
 candidates and four alternates for a final round of cryptanalysis and possible 
 standardization. 
 The current standardization-elected candidate Key Encapsulation Method (KEM) is 
-Kyber~\cite{Kyber} is a lattice-based cryptosystem, while NIST selected four 
+Kyber~\cite{Kyber}, a lattice-based cryptosystem, while NIST selected four 
 candidates relying on different computationally hard problems, in order to obtain
 resilience against potentially disruptive attacks on lattice-based cryptosystems.
 Among the four candidates, a polynomial-time cryptanalytic attack eliminated
 SIKE, leaving only three KEMs which are based based on the hardness of the 
 syndrome decoding problem, i.e., Classic McEliece~\cite{ClassicMcEliece}, 
-BIKE~\cite{BIKE} and HQC~\cite{melchor2018hamming}. 
+BIKE~\cite{BIKE} and HQC~\cite{HQC}.
 Among these candidates, only HQC can exhibit a security proof 
 based on a polynomial reduction of the solution of a computationally
 hard problem to the breaking of the cryptosystem.
 In particular, any successful break of HQC implies a faster way to solve the
 syndrome decoding problem on a random quasi-cyclic code of rate $\frac{1}{2}$.
-By contrast, Classic McEliece relies also on the indistinguishability 
-of a hidden Goppa code from a random code, and BIKE relies on the indistinguishability
-of a hidden QC-MDPC code from a random quasi cyclic code.
+By contrast, Classic McEliece relies on an additional assumption, namely the indistinguishability of a hidden Goppa code from a random code, and BIKE relies 
+on the indistinguishability of a hidden QC-MDPC code from a random quasi 
+cyclic code.
 While both arguments are currently unchallenged, there is no proof that they
-are indeed corresponding to computationally hard problems.
-
-Hamming Quasi-Cyclic (HQC)~\cite{melchor2018hamming,DBLP:journals/tit/Aguilar-Melchor18} is
-a code-based IND-CCA2 secure KEM whose security relies on the syndrome 
-decoding problem for quasi cyclic codes. It is obtained by applying the HHK 
-transform~\cite{DBLP:conf/tcc/HofheinzHK17} on a IND-CPA construction, which 
-is also denoted as HQC.PKE.
-HQC uses two types of codes: a tensor code (obtained concatenating a Reed-Muller 
-and Reed-Solomon code) with a public generator matrix $G$ and a random
-double-circulant [$2n, n$]-code with a systematic parity check matrix $(1, h)$.
-It is worth noting that the public code with generator matrix $G$ is only employed
-for its error correcting capability, and plays no role in the security proofs 
-(indeed, it is public).
-
+are indeed corresponding to computationally hard problems.\\
+\indent Hamming Quasi-Cyclic (HQC)~\cite{HQC,DBLP:journals/tit/Aguilar-Melchor18} is
+a code-based IND-CCA secure KEM whose security relies on the syndrome 
+decoding problem for quasi cyclic codes. It is obtained by applying the 
+Hofheinz-H\"{o}velmanns-Kiltz (HHK) transform~\cite{DBLP:conf/tcc/HofheinzHK17} 
+to a IND-CPA construction, which is also denoted as HQC.PKE.
 Given the sound security record of HQC, much attention has been devoted to its 
 side-channel cryptanalysis.
 Most of the independent analyses focused mainly on power analysis or on 
-extracting electromagnetic traces ~\cite{wcc22,DBLP:conf/pqcrypto/GoyLG22,DBLP:conf/pqcrypto/SchambergerHRWS22,DBLP:conf/cardis/SchambergerRSW20}, whilst by the end of the $2$nd round of the U.S. NIST contest 
-the authors in ~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} 
-and~\cite{DBLP:conf/sacrypt/PaivaT19} presented a practical key recovery 
-strategy based on the effectiveness of a chosen ciphertext timing attack against 
-the non-constant time implementation of the decoder of the 
-Bose-Chaudhuri-Hocquenghem (BCH) code (which was employed before the current 
-concatenated Reed Mueller-Reed Solomon code). 
-Both approaches exploit the dependence between the running time of the decoding 
-procedure and the number of decoded errors.  Specifically, when considering the 
-HQC instance exhibiting $128$-bit security parameters, the attack 
-in~\cite{DBLP:conf/sacrypt/PaivaT19} requires $400$ Mdecryption runs, while 
-the one in~\cite{DBLP:journals/amco/Wafo-TapaBBGM22} 
-reaches a key recovery after just $5,441$ calls with $93\%$ success rate. 
-Both attacks proposed as a solution the design of a constant-time decoding 
-algorithm without introducing a significant penalty in terms of computational 
-complexity.
-Nonetheless, in~\cite{DBLP:journals/tches/GuoHJLNS22} the authors described a 
-timing-based key-recovery  attack against HQC based on an implementation 
-weakness in the step that used a procedure called {\em rejection sampling} 
-during randomness generation. As a countermeasure, a more 
-careful implementation of the rejection sampling step is effective to prevent 
-the attack.
-
-To date, no dedicated, constant time implementation of HQC targeted to embedded 
-systems has been proposed, despite the fact that timing attacks are easier to
-carry out against them.
-Moreover, we also note that most of the literature focused on side-channel
-attacks aimed at key retrieval, while it is also possible to perform a 
+extracting electromagnetic traces~\cite{wcc22,DBLP:conf/pqcrypto/GoyLG22,DBLP:conf/pqcrypto/SchambergerHRWS22,DBLP:conf/cardis/SchambergerRSW20};
+nonetheless, in~\cite{DBLP:journals/tches/GuoHJLNS22} the authors described a 
+timing-based key-recovery  attack against HQC, based on an implementation 
+weakness in the step that used a procedure called \emph{rejection sampling} 
+during randomness generation. 
+As a countermeasure, a more careful implementation of the rejection sampling 
+step is currently employed.\\
+\indent 
+To date, no timing and power- or Electromagnetic(EM)-based side-channel secure 
+implementation of HQC, targeted to embedded systems, has been proposed, despite 
+the real threat set by these attacks.
+Moreover, we also note that most of the literature focused on timing side-channel
+attacks aims at key retrieval, while it is also possible to perform a 
 message-retrieval attack against the encryption primitive, in case the 
 operations in the said encryption are not constant time.
 Indeed, the attack mechanism mimics the common attacks on modular exponentiation, 
 as the non-constant time polynomial multiplication techniques, such as the one
 in the reference code by HQC, have a loop whose body contains branches depending
-on the values of one of the operands.
-Since, in the HQC.PKE encryption primitive, one of such operands is secret 
-(as it is the plaintext to be encrypted), providing constant time multiplication
-algorithms is needed to secure the encryption primitive. Furthermore,
-as the HHK transform requires a execution of the HQC.PKE encryption function
-during the computation of the HQC KEM decryption, the requirement for constant
-time multiplication implementations is further strengthened.
-
+on the values of a secret operand.
+Since, in the HQC.PKE encryption primitive, at least one of such operands is 
+secret (as it is the plaintext message to be encrypted), providing constant time
+multiplication algorithms is needed to secure the encryption primitive. 
+Furthermore, as the HHK transform requires a execution of the HQC.PKE encryption 
+function during the computation of the HQC KEM decryption, the requirement for 
+constant time multiplication implementations is further strengthened.\\
+\indent 
 The current state of the software HQC implementations tailored to the ARM
 Cortex-M$4$ microcontroller (chosen by NIST as the reference platform for
-microcontroller benchmarks) includes only the one in PQM$4$~\cite{PQM4}
-a public software project which collects the implementation of all NIST
+microcontroller benchmarks) includes only the one in PQM$4$~\cite{PQM4}, which is 
+a public software project collecting the implementation of all NIST
 fourth round candidates tailored for the Cortex M$4$ CPUs.
-In the PQM4 project, which is currently being used by NIST as one of the third
-party benchmarking suites, the latest version of the HQC implementation is directly
-derived from the third round reference implementation, 
-without further tailored optimizations.
+In the PQM$4$ project, the latest version of the HQC implementation is directly
+derived from the third round reference one, without further optimizations.
 As a consequence, the implementation is vulnerable to the timing side-channel 
-attack by~\cite{DBLP:journals/tches/GuoHJLNS22}.
-
+attack by~\cite{DBLP:journals/tches/GuoHJLNS22}. Furthermore, no protection 
+against power-based side-channel attacks is present.
 
 \noindent\textbf{Our Contribution.} In this paper, we present the first fully 
-constant-time software implementation of HQC, together with a comparative analysis
-of constant time binary polynomial multiplication techniques, tailored to Cortex-M$4$ 
-microcontrollers. 
-We provide an experimental validation of the constant time property via a battery
-of statistical $t$-tests, while varying the CPU frequency and memory latencies, 
-to highlight the stability of our solution across different memory access 
-latencies (which depend on the CPU frequency). 
-Our results show that employing a FFT based multiplication algorithm is the 
-optimal choice for constant-time multiplications, in contrast with classic
-divide-et-impera techniques (e.g., Karatsuba) which provide a better tradeoff
-for x$86$\_$64$ computing platforms.
+constant-time and power/EM side-channel protected software implementation of HQC.KEM, tailored to Cortex-M$4$ microcontrollers. 
+We provide an experimental validation of the security of our proposal via a 
+battery of statistical $t$-tests, both for the EM-emissions and execution time 
+side-channels.
+We evaluate the timing side-channel immunity while varying the CPU frequency and 
+memory latencies, to highlight the stability of our solution across different 
+memory access latencies (which depend on the CPU frequency). 
+Our results show that employing a FFT-based multiplication algorithm is the 
+optimal choice for constant-time multiplications on Cortex-M$4$, in contrast 
+with classic divide-et-impera techniques (e.g., Karatsuba) which provide a 
+better tradeoff for x$86$\_$64$ computing platforms.
+The new algorithmic strategy we introduce to hinder power/EM side-channel 
+attacks against HQC.KEM software implementations achieves a lower than linear 
+performance overhead in protecting the HQC.KEM Decapsulation primitive, 
+currently a unique and welcome feature among side-channel protected 
+implementations of post-quantum  KEMs.
+Our approach is specifically tailored to the decapsulation of 
+HQC, while applying an $n$ out of $n$ share-splitting strategy to 
+Key-generation and Encapsulation primitives with a linear 
+performance overhead.

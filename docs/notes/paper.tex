@@ -1,4 +1,27 @@
-\documentclass[runningheads]{llncs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Submitted papers must follow the LNCS template from the time they are submitted.
+% Submitted papers should be at most 16 pages (using 10-point font), excluding 
+% the bibliography and well-marked appendices, and at most 20 pages total. 
+% Committee members are not required to read the appendices, so the paper should 
+% be intelligible without them. All submissions must be written in English.
+% 
+% Submissions must be uploaded to the following EasyChair website: https://easychair.org/conferences/?conf=esorics2023
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Important Dates
+% Paper Submission             4 June 2023
+% Early reject notification   23 July 2023
+% Notification to Authors     30 July 2023
+% Camera-ready Papers         20 August 2023
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+\documentclass[runningheads, 10pt]{llncs}
 %
 %-------------------------------------------------------------------------------
 %
@@ -16,10 +39,9 @@
 %
 %-------------------------------------------------------------------------------
 %
-\title{A Compact and Constant Time HQC Realization on Cortex-M4}
-% If the paper title is too long for the running head, you can set
-% an abbreviated paper title here
-\titlerunning{A Compact and Constant Time HQC Realization on Cortex-M4}
+\title{A Timing and Power-based Side-channel protected HQC Realization on Cortex-M4}
+%
+\titlerunning{Protected HQC Realization on Cortex-M4}
 %
 %-------------------------------------------------------------------------------
 %
@@ -27,6 +49,14 @@
 \institute{Omitted for blind review}
 %
 %
+% \author{Alessandro Barenghi\orcidID{0000-0003-0840-6358} \inst{1} \and
+%          Domenico Cacace\orcidID{0009-0009-9268-916X} \inst{1} \and
+%          Gerardo Pelosi\orcidID{0000-0002-3812-5429} \inst{1} \and
+%          }
+%  \authorrunning{Barenghi et al.}
+%  \institute{
+%    Politecnico di Milano, Milano, Italy, \email{name.surname@polimi.it}
+% }
 %
 %
 %
@@ -41,15 +71,17 @@
 %-------------------------------------------------------------------------------
 %
 \begin{abstract}
-    In this paper we show the first constant-time implementation of HQC
-    targeting Cortex-M4 microcontrollers. We demostrate the efficiency
-    of our implementation and its constant-time behavior empirically,
-    proving that HQC is a viable candidate for the PQC standardization.\\
-    We then compare the performance of our implementations with
-    other post-quantum schemes, showing the efficiency of our approach.s
-Key point: first Cortex-M4 optimized implementation of HQC, fully constant time
+    In this paper we show the first constant-time and fully masked implementation of HQC targeting Cortex-M$4$ microcontrollers. 
+    Our proposal for a masked implementation is constant-time and
+    has a less-than linear overhead factor in the number of shares, thanks to 
+    appropriate exploitations of the Boolean linearity of the components
+    of HQC.
+    We demostrate the efficiency of our implementation and its constant-time 
+    behavior concretely, through taking clock-cycle level timing and 
+    electromagnetic emission measures on a commercial grade Cortex-M$4$, the 
+    current NIST reference microcontroller platform.
 \keywords{Post-quantum cryptography, code-based cryptosystems, constant time
-implementation, HQC}
+implementation, masking}
 \end{abstract}
 %
 %-------------------------------------------------------------------------------
@@ -57,46 +89,45 @@ implementation, HQC}
 \section{Introduction}\label{sec:intro}
 \input{paper/intro.tex}
 %
-%-------------------------------------------------------------------------------
-%
-%\section{Related Work}\label{sec:relatedWork}
-%\input{related_work.tex}
 %
 %-------------------------------------------------------------------------------
 %
+\vspace{-0.2cm}
 \section{Background}\label{sec:background}
 \input{paper/background.tex}
 %
 %-------------------------------------------------------------------------------
 %
-\section{Constant time, High Efficiency HQC}\label{sec:implem}
+\vspace{-0.2cm}
+\section{Analysis of HQC Operations}\label{sec:implem}
 \input{paper/implementation.tex}
 %
 %-------------------------------------------------------------------------------
 %
+\vspace{-0.2cm}
 \section{Experimental Evaluation}\label{sec:expres}
 \input{paper/expres.tex}
 %
 %-------------------------------------------------------------------------------
 %
-%\section{Analysis of Viable Countermeasures}\label{sec:counters}
-%\input{counters.tex}
-%
-%-------------------------------------------------------------------------------
-%
+\vspace{-0.4cm}
 \section{Concluding Remarks}\label{sec:conc}
+\vspace{-0.2cm}
 \input{paper/conc.tex}
 %
 %-------------------------------------------------------------------------------
-% ---- Bibliography ----
 %
-% BibTeX users should specify bibliography style 'splncs04'.
-% References will then be sorted and formatted in the correct style.
-
-%\clearpage
 \bibliographystyle{splncs04}
 \bibliography{refs.bib}
 %
+%-------------------------------------------------------------------------------
+%
+\clearpage
+\appendix
+\section*{Appendix}\label{sec:appendix}
+\input{appendix.tex}
+%
+%-------------------------------------------------------------------------------
 %
 \end{document}
 %

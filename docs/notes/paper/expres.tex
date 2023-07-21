@@ -1,0 +1,320 @@
+In this section we report the results of the efficiency and effectiveness of our
+proposed masked implementation.
+% In our implementation we will consider only the case $d=2$.
+To this end, we choose the Nucleo L$476$RG board, which is endowed with a
+STM$32$L$476$RG Cortex-M$4$ microcontroller (which can be clocked up to $80$MHz), 
+$128$kiB of RAM, $1$MiB of Flash memory, and a true random number generator.
+The choice of the platform was made as it is part of the \texttt{pqm4} benchmarking
+project~\cite{PQM4}, allowing us fair comparisons with the current state of the art, 
+and the chosen microcontroller is the one picked by NIST as reference platform.
+%
+The available memory on the microcontroller constrains us to the 
+\texttt{hqc-128} parameter set alone and a $x=2$ out of $2$ share splitting, as 
+larger ones have operands which do not fit, once share-split, into the RAM of
+the microcontroller. 
+We employed \texttt{libopencm3} $1$.$0$.$0$ as our hardware abstraction layer 
+library and compiled our code with \texttt{gcc-arm-none-eabi} $7$.$2$.$1$
+using the \texttt{-O3} optimization flag. 
+We performed our evaluation clocking the microcontroller with frequencies in the 
+$\{16, 32, 48, 64, 80\}$MHz set to elicit possible timing vulnerabilities due
+to different Flash memory wait states.
+% We run the same experiments on a x$86$ machine, equipped with an AMD Ryzen $25000$U, $8$GiB of DDR$4$ DRAM and running ArchLinux $6$.$2$; the executables are compiled with
+% \texttt{gcc} $12$.$2$.$1$ using the \texttt{-O3} optimization flag and, for AVX implementations (marked with a `$\dagger$'), the \texttt{-march=native} flag. 
+
+\noindent\textbf{Side-channel Security Evaluation.} 
+To detect the presence of an information leakage on either the timing or 
+the power consumption side channel we employ the well-established Test Vector 
+Leakage Assessment (TVLA)~\cite{DBLP:journals/jce/SchneiderM16} procedure,
+based on Welch's $t$-test. 
+The technique collects two sample populations, one from the cryptographic 
+algorithm running on a fixed value as an input, the other running on randomly
+generated inputs, while the cryptographic-key in both cases is a fixed value.
+TVLA subsequently employs a Student's $t$-test built with the null-hypothesis
+that the populations have different means (i.e., some information leakage takes
+place). The widely accepted bar for the $t$-test to reject the null-hypothesis
+and hence indicate absence of side channel leakage is that the value of the $t$
+statistic is in the range $[-4.5;\, 4.5]$.
+Small $t$ values give (statistical) evidence to reject the null hypothesis and, 
+as a consequence, to be assured that the two populations have the same mean. 
+Specifically, values of $t \in [-4.5;\,4.5]$ allow, with a confidence level of 
+$99.999\%$, the null hypothesis to be rejected, and then to be highly confident 
+that the side-channel behavior of the target implementation fed with random plaintexts 
+cannot be distinguished from the one obtained running the target implementation with a 
+fixed plaintext. 
+\begin{table}[!t]
+    \centering
+    \caption{$t$-values for the HQC.KEM algorithms. The `$\bullet$' in the \textbf{CT?} column indicates that the multiplication algorithm employed is constant-time \label{tab:ct}}
+\resizebox{0.99\textwidth}{!}{    
+%     \begin{tabular}{c | c c c | c c | c c | c c | c c }
+%         \toprule
+%         & & & &  \multicolumn{2}{c|}{\textbf{Encrypt}} & \multicolumn{2}{c|}{\textbf{Decrypt}} &  \multicolumn{2}{c|}{\textbf{Encaps}} & \multicolumn{2}{c}{\textbf{Decaps}}\\
+%         \textbf{Round} & \textbf{Version} & \textbf{Mul} & \textbf{CT?} & \texttt{x$86$} & \texttt{ARM} & \texttt{x$86$} & \texttt{ARM} & \texttt{x$86$} & \texttt{ARM} & \texttt{x$86$} & \texttt{ARM} \\
+%         \midrule
+%         \multirow{2}{*}{3}
+%         & \tt{reference} & Shift\&Add              & $\circ$   & $10.65$& $29.19$& $5.59$ & $39.23$& $58.42$& $28.65$& $20.71$& $18.44$\\
+%         & \tt{sparsemul} & CT Shift\&Add$^\dagger$ & $\bullet$ & $9.38 $& $23.12$& $7.59$ & $49.56$& $6.75 $& $14.29$& $5.81 $& $23.70$\\
+%         \midrule
+%         \multirow{3}{*}{4}
+%         & \tt{reference} & Karatsuba$^\dagger$     & $\bullet$ & $1.27$ & $1.04$ & $0.97$ & $0.30$ & $3.77$ & $4.01$ & $4.56$ & $0.26$\\
+%         & \tt{sparsemul} & CT Shift\&Add$^\dagger$ & $\bullet$ & $0.29$ & $0.07$ & $1.51$ & $1.64$ & $1.58$ & $2.17$ & $1.04$ & $0.22$\\
+%         & \tt{fastmul}   & Frobenius FFT           & $\bullet$ & $3.36$ & $0.56$ & $1.70$ & $1.99$ & $4.31$ & $4.25$ & $2.41$ & $0.53$\\
+%         \bottomrule
+%     \end{tabular}
+    \begin{tabular}{c | c c  |  c |  c |  c |  c }
+        \toprule
+        \textbf{NIST Round} & \textbf{Mult. Alg.} & \textbf{CT?} &  \textbf{Encrypt} & \textbf{Decrypt} &  \textbf{Encaps} & \textbf{Decaps}\\
+        \midrule
+        \multirow{2}{*}{3}
+        & Shift\&Add              & $\circ$   & $29.19$& $39.23$& $28.65$& $18.44$\\
+        & CT Shift\&Add           & $\bullet$ & $23.12$& $49.56$& $14.29$& $23.70$\\
+        \midrule
+        \multirow{3}{*}{4}
+        & Karatsuba-based         & $\bullet$ & $1.04$ & $0.30$ & $4.01$ & $0.26$\\
+        & CT Shift\&Add           & $\bullet$ & $0.07$ & $1.64$ & $2.17$ & $0.22$\\
+        & additive-FFT            & $\bullet$ & $0.56$ & $1.99$ & $4.25$ & $0.53$\\
+        \bottomrule
+    \end{tabular}    
+    }
+\vspace{-0.4cm}
+\end{table}
+
+To measure the execution times we use the {\em Data Watchpoint and 
+Trace Cycle Count Register} (\texttt{DWT\_CYCCNT}), a $32$-bit register that 
+counts the number of clock cycles elapsed since its last reset, with a resolution
+of one clock cycle; to avoid overflows, we reset the register after all the 
+measurements taken from each execution of the target implementation.
+Table~\ref{tab:ct} reports the values of the $t$ statistic for the implementations 
+of the entire HQC.KEM as provided by the authors to NIST for both Round $3$ and Round $4$ of the competition. For the sake of evaluation and comparison we tested their implementations also replacing our multiplication algorithms based on a constant time shift and add strategy as well as on the additive-FFT. The $t$ values reported in Table~\ref{tab:ct} have been obtained gathering $1,000$ samples for each population (i.e., fixed and randomized plaintexts), and setting the microcontroller frequency to $80$MHz. 
+The obtained results are analogous picking any working frequency in the
+in the $\{16, 32, 48, 64, 80\}$MHz set, and are omitted for lack of space.
+We note that reporting a pass in the $t$-test for the entire HQC.KEM is useful to confirm 
+that the entire implementation is constant time. 
+Indeed, Guo et. al~\cite{DBLP:journals/tches/GuoHJLNS22} highlighted that
+also components besides the multipliers may expose timing information leakage.
+This fact is highlighted by both implementations of the Round $3$ HQC proposal
+having reported $t$ statistics outside the acceptable interval $[-4.5;4.5]$ (e.g., $23.12$ from the execution of even the {\sc Encrypt} primitive alone, despite the use of a constant time multiplication algorithm).
+For the one employing the variable-time shift-and-add multiplication 
+the effect is more evident, while the one employing a constant-time multiplication
+algorithm has its timing leakage stemming from the sparse polynomial sampler proposed for the Round $3$ HQC.KEM 
+implementation, as reported in~\cite{DBLP:journals/tches/GuoHJLNS22}. 
+All Round $4$ HQC.KEM implementations, employing
+a Karatsuba-based multiplication strategy (as proposed by the HQC authors), or either a constant-time (CT) shift-and-add, or additive-FFT multiplication algorithm (proposed by us) have values for the $t$ statistic within the required interval.
+
+
+%  As already mentioned we employ the TVLA and take as populations the execution times
+% of the algorithm under test, running it with variable and fixed inputs; both populations are sampled $1,000$ times and, for ARM,
+% the frequency is set to $80$MHz. 
+% The results of the tests are reported in Table~\ref{tab:ctmult}.
+% \begin{table}[!t]
+%     \centering
+%     \caption{$t$-values for the multiplication algorithms\label{tab:ctmult}}
+%     \resizebox{0.99\textwidth}{!}{
+%     \begin{tabular}{ccccc}
+%         \toprule
+%         &  {\bf HQC reference impl.} & {\bf HQC optimized impl.}     & \multicolumn{2}{c}{{\bf Our realization}} \\
+%         & \textbf{Shift\&Add       } & \textbf{Toom-Cook+Karatsuba} & \textbf{Shift\&Add}  & \textbf{Additive-FFT} \\
+%         & {\bf variable-time}    & {\bf constant-time}          & {\bf constant-time}  & {\bf  constant-time}  \\            
+%         \midrule
+%         \texttt{ARM} & $55.75$ & $0.00$ & $0.00$ & $0.00$ \\
+%         \texttt{x86} & $20.94$ & $3.64$ & $3.37$ & $1.23$\\
+%         \bottomrule
+%     \end{tabular}
+%     }
+% \end{table}
+% 
+% As expected, the schoolbook Shift\&Add does not run in constant time while the 
+% other algorithms do, as they perform always the same
+% operations regardless of the inputs; the constant-time behavior of a part of 
+% the system however does not guarantee that the whole
+% system runs in constant time. In~\cite{DBLP:journals/tches/GuoHJLNS22}, the 
+% authors show that the algorithm employed in HQC and BIKE to sample polynomials
+% with a fixed Hamming weight is not constant-time and can be exploited to fully 
+% recover the secret key; this vulnerability was discovered
+% on the Round $3$ version, and it has been fixed in the subsequent round. 
+% We 
+% therefore run the TVLA on the PKE and KEM schemes with
+% the same settings as before, and find the results reported in Table~\ref{tab:ct}.
+\begin{figure}[!t]
+\begin{center}
+    \subfloat{\includegraphics[scale=0.35]{figures/decode_nomask_50k_t.png}}
+    \subfloat{\includegraphics[scale=0.35]{figures/decode_masked_50k_t.png}}
+    \newline\noindent
+    \subfloat{\includegraphics[scale=0.35]{figures/rsdecode_nomask.png}}
+    \subfloat{\includegraphics[scale=0.35]{figures/rsdecode_masked.png}}
+\end{center}
+    \caption{$t$-value statistics on the electromagnetic traces on the protected RM-RS decoder (top), and zoom on the RS decoder alone (bottom). Figures on the left are from the unprotected implementations, figures on the right from the protected one. All results obtained with $50$k traces.\label{fig:ttest_em}}
+\vspace{-0.5cm}
+\end{figure}
+We employ the electromagnetic emissions as a proxy of the power consumption, 
+and measure them with a PicoScope $5244$D oscilloscope sampling at $500$MS/s the 
+output of an H-probe placed on top of the STM$32$L$476$RG package, amplifying the
+signal with two Agilent INA-$10386$ amplifiers a $52$dB gain.
+We collect $50$k samples for each population, and run the $t$ test timewise, 
+as per the TVLA~\cite{DBLP:journals/jce/SchneiderM16} methodology, obtaining
+time sequences of $t$-statistics. 
+Figure~\ref{fig:ttest_em} reports plots of the $t$ statistic as a function of time
+for both the unprotected (left) and protected (right) implementations.
+In particular, the topmost two figures correspond to the computation of the
+RMRS decoder, while the bottom ones are a zoom on the RS decoder alone.
+The spike in the value of the $t$ statistic, reaching well beyond the admissible
+limit for the unprotected implementation corresponds, in time to the calculation 
+of the error corrector polynomial, which was also reported 
+by~\cite{schamberger2022power} as an information leaking computation.
+By contrast, the time series of the protected implementation are within the $[-4.5;4.5]$ interval, depicted by dashed red lines, showing
+the effectiveness of our countermeasure.
+
+% The aim of the test is to provide a quantitative measure of how much the means of two
+% populations differ; the t-test statistic is computed as follows:
+% \vspace{-10pt}
+% \begin{equation}
+%     t = \frac{\mu_0 - \mu_1}{\sqrt{\frac{s_0^2}{n_0} + \frac{s_1^2}{n_1}}}
+% \end{equation}  
+% \vspace{-2pt}
+% where $\mu, s^2$ and $n$ are the mean, variance and number of samples of the two populations, respectively.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[!t]
+\input{figures/efficiency.tex}
+\caption{Execution times of the encryption, decryption, encapsulation and 
+decapsulation algorithms of the \texttt{HQC.KEM} on the \texttt{ARM} 
+architecture. The measured components of the \texttt{HQC.KEM} include both the 
+non-constant time sampler from Round $3$ (R$3$) and the constant time from 
+Round $4$ (R$4$). \texttt{AFFT} marks the additive-FFT multiplier based implementations\label{fig:timing_hqc_kem}}
+\vspace{-0.4cm}
+\end{figure}
+\noindent\textbf{Efficiency evaluation.} We evalutated the computational
+efficiency of all the considered multiplication approaches reported in 
+Table~\ref{tab:ct}. 
+Figure~\ref{fig:timing_hqc_kem} reports the number of 
+clock cycles taken by a full execution of the HQC.KEM algorithms, considering
+their masked implementation (depicted with patterned columns), 
+and provide the results of the unprotected implementation only for the most 
+efficient, fully constant time proposal (i.e. the one based on the Round $4$ 
+sampler and FFT-based multipliers).
+The results in Figure~\ref{fig:timing_hqc_kem} show how the FFT-multiplier based
+HQC.KEM is almost an order of magnitude faster than the corresponding Karatsuba
+multiplier based one (note that the plot is in logarithmic scale on the $y$ axis).
+Our FFT-based multiplier approach also consistently outperforms the 
+constant-time shift-and-add one, albeit by a smaller margin.
+Finally, we note that the performance overhead which our algorithmic approach
+to compute the HQC.KEM as masked is consistently within the $2\times$ range
+which is expected from its sub-linear cost in the number of shares (two, in
+the figures we report).
+Consistently with~\cite{DBLP:journals/iacr/HeinzKLPSS22}, we also report that
+the main performance overhead comes from the additional multiplications, the 
+impact of the masking on the hash function is negligible with respect to 
+the total computation time.
+
+
+% \input{figures/plotting.tex}
+% \input{figures/arm_timing.tex}  % contains data for the plots
+% \input{figures/x86_timing.tex}  % contains data for the plots
+
+
+
+% % As for the x$86$ machine, we use the \texttt{rdtsc} instruction, that returns the current value of the processor's time stamp counter;
+% % to get accurate measurements, we lock the frequency of all cores to $2$.$0$GHz using \texttt{cpupower} and disable
+% the Turbo Boost feature.
+% In both cases, in order to reduce uncertainty, we run the experiments $1,000$ times and average the results.
+
+% As already mentioned, the multiplication operation is the most time-consuming operation for all primitives, hence the choice of
+% the multiplication algorithm is crucial to achieve good performance. 
+% The execution times of the various multiplication algorithms are shown in Figure~\ref{fig:multTiming}.
+% 
+% \begin{figure}[!t]
+%     \subfloat{\ARMtimingplotmult{\armMultTiming}}
+%     \subfloat{\xtimingplotmult{\xMultTiming}}
+%     \centering
+%     \newline
+%     \timingLegend
+%     \caption{Multiplication execution times on ARM (left) and x$86$ (right) in kcycles\label{fig:multTiming}}
+% \end{figure}
+% 
+% As expected, the fastest multiplication algorithm on ARM (after the Shift\&Add) is the one using the Frobenius FFT, followed by the
+% constant-time version of Shift\&Add. In the graph we can also see how the execution time for the Frobenius FFT is the only one
+% that is significantly impacted by the amount of memory wait states: as explained in Section~\ref{sec:fft} this algorithm heavily
+% relies on precomputed tables, requiring a higher amount of memory accesses and thus up to $92$\% more clock cycles; finally, 
+% we can see that the Karatsuba algorithm takes the longest amount of time.\\
+% Things change dramatically on x$86$: on this architecture we can take advantage of AVX instructions, which allow us to carry out
+% operations with $256$-bit vectors in a single clock cycle: this benefits the Karatsuba algorithm, which is the fastest one by a large margin,
+% while the Frobenius FFT becomes the slowest one.
+
+% \subsubsection{Constant-time execution}
+% As stated by the NIST, the constant-time execution is an important property for a standardization candidate, as it increases
+% its security against side-channel attacks: it is hence important to assess the presence of timing leaks in our multiplication implementations
+% before using them in the PKE and KEM schemes. As already mentioned we employ the TVLA and take as populations the execution times
+% of the algorithm under test, running it with variable and fixed inputs; both populations are sampled $1,000$ times and, for ARM,
+% the frequency is set to $80$MHz. 
+% % The results of the tests are reported in Table~\ref{tab:ctmult}.
+% % \begin{table}[!t]
+% %     \centering
+% %     \caption{$t$-values for the multiplication algorithms\label{tab:ctmult}}
+% %     \resizebox{0.99\textwidth}{!}{
+% %     \begin{tabular}{ccccc}
+% %         \toprule
+% %         &  {\bf HQC reference impl.} & {\bf HQC optimized impl.}     & \multicolumn{2}{c}{{\bf Our realization}} \\
+% %         & \textbf{Shift\&Add       } & \textbf{Toom-Cook+Karatsuba} & \textbf{Shift\&Add}  & \textbf{Additive-FFT} \\
+% %         & {\bf variable-time}    & {\bf constant-time}          & {\bf constant-time}  & {\bf  constant-time}  \\            
+% %         \midrule
+% %         \texttt{ARM} & $55.75$ & $0.00$ & $0.00$ & $0.00$ \\
+% %         \texttt{x86} & $20.94$ & $3.64$ & $3.37$ & $1.23$\\
+% %         \bottomrule
+% %     \end{tabular}
+% %     }
+% % \end{table}
+% % 
+% As expected, the schoolbook Shift\&Add does not run in constant time while the other algorithms do, as they perform always the same
+% operations regardless of the inputs; the constant-time behavior of a part of the system however does not guarantee that the whole
+% system runs in constant time. In~\cite{DBLP:journals/tches/GuoHJLNS22}, the authors show that the algorithm employed in HQC and BIKE to sample polynomials
+% with a fixed Hamming weight is not constant-time and can be exploited to fully recover the secret key; this vulnerability was discovered
+% on the Round $3$ version, and it has been fixed in the subsequent round. We therefore run the TVLA on the PKE and KEM schemes with
+% the same settings as before, and find the results reported in Table~\ref{tab:ct}.
+
+% 
+% We can see that, even with a constant-time multiplication algorithm, the Round 3 version is not constant-time, while the Round 4 version
+% runs in constant time with all the multiplication algorithms. 
+
+% \subsubsection{Power analysis}
+% Our power measuring setup employs the PicoScope $5244$D oscilloscope sampling at $500$MS/s, two Agilent INA-$10386$ amplifiers in a cascade
+% configuration achieving a $52$dB gain and a H-probe, placed on top of the STM32L476RG package. The EM traces are recorded and analyzed on a 
+% computer equipped with an AMD A$8$-$6600$K CPU, $32$GiB of DDR$4$ DRAM running Debian $10$. To ensure that the encryption/decryption process runs
+% correctly, we generate the inputs on the same machine, send them to the target via the USART$1$ interface and compare the outputs with the
+% expected ones; the executables to generate the inputs and verify the outputs are compiled with \texttt{gcc} ($9$.$3$.$0$) on the same machine,
+% using the \texttt{-O3} optimization flag. Due to the length of the traces we focus our attention on the RMRS decoder, which to date is the
+% main attack target of power attacks on HQC; this also allows us to capture a higher number of traces ($50,000$).
+
+% Our measurements, reported in Figure~\ref{fig:EMtstat1} and Figure~\ref{fig:EMtstat2}, show a peak in the $t$-value on the unprotected version in correspondance with the calculation of the error corrector polynomial, as
+% also reported by~\cite{schamberger2022power}; we can also see how this peak disappears in the masked implementation, showing the effectiveness of our 
+% countermeasure.
+
+
+% \begin{figure}[!t]
+%     \centering
+% 
+%     \caption{$t$-value statistics on the electromagnetic traces on the RS decoder alone\label{fig:EMtstat2}}
+% \end{figure}
+
+% \subsection{Comparison with other schemes}
+% Similarly to ~\cite{alagic2022status} we can compare the performance of our 
+% implementation with the other Round $4$ candidates; 
+% it is interesting to note that all three candidates are code-based cryptosystems 
+% and that they all have a Cortex-M$4$ implementation.
+% In Figure~\ref{fig:time} we can see the different amount of time required by 
+% our implementations, BIKE~\cite{DBLP:journals/tches/ChenCK21}
+% and McEliece~\cite{DBLP:journals/tches/ChenC21} to perform the different 
+% operations; for consistency, we consider only the optimized implementations for 
+% Cortex-M$4$ with level $1$ parameters. For HQC, we consider the results
+% obtained with zero memory wait states, as the authors of the other 
+% implementations did.
+ 
+
+
+% The results on the HQC.KEM scheme are impacted mainly by the multiplication algorithm, hence the impact of the
+% masking on the hash function~\cite{DBLP:journals/iacr/HeinzKLPSS22} is negligible.
+% We can see how the McEliece cryptosystem is the fastest one in terms of encapsulation and decapsulation, but 
+% requires $2\cdot 10^{12}$ cycles to generate the keypair. With respect to BIKE, the most promising
+% candidate in this round, we can see how HQC outperforms it in terms of key generation and decapsulation,
+% not only in the fast implementation but also in the masked one; the performance gap is even more evident
+% if we consider the time required for an ephemeral key agreement: HQC requires $30.9$ Mcycles and and $50.8$Mcycles
+% respectively for the fast and masked implementation while BIKE, without masking, requires $78.1$ Mcycles.
