@@ -13,7 +13,7 @@
 
 static inline void swap(uint16_t *tab, uint16_t elt1, uint16_t elt2);
 
-static void reduce(uint64_t *o, const uint64_t *a);
+static void reduce(DIGIT *o, const DIGIT *a);
 
 static void fast_convolution_mult(uint64_t *o, const uint32_t *a1, const uint64_t *a2, const uint16_t weight, seedexpander_state *ctx);
 
