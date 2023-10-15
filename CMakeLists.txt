@@ -113,12 +113,21 @@ list(APPEND HEADERS_TESTING
 #################################################
 
 #set(PRECHARGING_SCRIPT "${CMAKE_SOURCE_DIR}/scripts/precharger/asm_secure.py")
+#list(APPEND INCLUDE_DIRS 
+#	"-I${BASE_DIR}/codes"
+#	"-I${BASE_DIR}/common"
+#	"-I${BASE_DIR}/fastmul"
+#	"-I${BASE_DIR}/fields"
+#	"-I${BASE_DIR}/hqc"
+#	"-I${BASE_DIR}/lib"
+#	"-I${BASE_DIR}/testing"
+#)
 #
 #foreach(FILE IN LISTS SOURCES_TOPRECHARGE)
 #	get_filename_component(FILENAME ${FILE} NAME_WE)
 #   set(COMMON_DIR "${BASE_DIR}/common")
 #	set(ASM_OUTPUT "${CMAKE_SOURCE_DIR}/build/${FILENAME}.s")
-#	precharge_source("${FILE}" "${ASM_OUTPUT}" "${PRECHARGING_SCRIPT}" "${CMAKE_C_FLAGS} ${PROJECT_COMPILE_FLAGS}")
+#	precharge_source("${FILE}" "${ASM_OUTPUT}" "${PRECHARGING_SCRIPT}" "${CMAKE_C_FLAGS} ${PROJECT_COMPILE_FLAGS}" ${INCLUDE_DIRS})
 #	list(APPEND PRECHARGED_SOURCES ${ASM_OUTPUT})
 #endforeach()
 
