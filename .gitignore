@@ -12,5 +12,8 @@ build/
 cmake-build*/
 __pycache__/
 
+# Precharged sources
+src/precharged
+
 # Docs
 docs/notes
