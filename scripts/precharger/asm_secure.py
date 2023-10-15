@@ -1,5 +1,6 @@
 #!/usr/bin/python3.10
 from dataclasses import dataclass, field
+import sys
 
 __doc__ = '''
 Compilation
@@ -39,6 +40,25 @@ def neg_cond(cond):
 # Configuration 
 class Cfg(object):
   '''Needs to know how many reserved registers there are, as well as where is the TRNG'''
+  def autodetect(self,reserved_registers):
+    try : 
+      self.reserved_registers = int(reserved_registers)
+      return
+    except ValueError : pass
+    # autodetection
+    s1='register int *random  asm ("r8");'
+    s2='register int *rngaddr asm ("r7");'
+    s3='register int *apsrpro asm ("r6");'
+    r=0
+    fn = reserved_registers.split('.')[0]+'.c'
+    try :
+      with open(fn) as fin :
+        r = len([ l for l in fin.readlines() if s1 in l or s2 in l or s3 in l ])
+      print(f'{fn} autodetected: {r}', file=sys.stderr)
+    except Exception : 
+      print(f"Autodetect failed on {fn}!", file=sys.stderr)
+    self.reserved_registers=r
+    
   def __init__(self, reserved_registers=2, rng_address=None):
     if not rng_address : 
       # definition of RNG data address according to the STM32nucleo board needs
@@ -54,7 +74,8 @@ class Cfg(object):
     self.precharge_war_case = ''
     self.save_psr = ''
     self.load_psr = ''
-    if reserved_registers==3 : # use r8, r7, and r6
+    self.autodetect(reserved_registers)
+    if self.reserved_registers==3 : # use r8, r7, and r6
       self.load_random_and_add_to_itself = '''
 \tldr{0} r8, [r7]     @ load from TRNG
 \tadd {1}, r8, r8     @ sum with itself 
@@ -84,7 +105,7 @@ class Cfg(object):
 \tldr r6, [sp, #-8]
 \tmsr apsr, r6
 '''
-    elif reserved_registers==2 : # use r8 and r7 only
+    elif self.reserved_registers==2 : # use r8 and r7 only
       self.load_random_and_add_to_itself = '''
 \tldr r8, ={}         @ load TRNG address
 \tldr{{0}} r8, [r8]   @ load from TRNG
@@ -119,8 +140,8 @@ class Cfg(object):
 \tldr r7, [sp, #-16]
 \tmsr apsr, r7
 '''.format(rng_address)
+    else : raise Exception(f"Insufficient number of reserved registers: {self.reserved_registers}")
     ASMI.cfg=self
-
 
 # ARM assembler instrumentation
 @dataclass
@@ -256,20 +277,23 @@ def write_protected_asm(asm,fname):
 
 
 if __name__ == '__main__':
-  from sys import exit
   import argparse
   parser = argparse.ArgumentParser(
                     prog='asm_secure',
                     description='Add random precharging to ARM assembly code',
                     epilog='author: G. Agosta\n(c) Politecnico di Milano 2023')
   parser.add_argument('-v', '--verbose', action='store_true', help='print minimal information (for now)')
-  parser.add_argument('-r', '--reserved-regs', type=int, default=3, choices=[2,3], help='number of reserved registers in the assembly file; must be 2 or 3')
+  parser.add_argument('-r', '--reserved-regs', default='autodetect', choices=[2,3,'autodetect'], help='number of reserved registers in the assembly file; must be 2 or 3; omit for autodetection')
   parser.add_argument('filename', help='ARM assembler file; modified by the program')
   args = parser.parse_args()
   if args.verbose:
-    print(args)
+    print(args, sys.stderr)
   fn = args.filename
-  cfg = Cfg(reserved_registers=args.reserved_regs)
+  rg = args.reserved_regs if args.reserved_regs != 'autodetect' else fn
+  try : cfg = Cfg(reserved_registers=rg)
+  except Exception: 
+    print(f"File {fn} skipped!")
+    sys.exit(0)
   asm = read_asm(fn)
   '''
   for i in asm :
