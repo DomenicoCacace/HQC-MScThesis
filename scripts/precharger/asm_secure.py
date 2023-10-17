@@ -1,6 +1,7 @@
 #!/usr/bin/python3.10
 from dataclasses import dataclass, field
 import sys
+import os
 
 __doc__ = '''
 Compilation
@@ -50,12 +51,12 @@ class Cfg(object):
     s2='register int *rngaddr asm ("r7");'
     s3='register int *apsrpro asm ("r6");'
     r=0
-    fn = reserved_registers.split('.')[0]+'.c'
+    fn = '.'.join(reserved_registers.split('.')[:-1])+'.c'
     try :
       with open(fn) as fin :
         r = len([ l for l in fin.readlines() if s1 in l or s2 in l or s3 in l ])
       print(f'{fn} autodetected: {r}', file=sys.stderr)
-    except Exception : 
+    except Exception: 
       print(f"Autodetect failed on {fn}!", file=sys.stderr)
     self.reserved_registers=r
     
@@ -183,6 +184,9 @@ class ASMI(object):
     if self.comment: return self.comment
     return self.text
 
+  def is_nop(self):
+    return self.opcode == 'nop'
+
   def is_load(self):
     if not self.opcode : return False
     if self.opcode[:2] == 'ld' : return True
@@ -200,7 +204,7 @@ class ASMI(object):
     
   def is_compute(self):
     if self.is_label or self.is_directive or self.is_comment : return False
-    return not (self.is_mem() or self.is_branch())
+    return not (self.is_mem() or self.is_branch() or self.is_nop())
 
   def regs(self):
     try : return [ r for r in registers + special_registers if sum([ o.find(r)!=-1 for o in self.operands ]) ]
@@ -211,7 +215,9 @@ class ASMI(object):
     except TypeError : return []
 
   def written_regs(self):
-    if self.is_compute() or self.is_load() : return [ find_register(self.operands[0]) ]
+    if self.is_compute() or self.is_load() : 
+    	#print(self, self.operands, file=sys.stderr)
+    	return [ find_register(self.operands[0]) ]
     return []
 
   def is_function_dec(self):
@@ -275,6 +281,13 @@ def write_protected_asm(asm,fname):
     fout.write(protected_code(asm))
 
 
+# Functions for parsing arguments
+
+def dir_path(path):
+    if os.path.isdir(path):
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
 if __name__ == '__main__':
   import argparse
@@ -283,13 +296,14 @@ if __name__ == '__main__':
                     description='Add random precharging to ARM assembly code',
                     epilog='author: G. Agosta\n(c) Politecnico di Milano 2023')
   parser.add_argument('-v', '--verbose', action='store_true', help='print minimal information (for now)')
-  parser.add_argument('-r', '--reserved-regs', default='autodetect', choices=[2,3,'autodetect'], help='number of reserved registers in the assembly file; must be 2 or 3; omit for autodetection')
+  parser.add_argument('-p', '--path', type=dir_path, default='./', help='path for source file')
+  parser.add_argument('-r', '--reserved-regs', default='autodetect', choices=['2','3','autodetect'], help='number of reserved registers in the assembly file; must be 2 or 3; omit for autodetection')
   parser.add_argument('filename', help='ARM assembler file; modified by the program')
   args = parser.parse_args()
   if args.verbose:
     print(args, sys.stderr)
   fn = args.filename
-  rg = args.reserved_regs if args.reserved_regs != 'autodetect' else fn
+  rg = int(args.reserved_regs) if args.reserved_regs != 'autodetect' else os.path.join(args.path,fn)
   try : cfg = Cfg(reserved_registers=rg)
   except Exception: 
     print(f"File {fn} skipped!")
