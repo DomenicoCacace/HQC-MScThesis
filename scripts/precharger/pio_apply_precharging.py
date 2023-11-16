@@ -13,7 +13,7 @@ precharger = f"\"{project_dir}/scripts/precharger/asm_secure.py\""
 
 flags = "-DSECURITY_LEVEL=128 -D_M4_ASM_ -DCORTEX_M4 -DMASK_ENABLE -O3 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16"
 
-sources_preamble = """register int *random  asm ("r8");\nregister int *rngaddr asm ("r7");\nregister int *apsrpro asm ("r6");\n"""
+sources_preamble = """register int *random  asm ("r5");\nregister int *rngaddr asm ("r7");\nregister int *apsrpro asm ("r6");\n"""
 
 # Select which files should be preprocessed
 codes_sources = [
@@ -85,12 +85,13 @@ if dryRun == "Y" or dryRun == "y":
         print(f"\t-<{file}>")
     sys.exit(1)
 
-temp_dir = f"{project_dir}/temp_src"
+temp_dir = f"{source_dir}/temp_src"
 os.system(f"mkdir -p \"{temp_dir}\"")
 
 for file in toPrechargeOriginal:
     filename, extension = os.path.splitext(os.path.basename(file))
     asm_file = f"\"{temp_dir}/{filename}.s\""
+    #orig_s_file = f"\"{temp_dir}/{filename}_orig.s\""
 
     if(extension != ".s"):
         # copy source to temporary directory
@@ -112,13 +113,10 @@ for file in toPrechargeOriginal:
 
         # python asm_secure.py source.s
         command = f"{python} {precharger} -p \"{temp_dir}\" {asm_file}"
-        print(command)
         os.system(command) 
     else:
         command = f"cp \"{source_dir}/{file}\" {asm_file}"
         os.system(command)
 
- 
-
 # remove temp files
-os.system(f"rm -rf {temp_dir}/*.c")
+os.system(f"rm -rf \"{temp_dir}/\"*.c")

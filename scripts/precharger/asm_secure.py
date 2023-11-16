@@ -9,23 +9,30 @@ Compilation
   asm_secure.py gf.s
   arm-linux-gnueabi-gcc -c gf.s
 
-assumption: r8 and r7 are not used in the code
+assumption: r5 and r7 are not used in the code
 r6reserved = False # in config, set to true if also register r6 is reserved
 
 to ensure this add in each compilation unit:
-  register int *random  asm ("r8");
+  register int *random  asm ("r5");
   register int *rngaddr asm ("r7");
   register int *apsrpro asm ("r6");
 
+TODO: Remove comments in source code
 '''
 
 # ARM code manipulation functions
 registers = [ 'r'+str(i) for i in range(16) ]
 special_registers = [ 'a1', 'a2', 'a3', 'a4', 'v1', 'v2', 'v3', 'v4', 'v5', 'sb', 'sl', 'fp', 'ip', 'sp', 'lr', 'pc' ]
 
+def isprefix(pr,s):
+  return s[:len(pr)]==pr
+
 def find_register(string):
   res = [ r for r in registers + special_registers if string.find(r)!=-1 ]
-  if len(res) > 1 : raise Exception(f'Too many registers in string: {string}')
+  if len(res) > 1 : 
+  	longest = max(res,key=len)
+  	if sum([ isprefix(s,longest) for s in res ]) : return longest
+  	raise Exception(f'Too many registers ({res}) in string: {string}')
   if len(res) ==0 : raise Exception(f'No registers in string: {string}')
   return res[0]
 
@@ -36,7 +43,15 @@ def neg_cond(cond):
   if cond == 'lt' : return 'ge'
   if cond == 'le' : return 'gt'
   if cond == 'gt' : return 'le'
-  raise Exception('Unmanaged condition type')
+  if cond == 'ls' : return 'hi'
+  if cond == 'hi' : return 'ls'
+  if cond == 'vs' : return 'vt'
+  if cond == 'vt' : return 'vs'
+  if cond == 'pl' : return 'mi'
+  if cond == 'mi' : return 'pl'
+  if cond == 'cs' : return 'cc'
+  if cond == 'cc' : return 'cs'
+  raise Exception(f'Unmanaged condition type {cond}')
 
 # Configuration 
 class Cfg(object):
@@ -47,7 +62,7 @@ class Cfg(object):
       return
     except ValueError : pass
     # autodetection
-    s1='register int *random  asm ("r8");'
+    s1='register int *random  asm ("r5");'
     s2='register int *rngaddr asm ("r7");'
     s3='register int *apsrpro asm ("r6");'
     r=0
@@ -56,14 +71,14 @@ class Cfg(object):
       with open(fn) as fin :
         r = len([ l for l in fin.readlines() if s1 in l or s2 in l or s3 in l ])
       print(f'{fn} autodetected: {r}', file=sys.stderr)
-    except Exception: 
+    except Exception : 
       print(f"Autodetect failed on {fn}!", file=sys.stderr)
     self.reserved_registers=r
     
   def __init__(self, reserved_registers=2, rng_address=None):
     if not rng_address : 
       # definition of RNG data address according to the STM32nucleo board needs
-      per_base = 0x42000000
+      per_base = 0x40000000
       apb_base = 0x08000000
       rng_base = 0x08060800
       rng_data = 0x08
@@ -76,26 +91,26 @@ class Cfg(object):
     self.save_psr = ''
     self.load_psr = ''
     self.autodetect(reserved_registers)
-    if self.reserved_registers==3 : # use r8, r7, and r6
+    if self.reserved_registers==3 : # use r5, r7, and r6
       self.load_random_and_add_to_itself = '''
-\tldr{0} r8, [r7]     @ load from TRNG
-\tadd {1}, r8, r8     @ sum with itself 
+\tldr{0} r5, [r7]     @ load from TRNG
+\tadd {1}, r5, r5     @ sum with itself 
 '''
       self.store_random_value = '''
-\tldr{0} r8, [r7]     @ load from TRNG
-\tstr{0} r8, {1}      @ store over address 
+\tldr{0} r5, [r7]     @ load from TRNG
+\tstr{0} r5, {1}      @ store over address 
 '''
       self.prologue = '''
 \tldr r7, ={}         @ set the address
 '''.format(rng_address)
       self.precharge_war_case = '''
-\tldr{0} r8, [r7]       @ load from TRNG
-\tstr{0} r8, [sp, #-4]  @ protect next store
+\tldr{0} r5, [r7]       @ load from TRNG
+\tstr{0} r5, [sp, #-4]  @ protect next store
 \tstr{0} {1}, [sp, #-4] @ store accumulator
-\tldr{0} r8, [r7]       @ load from TRNG
-\tadd {1}, r8, r8       @ protect accumulator
-\tldr{0} r8, [sp, #-4]  @ restore accumulator value
-''' # add rX r8 rY 
+\tldr{0} r5, [r7]       @ load from TRNG
+\tadd {1}, r5, r5       @ protect accumulator
+\tldr{0} r5, [sp, #-4]  @ restore accumulator value
+''' # add rX r5 rY 
       self.save_psr = '''
 \tldr r6, [r7]       @ load from TRNG
 \tmrs r6, apsr 
@@ -104,31 +119,31 @@ class Cfg(object):
       self.load_psr = '''
 \tldr r6, [r7]       @ load from TRNG
 \tldr r6, [sp, #-8]
-\tmsr apsr, r6
+\tmsr apsr_nzcvq, r6
 '''
-    elif self.reserved_registers==2 : # use r8 and r7 only
+    elif self.reserved_registers==2 : # use r5 and r7 only
       self.load_random_and_add_to_itself = '''
-\tldr r8, ={}         @ load TRNG address
-\tldr{{0}} r8, [r8]   @ load from TRNG
-\tadd {{1}}, r8, r8   @ sum with itself 
+\tldr r5, ={}         @ load TRNG address
+\tldr{{0}} r5, [r5]   @ load from TRNG
+\tadd {{1}}, r5, r5   @ sum with itself 
 '''.format(rng_address)
       self.store_random_value = '''
-\tldr r8, ={}         @ load TRNG address
-\tldr{{0}} r8, [r8]   @ load from TRNG
-\tstr{{0}} r8, {{1}}  @ store over address 
+\tldr r5, ={}         @ load TRNG address
+\tldr{{0}} r5, [r5]   @ load from TRNG
+\tstr{{0}} r5, {{1}}  @ store over address 
 '''.format(rng_address)
       self.prologue = '''
 '''
       self.precharge_war_case = '''
-\tldr r8, ={0}           @ load TRNG address
-\tldr{{0}} r8, [r8]      @ load from TRNG
-\tstr{{0}} r8, [sp, #-4]     @ protect next store
+\tldr r5, ={0}           @ load TRNG address
+\tldr{{0}} r5, [r5]      @ load from TRNG
+\tstr{{0}} r5, [sp, #-4]     @ protect next store
 \tstr{{0}} {{1}}, [sp, #-4]  @ store accumulator
-\tldr r8, ={0}           @ load TRNG address
-\tldr{{0}} r8, [r8]      @ load from TRNG
-\tadd {{1}}, r8, r8      @ protect accumulator
-\tldr{{0}} r8, [sp, #-4] @ restore saved
-'''.format(rng_address) # add rX r8 rY 
+\tldr r5, ={0}           @ load TRNG address
+\tldr{{0}} r5, [r5]      @ load from TRNG
+\tadd {{1}}, r5, r5      @ protect accumulator
+\tldr{{0}} r5, [sp, #-4] @ restore saved
+'''.format(rng_address) # add rX r5 rY 
       self.save_psr = '''
 \tldr r7, ={0}           @ load TRNG address
 \tldr r7, [r7]           @ load from TRNG
@@ -139,7 +154,7 @@ class Cfg(object):
 \tldr r7, ={0}           @ load TRNG address
 \tldr r7, [r7]           @ load from TRNG
 \tldr r7, [sp, #-16]
-\tmsr apsr, r7
+\tmsr apsr_nzcvq, r7
 '''.format(rng_address)
     else : raise Exception(f"Insufficient number of reserved registers: {self.reserved_registers}")
     ASMI.cfg=self
@@ -184,6 +199,10 @@ class ASMI(object):
     if self.comment: return self.comment
     return self.text
 
+  def is_ite(self):
+    if not self.opcode : return False
+    return self.opcode[:2]=='it'
+
   def is_nop(self):
     return self.opcode == 'nop'
 
@@ -204,14 +223,15 @@ class ASMI(object):
     
   def is_compute(self):
     if self.is_label or self.is_directive or self.is_comment : return False
-    return not (self.is_mem() or self.is_branch() or self.is_nop())
+    return not (self.is_mem() or self.is_branch() or self.is_nop() or self.is_ite())
 
   def regs(self):
     try : return [ r for r in registers + special_registers if sum([ o.find(r)!=-1 for o in self.operands ]) ]
     except TypeError : return []
 
   def read_regs(self): # only works for write dest==first register
-    try : return [ r for r in registers + special_registers if sum([ o.find(r)!=-1 for o in self.operands[1:] ]) ]
+    #print(self.operands)
+    try : return [ r for r in registers + special_registers if sum([ o.strip('[]{}, \t')==r for o in self.operands[1:] ]) ]
     except TypeError : return []
 
   def written_regs(self):
@@ -227,35 +247,54 @@ class ASMI(object):
 
   def is_conditioned(self):
     return self.opcode[-2:] in [ 'eq', 'ne', 'cs', 'hs', 'cc', 'lo', 'mi', 'vs', 'vc', 'hi', 'ls', 'ge', 'gt', 'le' ]
+
+  def replace_reg(self, old, new):
+    count = 0
+    i = self.text.find(old)
+    while i>=0 :
+      nxt = self.text[i+len(old)]
+      try : int(nxt) 
+      except ValueError :
+        if count :
+          self.text = self.text[:i]+new+self.text[i+len(old):]
+        count +=1
+      i = self.text.find(old,i+1)
    
-  def add_protection(self, needs_prologue=False):
+  def add_protection(self, needs_prologue=False, ite_count=0):
     r = self.is_function_dec()
     if self.is_label :
       if needs_prologue==self.label:
         self.suffix=self.cfg.prologue
+    if self.is_ite():
+      self.text = self.store_psr
+      return r, len(self.opcode)-2
+    if ite_count>0 : 
+      self.prefix = self.load_psr
+      ite_count-=1
+    else :
+      self.prefix=''
     if self.is_store() and 'str'==self.opcode[:3]:
       address = ' '.join(self.operands[1:])
       byte_spec = '' if len(self.opcode)<=3 else self.opcode[3:]
-      self.prefix = self.cfg.store_random_value.format(byte_spec,address)
-      return r
+      self.prefix = self.cfg.store_random_value.format(byte_spec,address) + self.prefix
+      return r, ite_count
     regs = self.written_regs()
     if len(regs)==0 : return r 
-    self.prefix=''
     for w in regs :
       if w in ['fp','sp','pc']: continue
       byte_spec = '' if len(self.opcode)<=3 or 'ldr'!=self.opcode[:3] else self.opcode[3:]
       if w in self.read_regs() : 
         if self.is_conditioned() : self.prefix += self.cfg.save_psr
-        self.prefix += self.cfg.precharge_war_case.format(byte_spec,w)
+        self.prefix = self.cfg.precharge_war_case.format(byte_spec,w) + self.prefix
         if self.is_conditioned() : self.prefix += self.cfg.load_psr
         # se l'operazione è condizionata e la condizione è falsa, devo eseguire invece add, rX, rX, #0
-        self.text = self.text.replace(w, 'r8').replace('r8', w, 1) # replace all but first instance of w
+        self.replace_reg(w, 'r5') # replace all but first instance of w
         if self.is_conditioned() : 
           c = neg_cond(self.opcode[-2:])
-          self.suffix += f'\tmov{c} {w}, r8\n'
+          self.suffix += f'\tmov{c} {w}, r5\n'
       else :
-        self.prefix += self.cfg.load_random_and_add_to_itself.format(byte_spec,w)
-    return r
+        self.prefix = self.cfg.load_random_and_add_to_itself.format(byte_spec,w) + self.prefix
+    return r, ite_count
  
 # Functions running over the entire code  
 def read_asm(fname):
@@ -270,13 +309,17 @@ def all_regs_used(asm):
 def protected_code(asm):
   res = ''
   for r in asm : 
+    if 'r50' in r.prefix or 'r50' in r.text or 'r50' in r.suffix: 
+      print(r.prefix, r.text, r.suffix)
+      raise Exception
     res += r.prefix + r.text + r.suffix
   return res
 
 def write_protected_asm(asm,fname):
   needs_prologue=False
+  ite_count=0
   for i in asm :
-    needs_prologue = i.add_protection(needs_prologue)
+    needs_prologue, ite_count = i.add_protection(needs_prologue,ite_count)
   with open(fname,'w') as fout :
     fout.write(protected_code(asm))
 
